@@ -1,0 +1,20 @@
+---
+
+- name: reload httpd
+  service: name=apache2 state=reloaded
+
+- name: restart httpd
+  service: name=apache2 state=restarted
+
+- name: reload ldapd
+  service: name=slapd state=reloaded
+
+- name: restart ldapd
+  service: name=slapd state=restarted
+
+- name: reload nslcd
+  service: name=nslcd state=reloaded
+
+- name: restart nslcd
+  service: name=nslcd state=restarted
+

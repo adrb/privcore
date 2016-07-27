@@ -1,0 +1,17 @@
+---
+
+- name: deploying local CA directory tree
+  synchronize: src=CA/ dest={{ssl_config.dir}}/ recursive=yes
+
+- name: deploying serial file
+  copy: src=serial dest={{ssl_config.dir}}/serial force=no
+
+- name: deploying crlnumber file
+  copy: src=crlnumber dest={{ssl_config.dir}}/crlnumber force=no
+
+- name: deploying index.txt file
+  copy: src=index.txt dest={{ssl_config.dir}}/index.txt force=no
+
+- name: generating {{ssl_config.dir}}/openssl.cnf
+  template: src=openssl.cnf.j2 dest={{ssl_config.dir}}/openssl.cnf
+

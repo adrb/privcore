@@ -1,0 +1,5 @@
+---
+
+ssl_config:
+  dir: /etc/ssl/CA
+

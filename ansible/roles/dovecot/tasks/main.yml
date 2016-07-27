@@ -1,0 +1,19 @@
+---
+#
+# Testing dovecot with IMAPS:
+#  $ openssl s_client -host localhost -port 993
+#  1 login username pass
+#  2 LIST "" "*"
+#  3 EXAMINE INBOX
+#  4 FETCH 1 BODY[]
+#  5 logout
+#
+- name: repositories and packages
+  tags: dovecot_packages
+  include: packages.yml
+
+- name: configure dovecot
+  when: ansible_fqdn in groups['dovecot']
+  tags: dovecot_configure
+  include: configure_dovecot.yml
+

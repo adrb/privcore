@@ -1,0 +1,21 @@
+---
+
+- name: creating dovecot data dir - /var/lib/dovecot
+  file: path=/var/lib/dovecot state=directory owner=root group=root mode=0755
+
+- name: creating dovecot mail directory  - /var/lib/dovecot/maildirs
+  file: path=/var/lib/dovecot/maildirs state=directory owner=dovecot group=dovecot mode=1773
+
+- name: generating dovecot configuration files
+  template: src={{item}}.j2 dest=/etc/dovecot/{{item}}
+  with_items:
+    - 'conf.d/10-auth.conf'
+    - 'conf.d/10-logging.conf'
+    - 'conf.d/10-master.conf'
+    - 'conf.d/10-ssl.conf'
+    - 'conf.d/auth-ldap.conf.ext'
+    - 'conf.d/15-mailboxes.conf'
+    - 'dovecot-ldap.conf.ext'
+    - 'dovecot.conf'
+  notify: restart dovecot
+

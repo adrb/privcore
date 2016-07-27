@@ -1,0 +1,20 @@
+---
+
+# Debug routing:
+#   $ exim -bt user@domain
+#
+# Debug exim lookups
+#   $ exim -bt -d+lookup user@domain
+#
+# Deliver message:
+#   $ exim -M id
+
+- name: repositories and packages
+  tags: exim_packages
+  include: packages.yml
+
+- name: configure exim
+  when: ansible_fqdn in groups['exim']
+  tags: exim_configure
+  include: configure_exim.yml
+

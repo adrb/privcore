@@ -1,0 +1,11 @@
+---
+
+- name: repositories and packages
+  tags: roundcube_packages
+  include: packages.yml
+
+- name: configure roundcube
+  when: ansible_fqdn in groups['roundcube']
+  tags: roundcube_configure
+  include: configure_roundcube.yml
+

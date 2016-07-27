@@ -1,0 +1,22 @@
+---
+
+  # We can't configure/install nslcd unless we have slapd configured and running
+- name: installing nslcd
+  apt: name={{ item }} state=present force=yes update_cache=yes
+  with_items:
+      - nslcd
+
+- name: generating /etc/nslcd.conf
+  template: src=nslcd.conf.j2 dest=/etc/nslcd.conf
+  notify: restart nslcd
+
+- name: deploy /etc/nsswitch.conf
+  copy: src=nsswitch.conf dest=/etc/nsswitch.conf
+
+- name: enable ssh access for group ssh
+  blockinfile:
+    dest: /etc/pam.d/sshd
+    block: |
+      session required pam_mkhomedir.so skel=/etc/skel/ umask=0022
+    marker: "# {mark} ANSIBLE MANAGED BLOCK "
+

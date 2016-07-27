@@ -1,0 +1,38 @@
+# /etc/nslcd.conf
+# nslcd configuration file. See nslcd.conf(5)
+# for details.
+
+# The user and group nslcd should run as.
+uid nslcd
+gid nslcd
+
+# The location at which the LDAP server(s) should be reachable.
+{% if ansible_fqdn in groups['openldap'] -%}
+uri ldapi:///
+{% else -%}
+uri {{ldap_config.local_server_uri}}
+{% endif %}
+
+# The search base that will be used for all queries.
+base {{ldap_config.suffix}}
+
+# The LDAP protocol version to use.
+#ldap_version 3
+
+# The DN to bind with for normal lookups.
+binddn {{ldap_tree.root.dit_branch.users.dit_branch.services.dit_branch.readonly.dn}}
+bindpw {{ldap_tree.root.dit_branch.users.dit_branch.services.dit_branch.readonly.userpassword}}
+
+# The DN used for password modifications by root.
+rootpwmoddn cn=admin,{{ldap_config.suffix}}
+
+# SSL options
+#ssl off
+#tls_reqcert never
+tls_cacertfile /etc/ssl/certs/ca_cert.pem
+
+# The search scope.
+#scope sub
+
+pam_authz_search (&(objectClass=groupOfNames)(cn=ssh)(member=$dn))
+

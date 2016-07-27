@@ -1,0 +1,9 @@
+
+acl_connect:
+  defer message = Connection rate limit exceeded. You may try again at a later time.
+        hosts = ! +relay_from_hosts
+        ratelimit   = 15.0 / 10s / strict / per_conn / strict / $sender_host_address
+        log_message = Host has been ratelimited $sender_rate/$sender_rate_period max:$sender_rate_limit
+
+  accept
+

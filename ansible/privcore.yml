@@ -1,0 +1,17 @@
+---
+
+- name: privcore
+  hosts:
+    - all
+  gather_facts: yes
+
+  roles:
+    - { role: openssl, tags: ssl } # create CA and generate certificates for machines and its services
+    - { role: bind, tags: dns } # local DNS server
+    - { role: openldap, tags: ldap } # initialize directory servers and assign hosts to it
+    - { role: prosody, tags: xmpp } # prosody XMPP/Jabber server
+    - { role: owncloud, tags: owncloud } # sharing server (file, contacts, calendar)
+    - { role: dovecot, tags: imap } # E-mail mailboxes
+    - { role: exim, tags: smtp } # E-mail transport
+    - { role: roundcube, tags: webmail } # E-mail webclient
+

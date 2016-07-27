@@ -1,0 +1,98 @@
+---
+
+ldap_config:
+  organization: "{{ config.organization_name | default('Home') }}"
+  suffix: "{{ config.ldap_suffix | default('dc=home') }}"
+  adminpw: "{{ config.master_passwd | default('changeme') }}"
+  local_server_uri: ldap://localhost/
+  timezone: "{{ config.timezone | default('Europe/Warsaw') }}"
+
+ldap_tree:
+  root:
+    dn: "{{ldap_config.suffix}}"
+    objectClass:
+      - dcObject
+      - organization
+    o: "{{ldap_config.organization}}"
+
+    dit_branch:
+      users:
+        dn: "ou=users,{{ldap_config.suffix}}"
+        objectClass:
+          - organizationalUnit
+          - top
+
+        dit_branch:
+          services:
+            dn: "ou=services,ou=users,{{ldap_config.suffix}}"
+            objectClass:
+              - organizationalUnit
+              - top
+
+            dit_branch:
+              readonly:
+                dn: "uid=readonly,ou=services,ou=users,{{ldap_config.suffix}}"
+                objectclass: 
+                  - account
+                  - simpleSecurityObject
+                  - top
+                userpassword: changeme
+
+      groups:
+        dn: "ou=groups,{{ldap_config.suffix}}"
+        objectClass:
+          - organizationalUnit
+          - top
+
+        dit_branch:
+          admins:
+            dn: "cn=admins,ou=groups,{{ldap_config.suffix}}"
+            objectclass:
+              - groupOfNames
+              - top
+            member:
+                - "cn=admin,{{ldap_config.suffix}}"
+
+          users:
+            dn: "cn=users,ou=groups,{{ldap_config.suffix}}"
+            cn: users
+            gidnumber: 1000
+            objectclass:
+              - posixGroup
+              - top
+
+          ssh:
+            dn: "cn=ssh,ou=groups,{{ldap_config.suffix}}"
+            objectclass:
+              - groupOfNames
+              - top
+            member:
+                - "cn=admin,{{ldap_config.suffix}}"
+
+          xmpp_contacts:
+            dn: "ou=XMPP Contacts,ou=groups,{{ldap_config.suffix}}"
+            objectclass:
+              - organizationalUnit
+              - top
+
+            dit_branch:
+              admins:
+                dn: "cn=XMPP Admins,ou=XMPP Contacts,ou=groups,{{ldap_config.suffix}}"
+                gidnumber: 1001
+                objectclass:
+                  - posixGroup
+                  - top
+
+              users:
+                dn: "cn=XMPP Users,ou=XMPP Contacts,ou=groups,{{ldap_config.suffix}}"
+                gidnumber: 1002
+                objectclass:
+                  - posixGroup
+                  - top
+
+          smtp_groups:
+            dn: "ou=SMTP Groups,ou=groups,{{ldap_config.suffix}}"
+            objectclass:
+              - organizationalUnit
+              - top
+

@@ -1,0 +1,32 @@
+; vim:set ts=8 et sw=4 sts=4:
+$ORIGIN .
+$TTL 3600       ; 1 hour
+{{ansible_domain}}.  IN SOA  {{ansible_domain}}. hostmaster.{{ansible_domain}}. (
+                                {{ansible_date_time.year}}{{ansible_date_time.month}}{{ansible_date_time.day}}{{ansible_date_time.hour}} ; serial
+                                3600       ; refresh (1 hour)
+                                900        ; retry (15 minutes)
+                                604800     ; expire (1 week)
+                                600        ; minimum (10 minutes)
+                                )
+            A       {{ hostvars[ groups['bind_master'][0] ].default_ipv4_address }}
+            NS      ns1.{{ansible_domain}}.
+            MX  10  mail.{{ansible_domain}}.
+
+$ORIGIN {{ansible_domain}}.
+
+ns1             A       {{ hostvars[ groups['bind_master'][0] ].default_ipv4_address }}
+mail            A       {{ hostvars[ groups['bind_master'][0] ].default_ipv4_address }}
+ntp1            A       {{ hostvars[ groups['bind_master'][0] ].default_ipv4_address }}
+
+; XMPP/Jabber
+{% for jabber in groups['prosody'] %}
+xmpp            A       {{ hostvars[jabber].default_ipv4_address }}
+{% endfor %}
+_xmpp-client._tcp.{{ansible_domain}}.   SRV 0 5 5222 xmpp.{{ansible_domain}}.
+_xmpp-server._tcp.{{ansible_domain}}.   SRV 0 5 5269 xmpp.{{ansible_domain}}.
+
+; Hosts
+{% for host in groups['all'] %}
+{{hostvars[host].inventory_hostname_short}}       A       {{hostvars[host].default_ipv4_address}}
+{% endfor %}
+

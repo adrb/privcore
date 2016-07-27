@@ -1,0 +1,16 @@
+---
+
+- name: install owncloud server
+  when: ansible_fqdn in groups['owncloud']
+  apt: name={{ item }} state=present force=yes update_cache=yes
+  with_items:
+      - python-mysqldb  # for ansible mysql_user module
+      - owncloud
+
+- name: uninstall owncloud server for machines without role 'owncloud'
+  when: ansible_fqdn not in groups['owncloud']
+  apt: name={{ item }} state=absent purge=yes force=yes
+  with_items:
+      - python-mysqldb
+      - owncloud
+

@@ -1,0 +1,38 @@
+
+### acl/30_exim4-config_check_mail
+#################################
+
+# This access control list is used for every MAIL command in an incoming
+# SMTP message. The tests are run in order until the address is either
+# accepted or denied.
+#
+acl_check_mail:
+  .ifdef CHECK_MAIL_HELO_ISSUED
+  deny
+    message = no HELO given before MAIL command
+    condition = ${if def:sender_helo_name {no}{yes}}
+  .endif
+
+  deny  ! authenticated = *
+        sender_domains = +local_domains
+        hosts = ! +relay_from_hosts
+        message = Server requires authentication for sending from local domains
+
+  # require authenticated users to use +local_domains
+  deny  authenticated = *
+        sender_domains = ! +local_domains
+        hosts = ! +relay_from_hosts
+        message = Invalid sender domain: $sender_address_domain
+
+  # Authenticated users can use only own email or alias
+  deny  authenticated = *
+        sender_domains = +local_domains
+        hosts = ! +relay_from_hosts
+        ! condition = ${if eqi {$authenticated_id}{${lookup ldap{ \
+            USER=LDAP_USER PASS=LDAP_PASS \
+            {{ldap_config.local_server_uri}}/ou=users,LDAP_BASE?uid?sub?(&(objectClass=posixAccount)(uid=${authenticated_id}) \
+              (|(mail=${sender_address})(mailLocalAddress=${sender_address})))}}} {yes}{no}}
+
+        message = Invalid sender address for your account: $sender_address
+
+  accept

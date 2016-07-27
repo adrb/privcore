@@ -1,0 +1,20 @@
+---
+
+- name: install packages for all
+  apt: name={{ item }} state=present force=yes update_cache=yes
+  with_items:
+      - dnsutils
+      - python-dnspython # for ansible dig lookup
+
+- name: install bind server
+  when: ansible_fqdn in groups['bind_master'] or ansible_fqdn in groups['bind_slave']
+  apt: name={{ item }} state=present force=yes
+  with_items:
+      - bind9
+
+- name: uninstall DNS server for machines without roles 'bind_master' and 'bind_slave'
+  when: ansible_fqdn not in groups['bind_master'] and ansible_fqdn not in groups['bind_slave']
+  apt: name={{ item }} state=absent purge=yes force=yes
+  with_items:
+    - bind9
+

@@ -1,0 +1,49 @@
+---
+
+- name: creating database {{owncloud_config.mysql_db}}
+  mysql_db: name={{owncloud_config.mysql_db}} state=present
+
+- name: creating user {{owncloud_config.mysql_user}}@localhost with full access to {{owncloud_config.mysql_db}} database
+  mysql_user: name={{owncloud_config.mysql_user}} host=localhost password={{owncloud_config.mysql_pass}} priv={{owncloud_config.mysql_db}}.*:ALL state=present
+
+- name: hashing LDAP user password with BASE64
+  shell: echo -n "{{ldap_tree.root.dit_branch.users.dit_branch.services.dit_branch.readonly.userpassword}}" | base64
+  changed_when: false
+  register: _ldap_userpw_base64
+
+- name: creating variable ldap_userpw_base64
+  set_fact:
+    ldap_userpw_base64: "{{_ldap_userpw_base64.stdout_lines[0]}}"
+
+- name: geting owncloud HTTP cookies
+  uri:
+    url: "{{owncloud_config.url}}/"
+    method: GET
+    validate_certs: no
+    return_content: yes
+  register: _oc_cookies
+
+  # Yes, I know that i can use autoconfig.php
+- name: configuring owncloud
+  uri:
+    url: "{{owncloud_config.url}}/index.php"
+    method: POST
+    validate_certs: no
+    body: "install=true&adminlogin=admin&adminpass={{owncloud_config.adminpw}}&adminpass-clone={{owncloud_config.adminpw}}&directory=%2Fusr%2Fshare%2Fowncloud%2Fdata&dbtype=mysql&dbuser={{owncloud_config.mysql_user}}&dbpass={{owncloud_config.mysql_pass}}&dbpass-clone={{owncloud_config.mysql_pass}}&dbname={{owncloud_config.mysql_db}}&dbhost=localhost"
+    status_code: 302,200
+    HEADER_Content-Type: "application/x-www-form-urlencoded"
+    HEADER_Cookie: "{{_oc_cookies.set_cookie}}"
+
+#- name: Generating mysql file to /tmp/owncloud.mysql
+#  template: src=owncloud.mysql.j2 dest=/tmp/owncloud.mysql
+
+- name: configuring owncloud for LDAP
+  shell: |
+    mysql --force {{owncloud_config.mysql_db}} <<EOF
+    {{ lookup('template', 'owncloud.mysql.j2') }}
+    EOF
+    :
+  args:
+    executable: /bin/bash
+  register: oc_mysql_result
+

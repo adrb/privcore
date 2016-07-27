@@ -1,0 +1,18 @@
+---
+
+- name: install prosody XMPP/Jabber server
+  when: ansible_fqdn in groups['prosody']
+  apt: name={{ item }} state=present force=yes update_cache=yes
+  with_items:
+      - prosody
+      - lua-ldap
+      - prosody-modules
+      - apache2   # BOSH proxy
+
+- name: uninstall XMPP/Jabber prosody server for machines without role 'prosody'
+  when: ansible_fqdn not in groups['prosody']
+  apt: name={{ item }} state=absent purge=yes force=yes
+  with_items:
+      - prosody
+      - lua-ldap
+      - prosody-modules

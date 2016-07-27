@@ -1,0 +1,24 @@
+---
+
+- name: repositories and packages
+  tags: openldap_packages
+  include: packages.yml
+
+- name: configure slapd
+  when: ansible_fqdn in groups['openldap']
+  tags: openldap_configure
+  include: configure_slapd.yml
+
+- name: configure nslcd
+  tags: openldap_configure
+  include: configure_nslcd.yml
+
+- name: Generating client file /etc/ldap/ldap.conf
+  tags: openldap_configure
+  template: src=ldap.conf.j2 dest=/etc/ldap/ldap.conf
+
+- name: configure phpldapadmin
+  when: ansible_fqdn in groups['openldap']
+  tags: openldap_configure
+  include: configure_phpldapadmin.yml
+

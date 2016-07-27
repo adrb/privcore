@@ -1,0 +1,27 @@
+---
+
+- name: install packages for all
+  apt: name={{ item }} state=present force=yes update_cache=yes
+  with_items:
+      - ldap-utils
+      - libpam-modules
+
+- name: install packages for directory servers
+  when: ansible_fqdn in groups['openldap']
+  apt: name={{ item }} state=present force=yes
+  with_items:
+      - slapd
+      - phpldapadmin
+  notify: 
+    - restart httpd
+    - restart ldapd
+
+- name: uninstall LDAP server for machines without role 'openldap'
+  when: ansible_fqdn not in groups['openldap']
+  apt: name={{ item }} state=absent purge=yes force=yes
+  with_items:
+      - slapd
+      - phpldapadmin
+  notify: 
+    - restart httpd
+

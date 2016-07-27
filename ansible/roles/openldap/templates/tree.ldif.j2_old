@@ -1,0 +1,15 @@
+{%- macro multivalue(name,vlist) -%}
+{% for v in vlist -%}
+{{name}}: {{v}}
+{% endfor -%}
+{%- endmacro -%}
+{% for attr, val in ldap_tree.root.iteritems() recursive -%}
+{% if attr == "dit_branch" -%}
+{{ loop(val.iteritems()) }}
+{% endif -%}
+{% if val is string or val is number -%}
+{{attr}}: {{val}}
+{%- else -%}
+{{ multivalue(attr,val) }}
+{% endif -%}
+{% endfor %}

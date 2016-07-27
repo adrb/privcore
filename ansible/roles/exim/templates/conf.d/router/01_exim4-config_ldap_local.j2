@@ -1,0 +1,56 @@
+
+#
+# Query LDAP for recipient data
+#
+LDAP_ADDRESS_DATA_ATTRS = uid,uidNumber,gidNumber,mailStorageDirectory,mail,mailLocalAddress
+LDAP_ADDRESS_DATA_FILTER = (&(objectClass=posixAccount)(|(mail=${quote_ldap:$local_part@$domain})(mailLocalAddress=${quote_ldap:$local_part@$domain})))
+
+ldap_address_data:
+  debug_print = "R: ldap_address_data for $local_part@$domain"
+  driver = accept
+  domains = +local_domains
+  address_data = ${lookup ldap{ \
+    USER=LDAP_USER PASS=LDAP_PASS \
+    {{ldap_config.local_server_uri}}/ou=users,LDAP_BASE?LDAP_ADDRESS_DATA_ATTRS?sub?LDAP_ADDRESS_DATA_FILTER} {$value} fail}
+
+  transport = ldap_devnull
+  unseen
+
+#
+# Redirect for aliases
+#
+ldap_aliases:
+  driver = redirect
+  domains = +local_domains
+  allow_fail
+  allow_defer
+  data = ${extract{mail}{$address_data}}
+  file_transport = address_file
+  pipe_transport = address_pipe
+
+#
+# Redirect for groups
+#
+ldap_groups:
+  driver = redirect
+  domains = +local_domains
+  allow_fail
+  allow_defer
+  data = ${lookup ldapm{ \
+    USER=LDAP_USER PASS=LDAP_PASS \
+    {{ldap_config.local_server_uri}}/ou=SMTP Groups,ou=groups,LDAP_BASE?rfc822MailMember?sub?(&(objectClass=nisMailAlias)(cn=${quote_ldap:$local_part@$domain}))} \
+    {$value} fail}
+  file_transport = address_file
+  pipe_transport = address_pipe
+
+#
+# Is it local user?
+#
+ldap_localuser:
+  debug_print = "R: ldap_localuser for $local_part@$domain"
+  driver = accept
+  domains = +local_domains
+  condition = ${extract{uid}{$address_data}}
+  cannot_route_message = Unknown user
+  transport = ldap_maildir
+

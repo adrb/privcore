@@ -1,0 +1,37 @@
+---
+
+- name: generating keys
+  command: openssl genrsa -out private/{{item}}_key.pem 2048 chdir={{ssl_config.dir}} creates=private/{{item}}_key.pem
+  with_items: "{{ groups['all'] }}"
+
+- name: creating CSRs
+  command: openssl req -config openssl.cnf -key private/{{item}}_key.pem -new -sha256 -subj "/O={{ldap_config.organization}}/CN={{item}}" -out certs/{{item}}_csr.pem chdir={{ssl_config.dir}} creates=certs/{{item}}_csr.pem
+  with_items: "{{ groups['all'] }}"
+
+- name: signing the CSRs
+  command: openssl ca -config openssl.cnf -batch -extensions server_cert -days 3650 -notext -md sha256 -in certs/{{item}}_csr.pem -out certs/{{item}}_cert.pem chdir={{ssl_config.dir}} creates=certs/{{item}}_cert.pem
+  with_items: "{{ groups['all'] }}"
+
+- name: creating CRL
+  command: openssl ca -config openssl.cnf -gencrl -out certs/ca_crl.pem chdir={{ssl_config.dir}} creates=certs/ca_crl.pem
+
+  # Revoking via: openssl ca -config openssl.cnf -revoke certs/example_cert.pem
+  # After that, donf forget to recreate CRL file: openssl ca -config openssl.cnf -gencrl -out certs/ca_crl.pem
+  # Finally verify: openssl verify -crl_check -CApath /etc/ssl/CA/certs -CAfile /etc/ssl/CA/certs/ca_cert.pem /etc/ssl/CA/certs/example_cert.pem
+
+#- name: generating key for OCSP
+#  command: openssl genrsa -out private/ocsp.{{ansible_fqdn}}_key.pem 2048 chdir={{ssl_config.dir}} creates=private/ocsp.{{ansible_fqdn}}_key.pem
+#
+#- name: creating primary directory server CSRs for OCSP
+#  command: openssl req -config openssl.cnf -key private/ocsp.{{ansible_fqdn}}_key.pem -new -sha256 -subj "/O={{ldap_config.organization}}/CN=ocsp.{{ansible_fqdn}}" -out certs/ocsp.{{ansible_fqdn}}_csr.pem chdir={{ssl_config.dir}} creates=certs/ocsp.{{ansible_fqdn}}_csr.pem
+#
+#- name: signing the primary directory server CSR with Online Certificate Status Protocol
+#  when: ansible_fqdn in groups['pds']
+#  command: openssl ca -config openssl.cnf -batch -extensions ocsp -days 3650 -md sha256 -in certs/ocsp.{{ansible_fqdn}}_csr.pem -out certs/ocsp.{{ansible_fqdn}}_cert.pem chdir={{ssl_config.dir}} creates=certs/ocsp.{{ansible_fqdn}}_cert.pem
+#
+  # It's done mainly for proper CRL verification. 
+  # You can also concatenate the PEM CRL and the CA chain together (CRL last)
+- name: rehasing all certificates
+  command: c_rehash {{ssl_config.dir}}/certs
+  changed_when: false
+

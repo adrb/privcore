@@ -1,0 +1,38 @@
+
+#
+# Macros
+#
+
+REMOTE_SMTP_HELO_DATA = {{ config.internet_domain }}
+
+MAIN_TLS_ENABLE = true
+MAIN_TLS_CERTIFICATE = /etc/ssl/certs/{{ansible_fqdn}}_cert.pem
+MAIN_TLS_PRIVATEKEY = /etc/ssl/private/{{ansible_fqdn}}_key.pem
+MAIN_TLS_ADVERTISE_HOSTS = *
+
+LDAP_USER = {{ldap_tree.root.dit_branch.users.dit_branch.services.dit_branch.readonly.dn}}
+LDAP_PASS = {{ldap_tree.root.dit_branch.users.dit_branch.services.dit_branch.readonly.userpassword}}
+LDAP_BASE = {{ldap_config.suffix}}
+
+MESSAGE_SIZE_LIMIT = 64M
+#MAIN_LOG_SELECTOR = +deliver_time +queue_time +queue_time_overall +subject -host_lookup_failed -lost_incoming_connection
+MAIN_LOG_SELECTOR = +all
+
+#
+# Main configuration
+#
+smtp_banner = "{{ config.internet_domain }} ESMTP"
+daemon_smtp_ports = 25 : 465 : 587
+tls_on_connect_ports = 465
+tls_require_ciphers = NORMAL:!VERS-SSL3.0
+
+ldap_default_servers = localhost
+ldap_ca_cert_file = /etc/ssl/certs/ca_cert.pem
+ldap_cert_file = /etc/ssl/certs/{{ansible_fqdn}}_cert.pem
+ldap_cert_key = /etc/ssl/private/{{ansible_fqdn}}_key.pem
+ldap_require_cert = demand
+ldap_start_tls = false
+
+bounce_return_body = false
+bounce_return_message = false
+

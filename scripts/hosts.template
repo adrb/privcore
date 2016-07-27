@@ -1,0 +1,29 @@
+[openssl_ca]
+# only one server allowed
+%hostname%
+
+[openldap]
+%hostname%
+
+[bind_master]
+# only one server allowed
+%hostname%
+
+[bind_slave]
+# not implemented yet
+
+[prosody]
+%hostname%
+
+[owncloud]
+%hostname%
+
+[dovecot]
+%hostname%
+
+[exim]
+%hostname%
+
+[roundcube]
+%hostname%
+

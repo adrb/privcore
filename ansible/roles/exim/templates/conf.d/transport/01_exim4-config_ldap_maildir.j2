@@ -1,0 +1,25 @@
+
+ldap_maildir:
+  driver = appendfile
+  maildir_format = true
+  maildir_tag = ,S=$message_size
+  delivery_date_add
+  envelope_to_add
+  return_path_add
+
+  mode = 0700
+  user = ${extract{uidNumber}{$address_data}}
+  group = ${extract{gidNumber}{$address_data}}
+
+  create_directory = true
+  directory_mode = 0600
+  directory = ${if eq {${extract{mailStorageDirectory}{$address_data}}}{} \
+    {/var/lib/dovecot/maildirs/${extract{uid}{$address_data}}} \
+    {${extract{mailStorageDirectory}{$address_data}}} \
+  }
+
+ldap_devnull:
+  driver = appendfile
+  file = /dev/null
+  group = mail
+

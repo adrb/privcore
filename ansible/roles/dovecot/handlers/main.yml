@@ -1,0 +1,8 @@
+---
+
+- name: reload dovecot
+  service: name=dovecot state=reloaded
+
+- name: restart dovecot
+  service: name=dovecot state=restarted
+

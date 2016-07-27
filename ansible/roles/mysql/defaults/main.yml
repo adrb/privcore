@@ -1,0 +1,5 @@
+---
+
+mysql_config:
+  rootpw: "{{ config.master_passwd | default('changeme') }}"
+

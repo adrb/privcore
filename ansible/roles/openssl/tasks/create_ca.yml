@@ -1,0 +1,11 @@
+---
+
+- name: generating root CA key
+  command: openssl genrsa -out private/ca_key.pem 4096 chdir={{ssl_config.dir}} creates=private/ca_key.pem
+
+- name: creating root CA certificate
+  command: openssl req -config openssl.cnf -key private/ca_key.pem -new -x509 -days 7300 -sha256 -extensions v3_ca -subj "/O={{ldap_config.organization}}/CN=ROOT CA Certificate" -out certs/ca_cert.pem chdir={{ssl_config.dir}} creates=certs/ca_cert.pem
+
+- name: converting root CA to DER
+  command: openssl x509 -outform der -in certs/ca_cert.pem -out certs/ca_cert.der chdir={{ssl_config.dir}} creates=certs/ca_cert.pem
+

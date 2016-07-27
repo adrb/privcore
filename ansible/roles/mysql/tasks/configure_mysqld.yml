@@ -1,0 +1,23 @@
+---
+
+- name: removing unused root accounts
+  mysql_user: name='root' host={{item}} state=absent
+  with_items:
+    - '127.0.0.1'
+    - '::1'
+    - "{{ansible_hostname}}"
+
+- name: setting password for root@localhost
+  mysql_user: name=root host=localhost password={{mysql_config.rootpw}} state=present
+
+- name: generating /root/.my.cnf
+  template: src=my.cnf.j2 dest=/root/.my.cnf
+
+- name: setting MYSQL_PS1 in /root/.bashrc
+  blockinfile:
+    dest: /root/.bashrc
+    marker: "# {mark} ANSIBLE MANAGED BLOCK "
+    block: |
+
+      export MYSQL_PS1="(\\R:\\m:\\s)(\u@$(hostname -f):\d)\nmysql> "
+
