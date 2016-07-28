@@ -10,9 +10,11 @@ import argparse
 import yaml
 import commands
 import socket
+import time
 import locale
 import shlex, subprocess
 from dialog import Dialog
+
 
 ANSIBLE_ROOT = './ansible'
 ANSIBLE_CONFIG = '%s/group_vars/all.yml' % ANSIBLE_ROOT
@@ -269,16 +271,29 @@ def ansible_play(playtags=[]):
     # execute ansible playbooks
     for tag_name in playtags:
 
-        ansible_cmd = shlex.split('/bin/bash -c "sshpass -p \"%s\" ansible-playbook %s -i %s -t %s -c local --ask-pass | tee -a /tmp/privcore.log"' %
+        ansible_log_file = "/tmp/privcore-%s.log" % tag_name
+        ansible_log = open(ansible_log_file, 'w')
+
+        ansible_cmd = shlex.split('sshpass -p "%s" ansible-playbook %s -i %s -t %s -c local --ask-pass' %
             (ansible_config['config']['master_passwd'], ANSIBLE_PLAYBOOK, ANSIBLE_HOSTS, tag_name))
+        ansible_proc = subprocess.Popen(ansible_cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
 
-        ansible_pipe = subprocess.Popen(ansible_cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
+        while True:
+            ansible_out = ansible_proc.stdout.readline()
+            if ansible_out == '':
+                break
 
-        d.progressbox(fd=ansible_pipe.stdout.fileno(), text="PrivCore playbook tag: %s" % tag_name, height=TERM_HEIGHT, width=TERM_WIDTH)
+            ansible_log.write(ansible_out)
 
-        ansible_pipe.wait()
-        if ansible_pipe.returncode != 0:
-            d.msgbox("Oops, something went terribly wrong. Please check your log file for error messages: /tmp/privcore.log")
+            if ansible_out.startswith("TASK"): 
+                d.infobox("Executing playbook: %s (%i/%i)\n\n%s" % (tag_name, playtags.index(tag_name)+1, len(playtags), ansible_out),
+                    width=len(ansible_out)+4, height=6)
+
+        ansible_log.close()
+
+        ansible_proc.wait()
+        if ansible_proc.returncode != 0:
+            d.msgbox("Oops, something went terribly wrong. Please check your log file for error messages: %s" % ansible_log )
             exit(1)
 
     d.msgbox("We are done. Please try your services:\n\n" \
