@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# author: Adrian Brzezinski, privcore (at) adrb.pl
+# author: Adrian Brzezinski, adrb (at) privcore.net
 # license: https://creativecommons.org/licenses/by-nc-nd/3.0/
 #
 
@@ -41,7 +41,7 @@ export ANSIBLE_CONFIG='./ansible/ansible.cfg'
 
 #
 # Clear log file
-rm -f /tmp/privcore.log
+rm -f /tmp/privcore*.log
 
 #
 # run setup

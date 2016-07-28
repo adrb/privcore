@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 #
-# author: Adrian Brzezinski, privcore (at) adrb.pl
+# author: Adrian Brzezinski, adrb (at) privcore.net
 # license: https://creativecommons.org/licenses/by-nc-nd/3.0/
 #
 
