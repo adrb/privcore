@@ -274,7 +274,7 @@ def ansible_play(playtags=[]):
         ansible_log_file = "/tmp/privcore-%s.log" % tag_name
         ansible_log = open(ansible_log_file, 'w')
 
-        ansible_cmd = shlex.split('sshpass -p "%s" ansible-playbook %s -i %s -t %s -c local --ask-pass' %
+        ansible_cmd = shlex.split('sshpass -p "%s" ansible-playbook %s -i %s -t %s -c local --ask-pass -v' %
             (ansible_config['config']['master_passwd'], ANSIBLE_PLAYBOOK, ANSIBLE_HOSTS, tag_name))
         ansible_proc = subprocess.Popen(ansible_cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
 
@@ -293,7 +293,7 @@ def ansible_play(playtags=[]):
 
         ansible_proc.wait()
         if ansible_proc.returncode != 0:
-            d.msgbox("Oops, something went terribly wrong. Please check your log file for error messages: %s" % ansible_log_file )
+            d.msgbox("Oops, something went terribly wrong. Please check your log file for error messages:\n\n%s" % ansible_log_file )
             exit(1)
 
     d.msgbox("We are done. Please try your services:\n\n" \
