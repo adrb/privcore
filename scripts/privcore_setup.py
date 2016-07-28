@@ -250,7 +250,7 @@ def ansible_play(playtags=[]):
         ansible_config['config']['master_passwd'] = ''
 
     while ansible_config['config']['master_passwd'] == '':
-        code, ansible_config['config']['master_passwd'] = d.passwordbox("Type master password:",insecure=True)
+        code, ansible_config['config']['master_passwd'] = d.passwordbox("Type master password:", insecure=True)
         if code != d.OK: return 0
 
     #
@@ -293,7 +293,7 @@ def ansible_play(playtags=[]):
 
         ansible_proc.wait()
         if ansible_proc.returncode != 0:
-            d.msgbox("Oops, something went terribly wrong. Please check your log file for error messages: %s" % ansible_log )
+            d.msgbox("Oops, something went terribly wrong. Please check your log file for error messages: %s" % ansible_log_file )
             exit(1)
 
     d.msgbox("We are done. Please try your services:\n\n" \
