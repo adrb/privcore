@@ -39,10 +39,10 @@ def ansible_setup():
 
     new_ldap_suffix = ''
     readonly_password = ''
-    admin_user = { "uid": 'admin',
+    admin_user = { "uid": 'privcore',
                     "passwd_plain": '',
-                    "givenname": 'admin',
-                    "sn": 'admin' } 
+                    "givenname": 'privcore',
+                    "sn": 'privcore' } 
 
     #
     # set default values
@@ -191,8 +191,8 @@ def ansible_setup():
 
     while ldap_fresh_tree:
         code, admin_passwd = d.passwordbox(
-            "Please enter password for '%s %s'.\n\n" \
-            "Note, that this is administrative user.\n " % (admin_user["givenname"], admin_user["sn"]),
+            "Please enter password for '%s'.\n\n" \
+            "Note, that this is administrative user.\n " % (admin_user["uid"], admin_user["sn"]),
             insecure=True)
         if code != d.OK: return 0
 
