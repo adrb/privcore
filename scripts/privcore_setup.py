@@ -20,7 +20,7 @@ ANSIBLE_ROOT = './ansible'
 ANSIBLE_CONFIG = '%s/group_vars/all.yml' % ANSIBLE_ROOT
 ANSIBLE_HOSTS = '%s/hosts' % ANSIBLE_ROOT
 ANSIBLE_PLAYBOOK = '%s/privcore.yml' % ANSIBLE_ROOT
-ANSIBLE_TAGS = [ 'ssl', 'dns', 'ldap', 'xmpp', 'owncloud', 'imap', 'smtp', 'roundcube' ]
+ANSIBLE_TAGS = [ 'ssl', 'dns', 'ldap', 'xmpp', 'owncloud', 'imap', 'smtp', 'webmail' ]
 ANSIBLE_CONFIG_TEMPLATE = './scripts/all.yml.template'
 ANSIBLE_HOSTS_TEMPLATE = './scripts/hosts.template'
 
@@ -264,7 +264,7 @@ def ansible_play(playtags=[]):
                 ('owncloud', 'Sharing server (file, contacts, calendar)',True),
                 ('imap', 'Dovecot IMAP server',True),
                 ('smtp', 'Exim SMTP server',True),
-                ('roundcube', 'E-mail and Jabber webclient',True),
+                ('webmail', 'E-mail and Jabber webclient',True),
             ])
         if code != d.OK: return 0
 
