@@ -29,7 +29,7 @@
   # git clone https://github.com/blind-coder/rcmcarddav.git
   # git clone https://github.com/priyadi/roundcube-converse.js-xmpp-plugin
 - name: deploying roundcube plugins
-  synchronize: src={{item.src}} dest=/var/lib/roundcube/plugins/{{item.dest}}/ recursive=yes
+  synchronize: src={{item.src}}/ dest=/var/lib/roundcube/plugins/{{item.dest}} recursive=yes
   with_items:
     - { src: 'rcmcarddav', dest: 'carddav' }
     - { src: 'roundcube-converse.js-xmpp-plugin', dest: 'converse' }
