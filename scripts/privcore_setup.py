@@ -293,8 +293,9 @@ def ansible_play(playtags=[]):
 
         ansible_proc.wait()
         if ansible_proc.returncode != 0:
-            d.msgbox("Oops, something went terribly wrong. Please check your log file for error messages:\n\n%s" % ansible_log_file )
-            exit(1)
+            d.msgbox("Oops, something went terribly wrong. Please check your log file for error messages" \
+                    " and then try to replay playbooks:\n\n%s" % ansible_log_file )
+            return 1
 
     d.msgbox("We are done. Please try your services:\n\n" \
         "   - https://%s/roundcube\n" \
