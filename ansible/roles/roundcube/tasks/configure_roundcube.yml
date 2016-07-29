@@ -1,7 +1,7 @@
 ---
 
 - name: creating database {{roundcube_config.mysql_db}}
-  mysql_db: name={{roundcube_config.mysql_db}} state=present
+  mysql_db: name={{roundcube_config.mysql_db}} state=import target=/usr/share/roundcube/SQL/mysql.initial.sql
 
 - name: creating user {{roundcube_config.mysql_user}}@localhost with full access to {{roundcube_config.mysql_db}} database
   mysql_user: name={{roundcube_config.mysql_user}} host=localhost password={{roundcube_config.mysql_pass}} priv={{roundcube_config.mysql_db}}.*:ALL state=present
