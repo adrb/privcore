@@ -54,6 +54,14 @@
 - name: setting ACL to /etc/ssl/private/{{ansible_fqdn}}_key.pem for user openldap
   acl: name=/etc/ssl/private/{{ansible_fqdn}}_key.pem entity=openldap etype=user permissions="r" state=present
 
+- name: Enable SSL support
+  lineinfile: dest=/etc/default/slapd regexp='^SLAPD_SERVICES=' line='SLAPD_SERVICES="ldap://127.0.0.1:389/ ldaps:/// ldapi:///"'
+  notify:
+    - restart ldapd
+
+- name: forcing slapd restart before SSL configuration
+  meta: flush_handlers
+
 - name: Configure SSL support
   shell: |
     ldapmodify -c -a -Y EXTERNAL -Q -H ldapi:/// <<EOF
@@ -63,9 +71,4 @@
   args:
     executable: /bin/bash
   register: olc_ssl_result
-
-- name: Enable SSL support
-  lineinfile: dest=/etc/default/slapd regexp='^SLAPD_SERVICES=' line='SLAPD_SERVICES="ldap://127.0.0.1:389/ ldaps:/// ldapi:///"'
-  notify:
-    - restart ldapd
 
