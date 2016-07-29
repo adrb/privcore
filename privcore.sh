@@ -28,7 +28,7 @@ if ( ! dpkg -l ansible >/dev/null 2>&1 ) ; then
 fi
 
 for pkt in python python-dialog python-yaml pwgen sshpass ; do
-  if ( ! dpkg -l $pkt >/dev/null 2>&1 ) ; then
+  if ( ! dpkg -l $pkt 2>&1 | grep ^ii >/dev/null ) ; then
     echo "Installing $pkt..."
     apt-get --yes install $pkt >/dev/null || exit 1
   fi
