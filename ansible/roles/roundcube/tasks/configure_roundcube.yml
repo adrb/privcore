@@ -26,6 +26,8 @@
     - 'config.inc.php'
     - 'debian-db.php'
 
+  # git clone https://github.com/blind-coder/rcmcarddav.git
+  # git clone https://github.com/priyadi/roundcube-converse.js-xmpp-plugin
 - name: deploying roundcube plugins
   synchronize: src={{item.src}} dest=/var/lib/roundcube/plugins/{{item.dest}}/ recursive=yes
   with_items:
