@@ -8,6 +8,7 @@
       - roundcube
       - roundcube-mysql
       - php5-curl       # carddav plugin dependency
+      - curl
       - pwgen           # used for DES keys generation
 
 - name: install roundcube webmail client for machines without role 'roundcube'
