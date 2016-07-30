@@ -264,7 +264,7 @@ def ansible_play(playtags=[]):
                 ('owncloud', 'Sharing server (file, contacts, calendar)',True),
                 ('imap', 'Dovecot IMAP server',True),
                 ('smtp', 'Exim SMTP server',True),
-                ('webmail', 'E-mail and Jabber webclient',True),
+                ('webmail', 'Roundcube e-mail and Jabber webclient',True),
             ])
         if code != d.OK: return 0
 
