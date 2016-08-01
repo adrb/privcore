@@ -1,0 +1,11 @@
+#header .logo {
+	background-image: url(../img/privcore_owncloud_logo.png);
+	/* Please note, this relative link will mean that the file should be in the following dir:
+	*  [theme name]/core/img/logo.svg
+	*  Yes, you can use jpeg, png etc here.
+	*/
+	background-repeat: no-repeat;
+	width: 252px;
+	height: 66px;
+	margin: 0 auto;
+}

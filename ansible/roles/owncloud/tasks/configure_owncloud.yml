@@ -47,3 +47,12 @@
     executable: /bin/bash
   register: oc_mysql_result
 
+- name: deploying privcore theme
+  synchronize: src=privcore_owncloud_theme dest=/var/lib/owncloud/themes/ recursive=yes
+
+- name: cofiguring privcore theme
+  template: src=theme_defaults.php.j2 dest=/var/lib/owncloud/themes/privcore_owncloud_theme/defaults.php
+
+- name: enabling privcore theme
+  lineinfile: dest=/etc/owncloud/config.php regexp="'theme' => '" line="  'theme' => 'privcore_owncloud_theme'," insertbefore="\);"
+
