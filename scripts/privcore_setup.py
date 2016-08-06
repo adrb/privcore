@@ -192,7 +192,7 @@ def ansible_setup():
     while ldap_fresh_tree:
         code, admin_passwd = d.passwordbox(
             "Please enter password for '%s'.\n\n" \
-            "Note, that this is administrative user.\n " % (admin_user["uid"], admin_user["sn"]),
+            "Note, that this is administrative user.\n " % admin_user["uid"],
             insecure=True)
         if code != d.OK: return 0
 
