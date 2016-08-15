@@ -77,10 +77,12 @@ ldap_tree:
             dit_branch:
               admins:
                 memberuid:
+                  - "Dummy"   # https://prosody.im/issues/issue/708
                   - "%admin_user_uid%"
 
               users:
                 memberuid:
+                  - "Dummy"   # https://prosody.im/issues/issue/708
                   - "%admin_user_uid%"
 
           smtp_groups:
