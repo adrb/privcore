@@ -115,7 +115,8 @@ def ansible_setup():
             d.msgbox("Password missmatch!")
 
     while True:
-        code, ansible_config['config']['internet_domain'] = d.inputbox("The domain under which your machine can be accessed from the Internet network.\n ",
+        code, ansible_config['config']['internet_domain'] = d.inputbox("The domain under which your machine can be accessed from the Internet network.\n " \
+            "If you don't have any, it may be also IP address, but it's more workaround and isn't recommened.",
             init=ansible_config['config']['internet_domain'])
 
         if code != d.OK: return 0
