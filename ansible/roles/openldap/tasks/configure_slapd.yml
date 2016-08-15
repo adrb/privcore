@@ -72,3 +72,6 @@
     executable: /bin/bash
   register: olc_ssl_result
 
+- name: mark slapd to start on boot
+  service: name=slapd enabled=yes
+
