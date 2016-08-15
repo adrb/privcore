@@ -14,4 +14,5 @@
     - { role: dovecot, tags: imap } # E-mail mailboxes
     - { role: exim, tags: smtp } # E-mail transport
     - { role: roundcube, tags: webmail } # E-mail webclient
+    - { role: privcore, tags: privcore } # Some privcore specific configuration
 

@@ -269,6 +269,9 @@ def ansible_play(playtags=[]):
             ])
         if code != d.OK: return 0
 
+    # PrivCore role should always be performed at the end
+    playtags.append('privcore')
+
     # execute ansible playbooks
     for tag_name in playtags:
 
@@ -298,14 +301,7 @@ def ansible_play(playtags=[]):
                     " and then try to replay playbooks:\n\n%s" % ansible_log_file )
             return 1
 
-    d.msgbox("We are done. Please try your services:\n\n" \
-        "   - https://%s/roundcube\n" \
-        "   - https://%s/owncloud\n" \
-        "   - https://%s/ldapadmin\n \n" % (
-            ansible_config['config']['internet_domain'],
-            ansible_config['config']['internet_domain'],
-            ansible_config['config']['internet_domain'] )
-        )
+    d.msgbox("We are done. Please try your services at\n\n   https://%s/" % ansible_config['config']['internet_domain'] )
 
     return 0
 

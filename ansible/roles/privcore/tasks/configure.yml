@@ -1,0 +1,21 @@
+---
+
+- name: forcing redirect to SSL in /etc/apache2/sites-available/000-default.conf
+  blockinfile:
+    dest: /etc/apache2/sites-available/000-default.conf
+    marker: "# {mark} ANSIBLE MANAGED BLOCK "
+    block: |
+
+      Redirect permanent /ldapadmin https://{{config.internet_domain}}/ldapadmin
+      Redirect permanent /roundcube https://{{config.internet_domain}}/roundcube
+      Redirect permanent /owncloud  https://{{config.internet_domain}}/owncloud
+
+    insertbefore: "</VirtualHost>"
+  notify: reload httpd
+
+- name: deploying privcore logo
+  copy: src=privcore_logo_black.png dest=/var/www/html/images/ force=no
+
+- name: generating privcore /var/www/html/index.html file
+  template: src=index.html.j2 dest=/var/www/html/index.html
+
