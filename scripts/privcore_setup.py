@@ -334,17 +334,19 @@ if __name__ == '__main__':
         # check whatewer something was actually configured
         if os.path.isfile(ANSIBLE_CONFIG):
             menu_desc = "It's seems that you already configured PrivCore.\n\n" \
-                "Note, that if you choose to initialize configuration again, then you will be not allowed to change master password!\n "
+                "Note, that if you choose to edit your configuration, then you will be not allowed to change master password!\n "
+            code, tag = d.menu(menu_desc,
+                choices=[("setup", "Edit current configuration"),
+                    ("replay", "Replay configuration scripts (your manuall changes may be overwritten)"),
+                    ("uninstall", "Uninstall selected services"),
+                    ("exit","Quit setup program")])
         else:
             menu_desc = "Welcome to PrivCore simple setup wizzard.\n\nCurrently we support only all-in-one setup type. " \
                 "It means, that all services will be installed on single machine. Other installation methods require manual " \
                 "editing of PrivCore configuration files, with means that they are reserved for advanced users.\n "
-
-        code, tag = d.menu(menu_desc,
-            choices=[("setup", "Initialize configuration"),
-                ("replay", "Replay configuration scripts which should restore default settings"),
-                ("uninstall", "Uninstall selected services"),
-                ("exit","Quit setup program")])
+            code, tag = d.menu(menu_desc,
+                choices=[("setup", "Initialize configuration"),
+                    ("exit","Quit setup program")])
 
         if code != d.OK:
             sys.exit(0)
