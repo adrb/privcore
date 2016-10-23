@@ -32,5 +32,6 @@
 #  notify: reload httpd
 
   # OCSP verification example:
-  # openssl ocsp -resp_text -CAfile /etc/ssl/CA/certs/ca_cert.pem -issuer /etc/ssl/CA/certs/ca_cert.pem -cert /etc/ssl/CA/certs/core0.local_cert.pem -url https://ocsp.core0.local
+  # openssl x509 -noout -ocsp_uri -in /etc/ssl/CA/certs/core0.local_cert.pem
+  # openssl ocsp -text -CAfile /etc/ssl/CA/certs/ca_cert.pem -issuer /etc/ssl/CA/certs/ca_cert.pem -cert /etc/ssl/CA/certs/core0.local_cert.pem -url https://ocsp.core0.local
 
