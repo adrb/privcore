@@ -36,7 +36,7 @@ done
 
 #
 # Reset some env vars
-export TERM=xterm-color
+#export TERM=xterm-color
 export ANSIBLE_CONFIG='./ansible/ansible.cfg'
 
 #
