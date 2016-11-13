@@ -328,7 +328,7 @@ if __name__ == '__main__':
     TERM_WIDTH = int(TERM_WIDTH)-15
 
     d = Dialog(dialog="dialog", autowidgetsize=True)
-    d.set_background_title("PrivCore Setup (http://www.privcore.net)")
+    d.set_background_title("PrivCore Setup (http://privcore.net)")
 
     while True:
         # check whatewer something was actually configured
