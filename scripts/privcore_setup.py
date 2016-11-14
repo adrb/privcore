@@ -70,7 +70,7 @@ def ansible_setup():
 
     if 'timezone' not in ansible_config['config']:
         with open('/etc/timezone') as f:
-            ansible_config['config']['timezone'] = f.readline()
+            ansible_config['config']['timezone'] = f.readline().strip()
 
     if 'mysql_pass' not in ansible_config['owncloud_config']:
         ansible_config['owncloud_config']['mysql_pass'] = commands.getoutput('pwgen -N 1 -s 14')
