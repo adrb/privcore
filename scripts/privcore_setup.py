@@ -116,7 +116,7 @@ def ansible_setup():
 
     while True:
         code, ansible_config['config']['internet_domain'] = d.inputbox("The domain under which your machine can be accessed from the Internet network.\n\n" \
-            "If you don't have any, it may be also IP address, but it's more workaround and isn't recommened.",
+            "If you don't have any, it may be also IP address, but it's more like workaround and isn't recommened.",
             init=ansible_config['config']['internet_domain'])
 
         if code != d.OK: return 0
@@ -148,7 +148,7 @@ def ansible_setup():
         ansible_config['config']['ldap_suffix'] = new_ldap_suffix
 
     while ldap_fresh_tree:
-        code, ansible_config['config']['organization_name'] = d.inputbox("Please enter the name your organization, for eg: Home or Company Name\n ",
+        code, ansible_config['config']['organization_name'] = d.inputbox("Please enter the name of your organization, for eg: Home or Company Name\n ",
             init=ansible_config['config']['organization_name'])
 
         if code != d.OK: return 0
@@ -181,7 +181,7 @@ def ansible_setup():
 
     while ldap_fresh_tree:
         code, uid = d.inputbox("Please enter login name for '%s %s'.\n\n" \
-            "That name you need to type in login forms\n " % (admin_user["givenname"], admin_user["sn"]),
+            "That name you need to type in into login forms\n " % (admin_user["givenname"], admin_user["sn"]),
             init=admin_user["uid"])
 
         if code != d.OK: return 0
