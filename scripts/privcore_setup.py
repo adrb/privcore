@@ -115,7 +115,7 @@ def ansible_setup():
             d.msgbox("Password missmatch!")
 
     while True:
-        code, ansible_config['config']['internet_domain'] = d.inputbox("The domain under which your machine can be accessed from the Internet network.\n " \
+        code, ansible_config['config']['internet_domain'] = d.inputbox("The domain under which your machine can be accessed from the Internet network.\n\n" \
             "If you don't have any, it may be also IP address, but it's more workaround and isn't recommened.",
             init=ansible_config['config']['internet_domain'])
 
@@ -130,7 +130,7 @@ def ansible_setup():
 
     while True:
         code, new_ldap_suffix = d.inputbox("Please enter the name of root object for you LDAP tree.\n\n" \
-            "Generally it should be similar as domain name, but split with 'dc=' instead of dots.\n ",
+            "Generally it should be similar as domain name, but split up with 'dc=' instead of dots.\n ",
             init=new_ldap_suffix)
 
         if code != d.OK: return 0
