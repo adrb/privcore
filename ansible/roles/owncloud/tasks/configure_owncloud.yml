@@ -15,24 +15,35 @@
   set_fact:
     ldap_userpw_base64: "{{_ldap_userpw_base64.stdout_lines[0]}}"
 
-- name: geting owncloud HTTP cookies
+#- name: geting owncloud HTTP cookies
+#  uri:
+#    url: "{{owncloud_config.url}}/"
+#    method: GET
+#    validate_certs: no
+#    return_content: yes
+#  register: _oc_cookies
+#
+#  # Yes, I know that i can use autoconfig.php
+#- name: configuring owncloud
+#  uri:
+#    url: "{{owncloud_config.url}}/index.php"
+#    method: POST
+#    validate_certs: no
+#    body: "install=true&adminlogin=admin&adminpass={{owncloud_config.adminpw}}&adminpass-clone={{owncloud_config.adminpw}}&directory=%2Fusr%2Fshare%2Fowncloud%2Fdata&dbtype=mysql&dbuser={{owncloud_config.mysql_user}}&dbpass={{owncloud_config.mysql_pass}}&dbpass-clone={{owncloud_config.mysql_pass}}&dbname={{owncloud_config.mysql_db}}&dbhost=localhost"
+#    status_code: 302,200
+#    HEADER_Content-Type: "application/x-www-form-urlencoded"
+#    HEADER_Cookie: "{{_oc_cookies.set_cookie}}"
+
+- name: generating autoconfig.php file
+  template: src=autoconfig.php.j2 dest=/etc/owncloud/autoconfig.php
+
+- name: issue HTTP GET to initialize owncloud
   uri:
     url: "{{owncloud_config.url}}/"
     method: GET
     validate_certs: no
     return_content: yes
-  register: _oc_cookies
-
-  # Yes, I know that i can use autoconfig.php
-- name: configuring owncloud
-  uri:
-    url: "{{owncloud_config.url}}/index.php"
-    method: POST
-    validate_certs: no
-    body: "install=true&adminlogin=admin&adminpass={{owncloud_config.adminpw}}&adminpass-clone={{owncloud_config.adminpw}}&directory=%2Fusr%2Fshare%2Fowncloud%2Fdata&dbtype=mysql&dbuser={{owncloud_config.mysql_user}}&dbpass={{owncloud_config.mysql_pass}}&dbpass-clone={{owncloud_config.mysql_pass}}&dbname={{owncloud_config.mysql_db}}&dbhost=localhost"
-    status_code: 302,200
-    HEADER_Content-Type: "application/x-www-form-urlencoded"
-    HEADER_Cookie: "{{_oc_cookies.set_cookie}}"
+  register: _oc_get
 
 #- name: Generating mysql file to /tmp/owncloud.mysql
 #  template: src=owncloud.mysql.j2 dest=/tmp/owncloud.mysql
