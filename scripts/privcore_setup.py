@@ -116,7 +116,7 @@ def ansible_setup():
 
     while True:
         code, ansible_config['config']['internet_domain'] = d.inputbox("The domain under which your machine can be accessed from the Internet network.\n\n" \
-            "If you don't have any, it may be also IP address, but it's more like workaround and isn't recommened.",
+            "If you don't have any, it may be also IP address, but it's more like workaround and isn't recommended.",
             init=ansible_config['config']['internet_domain'])
 
         if code != d.OK: return 0
