@@ -6,6 +6,7 @@
   with_items:
       - python-mysqldb  # for ansible mysql_user module
       - owncloud
+      - libapache2-mod-php5
 
 - name: uninstall owncloud server for machines without role 'owncloud'
   when: ansible_fqdn not in groups['owncloud']
@@ -13,4 +14,5 @@
   with_items:
       - python-mysqldb
       - owncloud
+      - libapache2-mod-php5
 
