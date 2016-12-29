@@ -1,0 +1,42 @@
+body {
+    background-color: #eee;
+    font-size: 20px;
+}
+
+.container {
+    background-color: #fff;
+    border-radius: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+
+    -webkit-box-shadow: 10px 10px 2px 0px rgba(0, 0, 0, 0.03);
+    -moz-box-shadow:    10px 10px 2px 0px rgba(0, 0, 0, 0.03);
+    box-shadow:         10px 10px 2px 0px rgba(0, 0, 0, 0.03);
+}
+
+.row {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.logo {
+    padding-top: 10px;
+}
+
+.main-text {
+    background-color: #CD214F;
+    color: white;
+    padding: 10px 10px 15px 10px;
+}
+
+.tools-text {
+    border-top: 1px solid #CD214F;
+    border-bottom: 1px solid #CD214F;
+    padding: 20px 5px 10px 5px; 
+}
+
+img:hover {
+    opacity: 0.6;
+}
+
+

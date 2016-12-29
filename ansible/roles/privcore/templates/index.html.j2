@@ -1,250 +1,68 @@
+ <!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>PrivCore.net</title>
+        <link rel='shortcut icon' type='image/x-icon' href='imgs/favicon.ico' />
+        <link rel="stylesheet" href="css/bootstrap.min.css" integrity="sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi" crossorigin="anonymous">
+        <link rel="stylesheet" href="css/style.css"/>
+    </head>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>PrivCore</title>
-    <style type="text/css" media="screen">
-  * {
-    margin: 0px 0px 0px 0px;
-    padding: 0px 0px 0px 0px;
-  }
+    <body>
+        <div class="container">
 
-  body, html {
-    padding: 3px 3px 3px 3px;
+            <div class="row">
+                <div class="col-md-12 text-md-center logo">
+                <a href="http://privcore.net"><img src="imgs/privcore_logo_black2.png" /></a>
+                </div>
+            </div>  
 
-    background-color: #D8DBE2;
+            <div class="row ">
+                <div class="col-md-12 text-md-center main-text">
+                    <h1>What is PrivCore?</h1>
+                    <h3>It's a automated tool which can helps you with deploying IT services,<br> needed in every modern office or home.</h3>
+                </div>                      
+            </div>
+            
+            <div class="row ">
+                <div class="col-md-12 text-md-center ">
+                    <p>It means that you can have all benefits of cloud computing,<br> without sacrificing in exchange your privacy or data security.</p>
+                    <p>This has been achieved through a combination of several opensource technologies,<br> which form a coherent whole, in order to provide basic services - the core.</p>
+                    <p>All you need is:</p>
+                    <ul>
+                        <li>stable version of Debian</li>
+                        <li>maybe a piece of equipment</li>
+                        <li>optionally (but recommended) your own DNS domain</li>
+                    </ul>
+                   
+                </div>                   
+            </div>
 
-    font-family: Verdana, sans-serif;
-    font-size: 11pt;
-    text-align: center;
-  }
+            <div class="row text-md-center tools-text">
+                <div class="col-md-4">
+                    <a href="/roundcube"><img src="imgs/roundcube.png"  class="img-fluid" /></a>
+                    <p><strong>Roundcube</strong> a powerful e-mail web client. It's also integrated with XMPP and ownCloud.</p>
+                </div>
 
-  div.main_page {
-    position: relative;
-    display: table;
+                <div class="col-md-4">
+                    <a href="/owncloud"><img src="imgs/owncloud.png"  class="img-fluid" /></a>
+                    <p><strong>ownCloud</strong> allows you sharing your files, contacts and calendar with others.</p>
+                </div>
 
-    width: 800px;
+                <div class="col-md-4">
+                    <a href="/ldapadmin"><img src="imgs/phpLDAPadmin.png" class="img-fluid" /></a>
+                    <p><strong>PhpLdapAdmin</strong> it's a management interface for creating new users, adding email groups and so on...</p>
+                </div>
+            </div>
 
-    margin-bottom: 3px;
-    margin-left: auto;
-    margin-right: auto;
-    padding: 0px 0px 0px 0px;
+            <div class="row">
+                <div class="col-md-12 text-md-center">
+                    <h6>PrivCore.net - &copy; 2016 -  All Rights Reserved.</h6>
+                </div>
+            </div>
 
-    border-width: 2px;
-    border-color: #212738;
-    border-style: solid;
+        </div>       
 
-    background-color: #FFFFFF;
 
-    text-align: center;
-  }
-
-  div.page_header {
-    height: 140px;
-    width: 100%;
-
-    background-color: #F5F6F7;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  div.page_header span {
-    margin: 15px 0px 0px 50px;
-
-    font-size: 180%;
-    font-weight: bold;
-  }
-
-  div.page_header img {
-    margin: 0px 0px 0px 0px;
-
-    border: 0px 0px 0px;
-  }
-
-  div.table_of_contents {
-    clear: left;
-
-    min-width: 200px;
-
-    margin: 3px 3px 3px 3px;
-
-    background-color: #FFFFFF;
-
-    text-align: left;
-  }
-
-  div.table_of_contents_item {
-    clear: left;
-
-    width: 100%;
-
-    margin: 4px 0px 0px 0px;
-
-    background-color: #FFFFFF;
-
-    color: #000000;
-    text-align: left;
-  }
-
-  div.table_of_contents_item a {
-    margin: 6px 0px 0px 6px;
-  }
-
-  div.content_section {
-    margin: 3px 3px 3px 3px;
-
-    background-color: #FFFFFF;
-
-    text-align: left;
-  }
-
-  div.content_section_text {
-    padding: 4px 8px 4px 8px;
-
-    color: #000000;
-    font-size: 100%;
-  }
-
-  div.content_section_text pre {
-    margin: 8px 0px 8px 0px;
-    padding: 8px 8px 8px 8px;
-
-    border-width: 1px;
-    border-style: dotted;
-    border-color: #000000;
-
-    background-color: #F5F6F7;
-
-    font-style: italic;
-  }
-
-  div.content_section_text p {
-    margin-bottom: 6px;
-  }
-
-  div.content_section_text ul, div.content_section_text li {
-    padding: 4px 8px 4px 16px;
-  }
-
-  div.section_header {
-    padding: 3px 6px 3px 6px;
-
-    background-color: #8E9CB2;
-
-    color: #FFFFFF;
-    font-weight: bold;
-    font-size: 112%;
-    text-align: center;
-  }
-
-  div.section_header_red {
-    background-color: #CD214F;
-  }
-
-  div.section_header_grey {
-    background-color: #9F9386;
-  }
-
-  .floating_element {
-    position: relative;
-    float: left;
-  }
-
-  div.table_of_contents_item a,
-  div.content_section_text a {
-    text-decoration: none;
-    font-weight: bold;
-  }
-
-  div.table_of_contents_item a:link,
-  div.table_of_contents_item a:visited,
-  div.table_of_contents_item a:active {
-    color: #000000;
-  }
-
-  div.table_of_contents_item a:hover {
-    background-color: #000000;
-
-    color: #FFFFFF;
-  }
-
-  div.content_section_text a:link,
-  div.content_section_text a:visited,
-   div.content_section_text a:active {
-    background-color: #DCDFE6;
-
-    color: #000000;
-  }
-
-  div.content_section_text a:hover {
-    background-color: #000000;
-
-    color: #DCDFE6;
-  }
-
-  div.validator {
-  }
-    </style>
-  </head>
-  <body>
-    <div class="main_page">
-      <div class="page_header floating_element">
-        <img src="/images/privcore_logo_black.png" alt="PrivCore Logo"/>
-      </div>
-      <div class="content_section floating_element">
-
-        <div class="section_header section_header_red">
-          <div id="about"></div>
-          What is PrivCore?
-        </div>
-        <div class="content_section_text">
-          <p>
-                It's a automated tool which helps you with deploying IT services,
-                needed in every modern <nobr>office or home.</nobr>
-                It means that you can have all benefits of cloud computing, without
-                sacrificing in exchange your <b>priv</b>acy or data security.
-          </p><p>
-                This has been achieved through a combination of several opensource technologies,
-                which form a coherent whole, in order to provide basic services - the <b>core</b>.
-          </p><p>
-                All you need is a stable version of Debian, maybe a piece of equipment and optionally
-                <nobr>(but recommended),</nobr> your own DNS domain.
-          </p>
-        </div>
-        <div class="section_header">
-          <div id="roundcube"></div>
-            <a href="/roundcube/">Roundcube</a>
-        </div>
-        <div class="content_section_text">
-          <p>
-                Roundcube is a powerful e-mail web client. It's also integrated with XMPP
-                and ownCloud.
-          </p>
-        </div>
-        <div class="section_header">
-          <div id="owncloud"></div>
-            <a href="/owncloud/">ownCloud</a>
-        </div>
-        <div class="content_section_text">
-          <p>
-                ownCloud allows you share your files, contacts and calendar with others.
-          </p>
-        </div>
-        <div class="section_header">
-          <div id="owncloud"></div>
-            <a href="/ldapadmin/">PhpLdapAdmin</a>
-        </div>
-        <div class="content_section_text">
-          <p>
-                Here you can do management stuff like creating new users, adding email groups and so on...
-          </p>
-        </div>
-
-      </div>
-    </div>
-    <div class="validator">
-    </div>
-  </body>
-</html>
-
+    </body>
+</html> 

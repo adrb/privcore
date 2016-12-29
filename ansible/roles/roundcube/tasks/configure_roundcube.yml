@@ -55,9 +55,9 @@
     - 'carddav/config.inc.php'
     - 'converse/config.inc.php'
 
-- name: creating directory /var/www/html/images
-  file: path=/var/www/html/images state=directory owner=root group=root mode=0755
+- name: creating directory /var/www/html/imgs
+  file: path=/var/www/html/imgs state=directory owner=root group=root mode=0755
 
 - name: deploying privcore logo
-  copy: src=privcore_roundcube_logo.png dest=/var/www/html/images/ force=no
+  copy: src=privcore_roundcube_logo.png dest=/var/www/html/imgs/ force=no
 
