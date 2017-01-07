@@ -15,8 +15,9 @@ VirtualHost "{{config.internet_domain}}"
 -- like multi-user conferences, and transports.
 -- For more information on components, see http://prosody.im/doc/components
 
--- Set up a MUC (multi-user chat) room server on conference.example.com:
---Component "conference.local" "muc"
+-- Set up a MUC (multi-user chat) room server
+  Component "muc.{{config.internet_domain}}" "muc"
+    name = "The {{config.internet_domain}} Multi-User Chat server"
 
 -- Set up a SOCKS5 bytestream proxy for server-proxied file transfers:
 --Component "proxy.example.com" "proxy65"
