@@ -1,5 +1,9 @@
 ---
 
+#
+# Verify configuration:
+#   # exim4 -bV
+#
 # Debug routing:
 #   $ exim -bt user@domain
 #
