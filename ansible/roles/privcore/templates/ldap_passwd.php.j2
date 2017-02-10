@@ -15,7 +15,7 @@
                 <div class="col-md-12 text-md-center logo">
                 <a href="http://privcore.net"><img src="imgs/privcore_logo_black2.png" /></a>
                 </div>
-            </div>  
+            </div>
 
             <div class="row ">
                 <div class="col-md-12 text-md-center tools-text">
@@ -90,13 +90,13 @@
 
       $user_mod = array();
       $user_mod["userPassword"] = '{SSHA}'.ssha($newpass);
-   
+
       if ( !ldap_modify($ldapconn,$user_dn,$user_mod) ){
         error('ldap_modify: '.ldap_error($ldapconn)); return;
       }
 
       echo '<h2>Password changed</h2>';
-      
+
       mail($user_mail,'Password change notice',"Hello $uid,
 
 Your password on https://privcore.net was just changed. If you did not make this change, please contact the administrator immediately.
@@ -149,7 +149,7 @@ Repeat new password: <br><input name='_newpass' type='password'><br>
     break;
   }
 ?>
-                </div>                      
+                </div>
             </div>
             <div class="row">
                 <div class="col-md-12 text-md-center">
