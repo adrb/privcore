@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>PrivCore - Change Password</title>
+        <link rel='shortcut icon' type='image/x-icon' href='imgs/favicon.ico' />
+        <link rel="stylesheet" href="css/bootstrap.min.css" integrity="sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi" crossorigin="anonymous">
+        <link rel="stylesheet" href="css/style.css"/>
+    </head>
+
+    <body>
+        <div class="container">
+
+            <div class="row">
+                <div class="col-md-12 text-md-center logo">
+                <a href="http://privcore.net"><img src="imgs/privcore_logo_black2.png" /></a>
+                </div>
+            </div>
+
+            <div class="row ">
+                <div class="col-md-12 text-md-center tools-text">
+<?php
+/*
+  Change LDAP Password for PrivCore project by Adrian Brzezinski
+
+  License: CreativeCommons BY-SA 4.0 license
+
+  Website: http://privcore.net
+  Requirements: apt-get install apache2 php5-ldap
+*/
+
+  function error($err="") {
+    echo '<pre><br>ERROR: <b>'.$err.'</b></pre><br>';
+  }
+
+  function ssha($pass) {
+    $salt = sha1(rand());
+    $salt = substr($salt, 0, 4);
+    $hash = base64_encode( sha1($pass . $salt, true) . $salt );
+
+    return $hash;
+  }
+
+  function changepass($uid, $pass, $newpass) {
+
+      $ldapurl = '{{ldap_config.local_server_uri}}';
+      $binddn = '{{ldap_tree.root.dit_branch.users.dit_branch.services.dit_branch.readonly.dn}}';
+      $bindpw = '{{ldap_tree.root.dit_branch.users.dit_branch.services.dit_branch.readonly.userpassword}}';
+      $basedn = '{{ldap_config.suffix}}';
+
+      if ( preg_match("/[\"\'()]/",$uid) ) {
+        error('Login name contains illegal characters!'); return;
+      }
+
+      // find user by uid or email
+      $ldapconn = ldap_connect($ldapurl);
+      if ( !$ldapconn ) { error('ldap_connect:'.ldap_error()); return; };
+      ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
+
+      if ( !ldap_bind($ldapconn, $binddn, $bindpw) ) {
+        error('ldap_bind:'.ldap_error($ldapconn)); return;
+      }
+
+      $user_search = ldap_search($ldapconn, $basedn, '(|(uid='.$uid.')(mail='.$uid.'))',
+        array( "mail" ));
+      if ( !$user_search ) {
+        error('ldap_search:'.ldap_error($ldapconn)); return;
+      }
+
+//      echo '<pre style="text-align:left;">'.print_r($user_attrs).'</pre>';
+
+      $user_attrs = ldap_get_entries($ldapconn, $user_search);
+      if ( count($user_attrs) != 2 ) {
+        error('Ambiguous login name!'); return;
+      }
+
+      $user_dn = $user_attrs[0]['dn'];
+      $user_mail = $user_attrs[0]['mail'][0];
+
+      ldap_unbind($ldapconn);
+
+      // connect as a user and change password
+      $ldapconn = ldap_connect($ldapurl);
+      if ( !$ldapconn ) { error('ldap_connect:'.ldap_error()); return; };
+      ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
+
+      if ( !ldap_bind($ldapconn, $user_dn, $pass) ) {
+        error('ldap_bind: '.$uid.': '.ldap_error($ldapconn)); return;
+      }
+
+      $user_mod = array();
+      $user_mod["userPassword"] = '{SSHA}'.ssha($newpass);
+
+      if ( !ldap_modify($ldapconn,$user_dn,$user_mod) ){
+        error('ldap_modify: '.ldap_error($ldapconn)); return;
+      }
+
+      echo '<h2>Password changed</h2>';
+
+      mail($user_mail,'Password change notice',"Hello $uid,
+
+Your password on https://privcore.net was just changed. If you did not make this change, please contact the administrator immediately.
+
+Best Regards
+",'From: postmaster');
+  }
+
+  if ( isset($_POST['show']) ) $show=$_POST['show'];
+  if ( empty($show) || !preg_match("/^[a-z0-9_]+$/",$show) ) $show='main';
+
+  switch ($show) {
+    // show form
+    case 'main':
+      echo "
+<form action='' method='POST' name='form'>
+<input name='show' type='hidden' value='update'>
+<h2>Change Your Password</h2>
+Login: <br><input name='uid' type=''><br>
+Current password: <br><input name='pass' type='password'><br>
+New password: <br><input name='newpass' type='password'><br>
+Repeat new password: <br><input name='_newpass' type='password'><br>
+<input type='SUBMIT' value='Submit'>  <input type='RESET' value='Clear'>
+</form>
+";
+    break;
+    case 'update':
+
+      $uid = $_POST['uid'];
+      $pass = $_POST['pass'];
+      $newpass = $_POST['newpass'];
+
+      if ( strlen($uid) > 0 ) {
+        if ( $newpass == $_POST['_newpass'] ) {
+          if ( strlen($newpass) >= 6 )
+            changepass($uid, $pass, $newpass);
+          else
+            error('New password too short!');
+        } else
+          error('New password mismatch!');
+      } else
+        error('User login name missing!');
+
+      echo "
+<form action='' method='POST' name='form'>
+<input name='show' type='hidden' value='main'>
+<input type='SUBMIT' value='Go Back'>
+</form>
+";
+    break;
+  }
+?>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 text-md-center">
+                    <h6>PrivCore.net - &copy; 2017 -  All Rights Reserved.</h6>
+                </div>
+            </div>
+      </div>
+</body>
+</html>

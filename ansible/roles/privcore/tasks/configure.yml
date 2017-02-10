@@ -27,9 +27,13 @@
     - "imgs/favicon.ico"
     - "imgs/privcore_logo_black2.png"
     - "imgs/owncloud.png"
+    - "imgs/change_password.png"
     - "css/bootstrap.min.css"
     - "css/style.css"
 
 - name: generating privcore /var/www/html/index.html file
   template: src=index.html.j2 dest=/var/www/html/index.html
+
+- name: generating privcore /var/www/html/ldap_passwd.php file
+  template: src=ldap_passwd.php.j2 dest=/var/www/html/ldap_passwd.php
 
