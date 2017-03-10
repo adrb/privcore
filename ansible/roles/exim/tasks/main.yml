@@ -1,6 +1,9 @@
 ---
 
 #
+# Display configuration:
+#   # exim -bP
+#
 # Verify configuration:
 #   # exim4 -bV
 #
