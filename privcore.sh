@@ -27,12 +27,16 @@ if ( ! dpkg -l ansible >/dev/null 2>&1 ) ; then
   apt-get --yes -t jessie-backports install ansible >/dev/null || exit 1
 fi
 
+_install_pkgs=''
 for pkt in python python-dialog python-yaml pwgen sshpass ; do
   if ( ! dpkg -l $pkt 2>&1 | grep ^ii >/dev/null ) ; then
-    echo "Installing $pkt..."
-    apt-get --yes install $pkt >/dev/null || exit 1
+    _install_pkgs="$pkt $_install_pkgs"
   fi
 done
+if [ -n "$_install_pkgs" ]; then
+  echo "Installing: $_install_pkgs..."
+  apt-get --yes install $_install_pkgs >/dev/null || exit 1
+fi
 
 #
 # Reset some env vars
