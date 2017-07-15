@@ -3,6 +3,9 @@
 #- name: adding user Debian-exim to group ssl-cert
 #  user: name=Debian-exim groups=ssl-cert append=yes
 
+- name: setting ACL to /etc/ssl/private for user Debian-exim
+  acl: name=/etc/ssl/private entity=Debian-exim etype=user permissions="X" state=present
+
 - name: setting ACL to /etc/ssl/private/{{ansible_fqdn}}_key.pem for user Debian-exim
   acl: name=/etc/ssl/private/{{ansible_fqdn}}_key.pem entity=Debian-exim etype=user permissions="r" state=present
 
