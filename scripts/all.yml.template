@@ -33,15 +33,15 @@ ldap_tree:
               readonly:
                 userpassword: "%readonly_password%"
 
-          employees:
-            dn: "ou=employees,ou=users,{{ldap_config.suffix}}"
+          people:
+            dn: "ou=people,ou=users,{{ldap_config.suffix}}"
             objectClass:
               - organizationalUnit
               - top
 
             dit_branch:
               admin_user:
-                dn: "cn=%admin_user_uid%,ou=employees,ou=users,{{ldap_config.suffix}}"
+                dn: "cn=%admin_user_uid%,ou=people,ou=users,{{ldap_config.suffix}}"
                 objectclass:
                   - inetOrgPerson
                   - posixAccount
@@ -63,7 +63,7 @@ ldap_tree:
         dit_branch:
           admins:
             member:
-              - "cn=%admin_user_uid%,ou=employees,ou=users,{{ldap_config.suffix}}"
+              - "cn=%admin_user_uid%,ou=people,ou=users,{{ldap_config.suffix}}"
 
           users:
             memberuid:
@@ -71,7 +71,7 @@ ldap_tree:
 
           ssh:
             member:
-              - "cn=%admin_user_uid%,ou=employees,ou=users,{{ldap_config.suffix}}"
+              - "cn=%admin_user_uid%,ou=people,ou=users,{{ldap_config.suffix}}"
 
           xmpp_contacts:
             dit_branch:

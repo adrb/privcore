@@ -1,7 +1,7 @@
 ---
 
-- name: adding user prosody to group ssl-cert
-  user: name=prosody groups=ssl-cert append=yes
+#- name: adding user prosody to group ssl-cert
+#  user: name=prosody groups=ssl-cert append=yes
 
 - name: setting ACL to /etc/ssl/private/{{ansible_fqdn}}_key.pem for user prosody
   acl: name=/etc/ssl/private/{{ansible_fqdn}}_key.pem entity=prosody etype=user permissions="r" state=present

@@ -26,7 +26,7 @@
 - name: setting mode to 0711 for private keys directory
   when: ansible_fqdn in groups['openssl_ca']
   tags: openssl_gencerts
-  file: path={{ssl_config.dir}}/private  owner=root group=ssl-cert mode=0711
+  file: path={{ssl_config.dir}}/private  owner=root group=root mode=0711
 
 - name: deploying certificates to machines
   tags: openssl_gencerts

@@ -54,7 +54,7 @@ def ansible_setup():
 
         # let's make some 'links' to objects hidden much deeper in the ldap tree
         readonly_password = ansible_config['ldap_tree']['root']['dit_branch']['users']['dit_branch']['services']['dit_branch']['readonly']['userpassword']
-        admin_user = ansible_config['ldap_tree']['root']['dit_branch']['users']['dit_branch']['employees']['dit_branch']['admin_user']
+        admin_user = ansible_config['ldap_tree']['root']['dit_branch']['users']['dit_branch']['people']['dit_branch']['admin_user']
 
     if 'master_passwd' not in ansible_config['config']:
         ansible_config['config']['master_passwd'] = ''
@@ -275,25 +275,15 @@ def ansible_play(playtags=[]):
     # execute ansible playbooks
     for tag_name in playtags:
 
-        ansible_log_file = "/tmp/privcore-%s.log" % tag_name
-        ansible_log = open(ansible_log_file, 'w')
+        ansible_log_file = "/tmp/privcore.log"
 
         ansible_cmd = shlex.split('sshpass -p "%s" ansible-playbook %s -i %s -t %s -c local --ask-pass -v' %
             (ansible_config['config']['master_passwd'], ANSIBLE_PLAYBOOK, ANSIBLE_HOSTS, tag_name))
         ansible_proc = subprocess.Popen(ansible_cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
 
-        while True:
-            ansible_out = ansible_proc.stdout.readline()
-            if ansible_out == '':
-                break
-
-            ansible_log.write(ansible_out)
-
-            if ansible_out.startswith("TASK"): 
-                d.infobox("Executing playbook: %s (%i/%i)\n\n%s" % (tag_name, playtags.index(tag_name)+1, len(playtags), ansible_out),
-                    width=len(ansible_out)+4, height=6)
-
-        ansible_log.close()
+        d.progressbox(fd=ansible_proc.stdout.fileno(),
+                text="Executing playbook: %s (%i/%i)\n" % (tag_name, playtags.index(tag_name)+1, len(playtags)),
+                height=TERM_HEIGHT, width=TERM_WIDTH)
 
         ansible_proc.wait()
         if ansible_proc.returncode != 0:

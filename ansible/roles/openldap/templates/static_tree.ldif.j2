@@ -8,10 +8,10 @@ objectClass: organizationalUnit
 objectclass: top
 ou: users
 
-dn: ou=employees,ou=users,{{ ldap_config.suffix }}
+dn: ou=people,ou=users,{{ ldap_config.suffix }}
 objectClass: organizationalUnit
 objectclass: top
-ou: employees
+ou: people
 
 dn: ou=services,ou=users,{{ ldap_config.suffix }}
 objectClass: organizationalUnit

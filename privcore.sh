@@ -14,8 +14,8 @@ fi
 if [ ! -f /etc/apt/sources.list.d/backports.list ] && ( ! grep "jessie-backports" /etc/apt/sources.list >/dev/null ) ; then
   echo "Configuring debian backports..."
   cat > /etc/apt/sources.list.d/backports.list <<EOF
-deb http://ftp.pl.debian.org/debian/ jessie-backports main contrib non-free
-deb-src http://ftp.pl.debian.org/debian/ jessie-backports main contrib non-free
+deb http://httpredir.debian.org/debian jessie-backports main contrib non-free
+deb-src http://httpredir.debian.org/debian jessie-backports main contrib non-free
 EOF
 
   echo "Updating the package index files..."
