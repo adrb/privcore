@@ -36,10 +36,6 @@
     - 'certs/{{ansible_fqdn}}_cert.pem'
     - 'private/{{ansible_fqdn}}_key.pem'
   delegate_to: "{{ groups['openssl_ca'][0] }}"
-#  shell: scp {{ item[0] }}:{{ssl_config.dir}}/{{ item[1] }} /etc/ssl/{{ item[1] }}
-#  with_nested:
-#    - "{{ groups['openssl_ca'] }}"
-#    - [ 'certs/ca_cert.pem', 'certs/{{ansible_fqdn}}_cert.pem', 'private/{{ansible_fqdn}}_key.pem' ]
 
 - name: configure apache
   when: ansible_fqdn in groups['openssl_ca']
