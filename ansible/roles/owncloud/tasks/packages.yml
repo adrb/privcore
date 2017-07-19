@@ -1,18 +1,24 @@
 ---
 
-- name: install owncloud server
+- name: install owncloud dependencies
   when: ansible_fqdn in groups['owncloud']
   apt: name={{ item }} state=present force=yes update_cache=yes
   with_items:
       - python-mysqldb  # for ansible mysql_user module
-      - owncloud
       - libapache2-mod-php5
 
-- name: uninstall owncloud server for machines without role 'owncloud'
+- name: install owncloud files
+  when: ansible_fqdn in groups['owncloud']
+  unarchive: src={{ item }} dest={{ owncloud_config.install_dir }} keep_newer=yes
+  with_items: "{{ owncloud_config.sources }}"
+
+- name: resetting files ownership and permissions
+  file: path={{ owncloud_config.install_dir }}/owncloud owner=www-data group=www-data mode=0755 recurse=yes
+
+- name: uninstall owncloud dependencies for machines without role 'owncloud'
   when: ansible_fqdn not in groups['owncloud']
   apt: name={{ item }} state=absent purge=yes force=yes
   with_items:
       - python-mysqldb
-      - owncloud
       - libapache2-mod-php5
 

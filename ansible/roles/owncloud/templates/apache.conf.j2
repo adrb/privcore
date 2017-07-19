@@ -1,0 +1,10 @@
+
+    Alias /owncloud {{ owncloud_config.install_dir }}/owncloud
+
+    <Directory {{ owncloud_config.install_dir }}/owncloud>
+        Options +SymLinksIfOwnerMatch
+        AllowOverride All
+        Require all granted
+
+    </Directory>
+
