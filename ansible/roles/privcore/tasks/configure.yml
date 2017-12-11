@@ -8,7 +8,7 @@
 
       Redirect permanent /ldapadmin https://{{config.internet_domain}}/ldapadmin
       Redirect permanent /roundcube https://{{config.internet_domain}}/roundcube
-      Redirect permanent /owncloud  https://{{config.internet_domain}}/owncloud
+      Redirect permanent /nextcloud  https://{{config.internet_domain}}/nextcloud
 
     insertbefore: "</VirtualHost>"
   notify: reload httpd
@@ -26,7 +26,7 @@
     - "imgs/phpLDAPadmin.png"
     - "imgs/favicon.ico"
     - "imgs/privcore_logo_black2.png"
-    - "imgs/owncloud.png"
+    - "imgs/nextcloud.png"
     - "imgs/change_password.png"
     - "css/bootstrap.min.css"
     - "css/style.css"

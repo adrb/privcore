@@ -1,13 +1,13 @@
 ---
 
 - name: make sure that apache is installed
-  when: ansible_fqdn in groups['openldap'] or ansible_fqdn in groups['roundcube'] or ansible_fqdn in groups['owncloud']
+  when: ansible_fqdn in groups['openldap'] or ansible_fqdn in groups['roundcube'] or ansible_fqdn in groups['nextcloud']
   apt: name={{ item }} state=present force=yes update_cache=yes
   with_items:
       - apache2
 
 - name: configure privcore
-  when: ansible_fqdn in groups['openldap'] or ansible_fqdn in groups['roundcube'] or ansible_fqdn in groups['owncloud']
+  when: ansible_fqdn in groups['openldap'] or ansible_fqdn in groups['roundcube'] or ansible_fqdn in groups['nextcloud']
   tags: privcore_configure
   include: configure.yml
 
