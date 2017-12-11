@@ -1,0 +1,19 @@
+---
+
+nextcloud_config:
+  adminpw: "{{ config.master_passwd | default('changeme') }}"
+  url: "https://{{ config.internet_domain }}/nextcloud"
+  mysql_user: nextcloud
+  mysql_pass: changeme
+  mysql_db: nextcloud
+
+  install_dir: /var/www
+  source: "nextcloud-12.0.4.tar.bz2"
+  apps_sources:
+    - "calendar.tar.gz"
+    - "contacts.tar.gz"
+#    - "mail.tar.gz" # IMAP client (disabled)
+    - "rainloop.tar.gz" # IMAP client 
+    - "ojsxc-3.3.2.tar.gz" # jabber
+    - "files_clipboard.tar.gz"
+

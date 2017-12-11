@@ -1,0 +1,17 @@
+---
+
+- name: generating TURN REST API secret key
+  shell: openssl rand -hex 32
+  changed_when: false
+  register: _coturn_auth_secret
+
+- name: creating variable coturn_auth_secret
+  set_fact:
+    coturn_auth_secret: "{{_coturn_auth_secret.stdout_lines[0]}}"
+
+- name: Generating coturn config file to /etc/turnserver.conf
+  template: src=turnserver.conf.j2 dest=/etc/turnserver.conf
+
+- name: Enabling coturn server in /etc/default/coturn
+  lineinfile: dest=/etc/default/coturn regexp="TURNSERVER_ENABLED" line="TURNSERVER_ENABLED=1"
+

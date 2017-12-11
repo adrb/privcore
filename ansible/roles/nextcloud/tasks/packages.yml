@@ -1,0 +1,73 @@
+---
+
+- name: install nextcloud dependencies
+  when: ansible_fqdn in groups['nextcloud']
+  apt: name={{ item }} state=present force=yes update_cache=yes
+  with_items:
+      - python-mysqldb  # for ansible mysql_user module
+      - libapache2-mod-php5 # module for apache
+      - php5-apcu
+      # ICE/TURN/STUN server
+      - coturn
+      # nextcloud dependencies (php5.6)
+      - fonts-font-awesome
+      - fonts-liberation
+      - fonts-linuxlibertine
+      - fonts-lohit-deva
+      - fonts-sil-gentium-basic
+      - fonts-wqy-microhei
+      - libjs-chosen
+      - libjs-dojo-dojox
+      - libjs-jcrop
+      - libjs-jquery-minicolors
+      - libjs-jquery-mousewheel
+      - libjs-jquery-timepicker
+      - libjs-mediaelement
+      - libjs-pdf
+      - libjs-underscore
+      - libphp-phpmailer
+      - php-assetic
+      - php-doctrine-dbal
+      - php-getid3
+      - php-opencloud
+      - php-patchwork-utf8
+      - php-pear
+      - php-pimple
+      - php-sabre-dav
+      - php-seclib
+      - php-symfony-classloader
+      - php-symfony-class-loader
+      - php-symfony-console
+      - php-symfony-routing
+      - php5
+      - php5-cli
+      - php5-gd
+      - php5-json
+      - php5-mcrypt
+      - php5-curl
+      - php5-intl
+#      - php5-mysql
+      - php5-mysqlnd
+      - php5-sqlite
+      - zendframework
+
+- name: install nextcloud files
+  when: ansible_fqdn in groups['nextcloud']
+  unarchive: src={{ nextcloud_config.source }} dest={{ nextcloud_config.install_dir }} keep_newer=yes
+
+- name: install nextcloud apps
+  when: ansible_fqdn in groups['nextcloud']
+  unarchive: src={{ item }} dest={{ nextcloud_config.install_dir }}/nextcloud/apps keep_newer=yes
+  with_items: "{{ nextcloud_config.apps_sources }}"
+
+- name: resetting files ownerships and permissions
+  when: ansible_fqdn in groups['nextcloud']
+  file: path={{ nextcloud_config.install_dir }}/nextcloud owner=www-data group=www-data mode=0755 recurse=yes
+
+- name: uninstall nextcloud dependencies for machines without role 'nextcloud'
+  when: ansible_fqdn not in groups['nextcloud']
+  apt: name={{ item }} state=absent purge=yes force=yes
+  with_items:
+      - python-mysqldb
+      - libapache2-mod-php5
+

@@ -20,7 +20,7 @@ ANSIBLE_ROOT = './ansible'
 ANSIBLE_CONFIG = '%s/group_vars/all.yml' % ANSIBLE_ROOT
 ANSIBLE_HOSTS = '%s/hosts' % ANSIBLE_ROOT
 ANSIBLE_PLAYBOOK = '%s/privcore.yml' % ANSIBLE_ROOT
-ANSIBLE_TAGS = [ 'ssl', 'dns', 'ldap', 'xmpp', 'owncloud', 'imap', 'smtp', 'webmail' ]
+ANSIBLE_TAGS = [ 'ssl', 'dns', 'ldap', 'xmpp', 'cloud', 'imap', 'smtp', 'webmail' ]
 ANSIBLE_CONFIG_TEMPLATE = './scripts/all.yml.template'
 ANSIBLE_HOSTS_TEMPLATE = './scripts/hosts.template'
 
@@ -33,7 +33,7 @@ def ansible_setup():
     ansible_config = {
         'config': {},
         'ldap_config': {},
-        'owncloud_config': {},
+        'nextcloud_config': {},
         'roundcube_config': {},
         'ldap_tree': {}  }
 
@@ -72,8 +72,8 @@ def ansible_setup():
         with open('/etc/timezone') as f:
             ansible_config['config']['timezone'] = f.readline().strip()
 
-    if 'mysql_pass' not in ansible_config['owncloud_config']:
-        ansible_config['owncloud_config']['mysql_pass'] = commands.getoutput('pwgen -N 1 -s 14')
+    if 'mysql_pass' not in ansible_config['nextcloud_config']:
+        ansible_config['nextcloud_config']['mysql_pass'] = commands.getoutput('pwgen -N 1 -s 14')
 
     if 'mysql_pass' not in ansible_config['roundcube_config']:
         ansible_config['roundcube_config']['mysql_pass'] = commands.getoutput('pwgen -N 1 -s 14')
@@ -224,7 +224,7 @@ def ansible_setup():
         "%admin_user_givenname%": admin_user["givenname"],
         "%admin_user_sn%": admin_user["sn"],
         "%admin_user_password%": admin_user["userpassword"],
-        "%owncloud_mysql_pass%": ansible_config['owncloud_config']['mysql_pass'],
+        "%nextcloud_mysql_pass%": ansible_config['nextcloud_config']['mysql_pass'],
         "%roundcube_mysql_pass%": ansible_config['roundcube_config']['mysql_pass'],
     }
     template_file(ANSIBLE_CONFIG_TEMPLATE, ANSIBLE_CONFIG, replace_dict)
@@ -262,7 +262,7 @@ def ansible_play(playtags=[]):
                 ('dns', 'Configure bind as local DNS server',True),
                 ('ldap', 'Prepare openldap tree',True),
                 ('xmpp', 'Prosody XMPP/Jabber server',True),
-                ('owncloud', 'Sharing server (file, contacts, calendar)',True),
+                ('cloud', 'Nextcloud sharing server (file, contacts, calendar)',True),
                 ('imap', 'Dovecot IMAP server',True),
                 ('smtp', 'Exim SMTP server',True),
                 ('webmail', 'Roundcube e-mail and Jabber webclient',True),

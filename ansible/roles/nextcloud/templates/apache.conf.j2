@@ -1,0 +1,19 @@
+
+    Alias /nextcloud {{ nextcloud_config.install_dir }}/nextcloud
+
+    <Directory {{ nextcloud_config.install_dir }}/nextcloud>
+        Options +SymLinksIfOwnerMatch
+        AllowOverride All
+        Require all granted
+
+        <IfModule mod_dav.c>
+          Dav off
+        </IfModule>
+
+        SetEnv HOME {{ nextcloud_config.install_dir }}/nextcloud
+        SetEnv HTTP_HOME {{ nextcloud_config.install_dir }}/nextcloud
+
+    </Directory>
+
+    Header always set Strict-Transport-Security "max-age=15552000; includeSubDomains"
+
