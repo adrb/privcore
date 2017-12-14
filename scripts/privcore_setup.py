@@ -289,6 +289,7 @@ def ansible_play(playtags=[]):
         if ansible_proc.returncode != 0:
             d.msgbox("Oops, something went terribly wrong. Please check your log file for error messages" \
                     " and then try to replay playbooks:\n\n%s" % ansible_log_file )
+            d.textbox(ansible_log_file, height=TERM_HEIGHT, width=TERM_WIDTH)
             return 1
 
     d.msgbox("We are done. Please try your services at\n\n   https://%s/" % ansible_config['config']['internet_domain'] )
