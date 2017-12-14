@@ -15,3 +15,6 @@
 - name: generating {{ssl_config.dir}}/openssl.cnf
   template: src=openssl.cnf.j2 dest={{ssl_config.dir}}/openssl.cnf
 
+- name: linking to /etc/ssl/openssl.cnf
+  file: src={{ssl_config.dir}}/openssl.cnf dest=/etc/ssl/openssl.cnf state=link owner=root group=root
+
