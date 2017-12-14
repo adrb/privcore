@@ -1,20 +1,13 @@
 
 LOCK TABLES oc_appconfig WRITE;
 
-INSERT INTO oc_appconfig VALUES ("activity","enabled","yes") ON DUPLICATE KEY UPDATE configvalue="yes";
 INSERT INTO oc_appconfig VALUES ("calendar","enabled","yes") ON DUPLICATE KEY UPDATE configvalue="yes";
 INSERT INTO oc_appconfig VALUES ("contacts","enabled","yes") ON DUPLICATE KEY UPDATE configvalue="yes";
-INSERT INTO oc_appconfig VALUES ("documents","enabled","yes") ON DUPLICATE KEY UPDATE configvalue="yes";
 INSERT INTO oc_appconfig VALUES ("files","enabled","yes") ON DUPLICATE KEY UPDATE configvalue="yes";
-INSERT INTO oc_appconfig VALUES ("files_pdfviewer","enabled","yes") ON DUPLICATE KEY UPDATE configvalue="yes";
 INSERT INTO oc_appconfig VALUES ("files_sharing","enabled","yes") ON DUPLICATE KEY UPDATE configvalue="yes";
 INSERT INTO oc_appconfig VALUES ("files_texteditor","enabled","yes") ON DUPLICATE KEY UPDATE configvalue="yes";
 INSERT INTO oc_appconfig VALUES ("files_trashbin","enabled","yes") ON DUPLICATE KEY UPDATE configvalue="yes";
 INSERT INTO oc_appconfig VALUES ("files_versions","enabled","yes") ON DUPLICATE KEY UPDATE configvalue="yes";
-INSERT INTO oc_appconfig VALUES ("files_videoviewer","enabled","yes") ON DUPLICATE KEY UPDATE configvalue="yes";
-INSERT INTO oc_appconfig VALUES ("firstrunwizard","enabled","yes") ON DUPLICATE KEY UPDATE configvalue="yes";
-INSERT INTO oc_appconfig VALUES ("gallery","enabled","yes") ON DUPLICATE KEY UPDATE configvalue="yes";
-INSERT INTO oc_appconfig VALUES ("search_lucene","enabled","yes") ON DUPLICATE KEY UPDATE configvalue="yes";
 INSERT INTO oc_appconfig VALUES ("templateeditor","enabled","yes") ON DUPLICATE KEY UPDATE configvalue="yes";
 INSERT INTO oc_appconfig VALUES ("user_ldap","enabled","yes") ON DUPLICATE KEY UPDATE configvalue="yes";
 INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_agent_password","{{ldap_userpw_base64}}") ON DUPLICATE KEY UPDATE configvalue="{{ldap_userpw_base64}}";
@@ -31,23 +24,17 @@ INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_email_attr","mail") ON DUPLIC
 INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_group_display_name","cn") ON DUPLICATE KEY UPDATE configvalue="cn";
 INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_group_member_assoc_attribute","memberUid") ON DUPLICATE KEY UPDATE configvalue="memberUid";
 INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_host","{{ldap_config.local_server_uri}}") ON DUPLICATE KEY UPDATE configvalue="{{ldap_config.local_server_uri}}";
-INSERT INTO oc_appconfig VALUES ('user_ldap','ldap_port','636') ON DUPLICATE KEY UPDATE configvalue="636";
+INSERT INTO oc_appconfig VALUES ('user_ldap','ldap_port','389') ON DUPLICATE KEY UPDATE configvalue="389";
 INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_login_filter","(&(|(objectclass=inetOrgPerson))(|(uid=%uid)(|(mailPrimaryAddress=%uid)(mail=%uid))))") ON DUPLICATE KEY UPDATE configvalue="(&(|(objectclass=inetOrgPerson))(|(uid=%uid)(|(mailPrimaryAddress=%uid)(mail=%uid))))";
 INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_loginfilter_email","1") ON DUPLICATE KEY UPDATE configvalue="1";
 INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_loginfilter_username","1") ON DUPLICATE KEY UPDATE configvalue="1";
 INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_userfilter_objectclass","inetOrgPerson") ON DUPLICATE KEY UPDATE configvalue="inetOrgPerson";
 INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_userlist_filter","(|(objectclass=inetOrgPerson))") ON DUPLICATE KEY UPDATE configvalue="(|(objectclass=inetOrgPerson))";
 INSERT INTO oc_appconfig VALUES ("user_ldap","types","authentication") ON DUPLICATE KEY UPDATE configvalue="authentication";
-INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_group_display_name","cn") ON DUPLICATE KEY UPDATE configvalue="cn";
 INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_group_filter","(|(objectclass=posixGroup))") ON DUPLICATE KEY UPDATE configvalue="(|(objectclass=posixGroup))";
 INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_group_filter_mode","1") ON DUPLICATE KEY UPDATE configvalue="1";
 INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_group_member_assoc_attribute","memberUid") ON DUPLICATE KEY UPDATE configvalue="memberUid";
 
 UNLOCK TABLES;
 
-LOCK TABLES oc_preferences WRITE;
-
-INSERT INTO oc_preferences VALUES ("admin","settings","email","admin@{{config.internet_domain}}") ON DUPLICATE KEY UPDATE configvalue="admin@{{config.internet_domain}}";
-
-UNLOCK TABLES;
 

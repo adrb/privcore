@@ -17,8 +17,8 @@ config:
 ldap_config:
   local_server_uri: "ldaps://%hostname%"
 
-owncloud_config:
-  mysql_pass: "%owncloud_mysql_pass%"
+nextcloud_config:
+  mysql_pass: "%nextcloud_mysql_pass%"
 
 roundcube_config:
   mysql_pass: "%roundcube_mysql_pass%"

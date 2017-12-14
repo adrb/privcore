@@ -6,6 +6,8 @@
   with_items:
       - prosody
       - lua-ldap
+      - lua-sec   # TLS
+      - lua-event
       - prosody-modules
       - apache2   # BOSH proxy
 
@@ -16,3 +18,5 @@
       - prosody
       - lua-ldap
       - prosody-modules
+      - lua-sec   # TLS
+      - lua-event

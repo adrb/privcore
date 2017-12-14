@@ -7,3 +7,10 @@ owncloud_config:
   mysql_pass: changeme
   mysql_db: owncloud
 
+  install_dir: /var/www
+  sources:
+    - "owncloud-10.0.2.tar.bz2"
+    - "user_ldap-0.9.1.tgz"
+    - "calendar-1.4.2.tgz"
+    - "contacts-1.5.2.tgz"
+

@@ -1,10 +1,52 @@
 ---
+#
+# Documentation: https://doc.owncloud.org/server/latest/admin_manual/installation/command_line_installation.html
+#
 
 - name: creating database {{owncloud_config.mysql_db}}
   mysql_db: name={{owncloud_config.mysql_db}} state=present
 
 - name: creating user {{owncloud_config.mysql_user}}@localhost with full access to {{owncloud_config.mysql_db}} database
   mysql_user: name={{owncloud_config.mysql_user}} host=localhost password={{owncloud_config.mysql_pass}} priv={{owncloud_config.mysql_db}}.*:ALL state=present
+
+- name: configuring
+  shell: |
+    cd {{ owncloud_config.install_dir }}/owncloud
+    php occ maintenance:install --database "mysql" --database-name {{owncloud_config.mysql_db}} \
+      --database-user "{{owncloud_config.mysql_user}}" --database-pass "{{owncloud_config.mysql_pass}}" \
+      --admin-user "admin" --admin-pass "{{owncloud_config.adminpw}}" \
+      --data-dir "{{ owncloud_config.install_dir }}/owncloud/data"
+    :
+  register: occ_install_result
+  failed_when: occ_install_result.rc != 0
+  changed_when: occ_install_result.rc != 0
+  become: true
+  become_method: su
+  become_user: www-data
+  become_flags: '-s /bin/bash'
+
+- name: fixing configured cli.url
+  lineinfile: dest={{ owncloud_config.install_dir }}/owncloud/config/config.php regexp="'overwrite.cli.url' => '" line="  'overwrite.cli.url' => 'https://{{ config.internet_domain }}'," insertbefore="\);"
+
+- name: changing trusted domain
+  lineinfile: dest={{ owncloud_config.install_dir }}/owncloud/config/config.php regexp="0 => " line="    0 => '{{ config.internet_domain }}'," insertbefore="\);"
+
+- name: enabling basic apps
+  shell: |
+    cd {{ owncloud_config.install_dir }}/owncloud
+    php occ app:enable {{ item }}
+    :
+  with_items:
+    - "user_ldap"
+    - "calendar"
+    - "contacts"
+  register: occ_app_result
+  failed_when: occ_app_result.rc != 0
+  changed_when: occ_app_result.rc != 0
+  become: true
+  become_method: su
+  become_user: www-data
+  become_flags: '-s /bin/bash'
 
 - name: hashing LDAP user password with BASE64
   shell: echo -n "{{ldap_tree.root.dit_branch.users.dit_branch.services.dit_branch.readonly.userpassword}}" | base64
@@ -15,55 +57,31 @@
   set_fact:
     ldap_userpw_base64: "{{_ldap_userpw_base64.stdout_lines[0]}}"
 
-#- name: geting owncloud HTTP cookies
-#  uri:
-#    url: "{{owncloud_config.url}}/"
-#    method: GET
-#    validate_certs: no
-#    return_content: yes
-#  register: _oc_cookies
-#
-#  # Yes, I know that i can use autoconfig.php
-#- name: configuring owncloud
-#  uri:
-#    url: "{{owncloud_config.url}}/index.php"
-#    method: POST
-#    validate_certs: no
-#    body: "install=true&adminlogin=admin&adminpass={{owncloud_config.adminpw}}&adminpass-clone={{owncloud_config.adminpw}}&directory=%2Fusr%2Fshare%2Fowncloud%2Fdata&dbtype=mysql&dbuser={{owncloud_config.mysql_user}}&dbpass={{owncloud_config.mysql_pass}}&dbpass-clone={{owncloud_config.mysql_pass}}&dbname={{owncloud_config.mysql_db}}&dbhost=localhost"
-#    status_code: 302,200
-#    HEADER_Content-Type: "application/x-www-form-urlencoded"
-#    HEADER_Cookie: "{{_oc_cookies.set_cookie}}"
+- name: Generating apps settings file to /tmp/owncloud.mysql
+  template: src=owncloud.mysql.j2 dest=/tmp/owncloud.mysql
 
-- name: generating autoconfig.php file
-  template: src=autoconfig.php.j2 dest=/etc/owncloud/autoconfig.php
-
-- name: issue HTTP GET to initialize owncloud
-  uri:
-    url: "{{owncloud_config.url}}/"
-    method: GET
-    validate_certs: no
-    return_content: yes
-  register: _oc_get
-
-#- name: Generating mysql file to /tmp/owncloud.mysql
-#  template: src=owncloud.mysql.j2 dest=/tmp/owncloud.mysql
-
-- name: configuring owncloud for LDAP
+- name: configuring apps
   shell: |
-    mysql --force {{owncloud_config.mysql_db}} <<EOF
-    {{ lookup('template', 'owncloud.mysql.j2') }}
-    EOF
-    :
+    mysql --force {{owncloud_config.mysql_db}} < /tmp/owncloud.mysql
   args:
     executable: /bin/bash
-  register: oc_mysql_result
 
 - name: deploying privcore theme
-  synchronize: src=privcore_owncloud_theme dest=/var/lib/owncloud/themes/ recursive=yes
+  synchronize: src=privcore_owncloud_theme dest={{ owncloud_config.install_dir }}/owncloud/themes/ recursive=yes
 
 - name: cofiguring privcore theme
-  template: src=theme_defaults.php.j2 dest=/var/lib/owncloud/themes/privcore_owncloud_theme/defaults.php
+  template: src=theme_defaults.php.j2 dest={{ owncloud_config.install_dir }}/owncloud/themes/privcore_owncloud_theme/defaults.php
 
 - name: enabling privcore theme
-  lineinfile: dest=/etc/owncloud/config.php regexp="'theme' => '" line="  'theme' => 'privcore_owncloud_theme'," insertbefore="\);"
+  lineinfile: dest={{ owncloud_config.install_dir }}/owncloud/config/config.php regexp="'theme' => '" line="  'theme' => 'privcore_owncloud_theme'," insertbefore="\);"
+
+- name: generating apache configuration
+  template: src=apache.conf.j2 dest=/etc/apache2/conf-available/owncloud.conf
+  notify: reload httpd
+
+- name: enabling apache configuration
+  command: a2enconf owncloud
+  register: a2enconf_owncloud
+  changed_when: ("Conf owncloud already enabled" not in a2enconf_owncloud.stdout)
+  notify: reload httpd
 

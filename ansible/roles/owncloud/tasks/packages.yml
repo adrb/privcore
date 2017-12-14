@@ -1,18 +1,64 @@
 ---
 
-- name: install owncloud server
+- name: install owncloud dependencies
   when: ansible_fqdn in groups['owncloud']
   apt: name={{ item }} state=present force=yes update_cache=yes
   with_items:
       - python-mysqldb  # for ansible mysql_user module
-      - owncloud
-      - libapache2-mod-php5
+      - libapache2-mod-php5 # module for apache
+      # owncloud dependencies (php5.6)
+      - fonts-font-awesome
+      - fonts-liberation
+      - fonts-linuxlibertine
+      - fonts-lohit-deva
+      - fonts-sil-gentium-basic
+      - fonts-wqy-microhei
+      - libjs-chosen
+      - libjs-dojo-dojox
+      - libjs-jcrop
+      - libjs-jquery-minicolors
+      - libjs-jquery-mousewheel
+      - libjs-jquery-timepicker
+      - libjs-mediaelement
+      - libjs-pdf
+      - libjs-underscore
+      - libphp-phpmailer
+      - php-assetic
+      - php-doctrine-dbal
+      - php-getid3
+      - php-opencloud
+      - php-patchwork-utf8
+      - php-pear
+      - php-pimple
+      - php-sabre-dav
+      - php-seclib
+      - php-symfony-classloader
+      - php-symfony-class-loader
+      - php-symfony-console
+      - php-symfony-routing
+      - php5
+      - php5-cli
+      - php5-gd
+      - php5-json
+#      - php5-mysql
+      - php5-mysqlnd
+      - php5-pgsql
+      - php5-sqlite
+      - zendframework
 
-- name: uninstall owncloud server for machines without role 'owncloud'
+- name: install owncloud files
+  when: ansible_fqdn in groups['owncloud']
+  unarchive: src={{ item }} dest={{ owncloud_config.install_dir }} keep_newer=yes
+  with_items: "{{ owncloud_config.sources }}"
+
+- name: resetting files ownership and permissions
+  when: ansible_fqdn in groups['owncloud']
+  file: path={{ owncloud_config.install_dir }}/owncloud owner=www-data group=www-data mode=0755 recurse=yes
+
+- name: uninstall owncloud dependencies for machines without role 'owncloud'
   when: ansible_fqdn not in groups['owncloud']
   apt: name={{ item }} state=absent purge=yes force=yes
   with_items:
       - python-mysqldb
-      - owncloud
       - libapache2-mod-php5
 
