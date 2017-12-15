@@ -17,8 +17,3 @@
   tags: openldap_configure
   template: src=ldap.conf.j2 dest=/etc/ldap/ldap.conf
 
-- name: configure phpldapadmin
-  when: ansible_fqdn in groups['openldap']
-  tags: openldap_configure
-  include: configure_phpldapadmin.yml
-
