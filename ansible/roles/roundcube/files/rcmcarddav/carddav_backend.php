@@ -1,7 +1,7 @@
 <?php
 /*
     RCM CardDAV Plugin
-    Copyright (C) 2011-2013 Benjamin Schieder <blindcoder@scavenger.homeip.net>,
+    Copyright (C) 2011-2016 Benjamin Schieder <rcmcarddav@wegwerf.anderdonau.de>,
                             Michael Stilkerich <ms@mike2k.de>
 
     This program is free software; you can redistribute it and/or modify
@@ -40,6 +40,9 @@ class carddav_backend extends rcube_addressbook
 	private $result;
 	// configuration of the addressbook
 	private $config;
+	// The value of the global "sync_collection_workaround" preference.
+	// Defaults to false if the user comments it out.
+	private $sync_collection_workaround = false;
 	// custom labels defined in the addressbook
 	private $xlabels;
 
@@ -112,6 +115,11 @@ class carddav_backend extends rcube_addressbook
 	if($this->config['presetname']) {
 		if($prefs[$this->config['presetname']]['readonly'])
 			$this->readonly = true;
+	}
+
+	if (isset($prefs['_GLOBAL']['sync_collection_workaround'])) {
+	  $this->sync_collection_workaround =
+	    $prefs['_GLOBAL']['sync_collection_workaround'];
 	}
 
 	$rc = rcmail::get_instance();
@@ -450,7 +458,10 @@ EOF
 	$xml = self::$helper->checkAndParseXML($reply);
 	if($xml !== false) {
 		$xpresult = $xml->xpath('//RCMCD:supported-report/RCMCD:report/RCMCD:sync-collection');
-		if(count($xpresult) > 0) {
+		// To avoid sync-collection, we can simply skip the next line
+		// leaving $records = -1 which will trigger a call to
+		// list_records_propfind() below.
+		if(count($xpresult) > 0 && !$this->sync_collection_workaround) {
 			$records = $this->list_records_sync_collection();
 		}
 	}
@@ -567,13 +578,15 @@ EOF
 
 		$xml = self::$helper->checkAndParseXML($reply);
 
-		if($xml === false) {
+		if($xml === false || (is_array($reply) && ($reply["status"] < 200 || $reply["status"] >= 300))) {
 			// a server may invalidate old sync-tokens, in which case we need to do a full resync
-			if (strlen($sync_token)>0 && $reply == 412){
+			if (strlen($sync_token)>0 && ($reply == 412 || (is_array($reply) && $reply["status"] == 412))){
 				self::$helper->warn("Server reported invalid sync-token in sync of addressbook " . $this->config['abookid'] . ". Resorting to full resync.");
 				$sync_token = '';
 				continue;
 			} else {
+				$errorstatus = is_array($reply) ? $reply["status"] : $reply;
+				self::$helper->warn("An error (status " . $errorstatus . ") occured while retrieving the sync-token of addressbook " . $this->config['abookid'] . ". Sync-collection synchronization aborted. Will use propfind synchronization instead.");
 				return -1;
 			}
 		}
@@ -624,6 +637,15 @@ EOF
 	if($this->group_id) {
 		$xfrom = ',' . $dbh->table_name('carddav_group_user');
 		$xwhere = ' AND id=contact_id AND group_id=' . $dbh->quote($this->group_id) . ' ';
+	}
+
+	if ($this->config['presetname']){
+		$prefs = carddav_common::get_adminsettings();
+		if (array_key_exists("require_always", $prefs[$this->config['presetname']])){
+			foreach ($prefs[$this->config['presetname']]["require_always"] as $col){
+				$xwhere .= " AND $col <> ".$dbh->quote('')." ";
+			}
+		}
 	}
 
 	// Workaround for Roundcube versions < 0.7.2
@@ -705,7 +727,11 @@ EOF
 
 	$reply = self::$helper->cdfopen($this->config['url'], $optsREPORT, $this->config);
 	$xml = self::$helper->checkAndParseXML($reply);
-	if($xml === false) return -1;
+	if($xml === false || (is_array($reply) && ($reply["status"] < 200 || $reply["status"] >= 300))) {
+        $errorstatus = is_array($reply) ? $reply["status"] : $reply;
+		rcmail::write_log("carddav", "An error (status " . $errorstatus . ") occured while retrieving vcards for addressbook " . $this->config['abookid'] . ". Synchronization aborted.");
+		return -1;
+	}
 
 	$xpresult = $xml->xpath('//RCMCD:response[descendant::RCMCC:address-data]');
 
@@ -743,6 +769,10 @@ EOF
 				// record group members for deferred store
 				$this->users_to_add[$dbid] = array();
 				$members = $vcfobj->{'X-ADDRESSBOOKSERVER-MEMBER'};
+				if ($members === null) {
+				    $members = array();
+				}
+
 				self::$helper->debug("Group $dbid has " . count($members) . " members");
 				foreach($members as $mbr) {
 					$mbr = preg_split('/:/', $mbr);
@@ -824,7 +854,11 @@ EOF
 
 	$reply = self::$helper->cdfopen("", $opts, $this->config);
 	$xml = self::$helper->checkAndParseXML($reply);
-	if($xml === false) return -1;
+	if($xml === false || (is_array($reply) && ($reply["status"] < 200 || $reply["status"] >= 300))) {
+        $errorstatus = is_array($reply) ? $reply["status"] : $reply;
+		rcmail::write_log("carddav", "An error (status " . $errorstatus . ") occured while retrieving the vcard list for addressbook " . $this->config['abookid'] . ". Synchronization aborted.");
+		return -1;
+	}
 	$records = $this->addvcards($xml);
 	if($records>=0) {
 		$this->delete_unseen();
@@ -835,6 +869,7 @@ EOF
 
 	private function addvcards($xml)
 	{{{
+    $records = 0;
 	$urls = array();
 	$xpresult = $xml->xpath('//RCMCD:response[starts-with(translate(child::RCMCD:propstat/RCMCD:status, "ABCDEFGHJIKLMNOPQRSTUVWXYZ", "abcdefghjiklmnopqrstuvwxyz"), "http/1.1 200 ") and child::RCMCD:propstat/RCMCD:prop/RCMCD:getetag]');
 	foreach ($xpresult as $r) {
@@ -859,6 +894,8 @@ EOF
 	if (count($urls) > 0) {
 		$records = $this->query_addressbook_multiget($urls);
 	}
+
+	return $records;
 	}}}
 
 	/** delete cards not present on the server anymore */
@@ -949,8 +986,8 @@ EOF
 		$val = is_array($value) ? $value[$idx] : $value;
 		// table column
 		if (in_array($col, $this->table_cols)) {
-			switch ($mode) {
-			case 1: // strict
+			if ($mode & 1) {
+				// strict
 				$where[] =
 					// exact match 'name@domain.com'
 					'(' . $dbh->ilike($col, $val)
@@ -960,35 +997,42 @@ EOF
 					. ' OR ' . $dbh->ilike($col, '%' . $AS . $WS . $val . $AS . '%')
 					// line end match '%, name@domain.com'
 					. ' OR ' . $dbh->ilike($col, '%' . $AS . $WS . $val) . ')';
-				break;
-			case 2: // prefix
+			} elseif ($mode & 2) {
+				// prefix
 				$where[] = '(' . $dbh->ilike($col, $val . '%')
 					. ' OR ' . $dbh->ilike($col, $AS . $WS . $val . '%') . ')';
-				break;
-			default: // partial
+			} else {
+				// partial
 				$where[] = $dbh->ilike($col, '%' . $val . '%');
 			}
 		}
 		// vCard field
 		else {
 				foreach (explode(" ", self::normalize_string($val)) as $word) {
-					switch ($mode) {
-					case 1: // strict
+					if ($mode & 1) {
+						// strict
 						$words[] = '(' . $dbh->ilike('vcard', $word . $WS . '%')
 							. ' OR ' . $dbh->ilike('vcard', '%' . $AS . $WS . $word . $WS .'%')
 							. ' OR ' . $dbh->ilike('vcard', '%' . $AS . $WS . $word) . ')';
-						break;
-					case 2: // prefix
+					} elseif ($mode & 2) {
+						// prefix
 						$words[] = '(' . $dbh->ilike('vcard', $word . '%')
 							. ' OR ' . $dbh->ilike('vcard', $AS . $WS . $word . '%') . ')';
-						break;
-					default: // partial
+					} else {
+						// partial
 						$words[] = $dbh->ilike('vcard', '%' . $word . '%');
 					}
 				}
 				$where[] = '(' . join(' AND ', $words) . ')';
 			if (is_array($value))
 				$post_search[$col] = mb_strtolower($val);
+		}
+	}
+
+	if ($this->config['presetname']){
+		$prefs = carddav_common::get_adminsettings();
+		if (array_key_exists("require_always", $prefs[$this->config['presetname']])){
+			$required = array_merge($prefs[$this->config['presetname']]["require_always"], $required);
 		}
 	}
 
@@ -1033,16 +1077,12 @@ EOF
 						// composite field, e.g. address
 						foreach ((array)$value as $val) {
 							$val = mb_strtolower($val);
-							switch ($mode) {
-							case 1:
+							if ($mode & 1) {
 								$got = ($val == $search);
-								break;
-							case 2:
+							} elseif ($mode & 2) {
 								$got = ($search == substr($val, 0, strlen($search)));
-								break;
-							default:
+							} else {
 								$got = (strpos($val, $search) !== false);
-								break;
 							}
 
 							if ($got) {
@@ -1240,11 +1280,11 @@ EOF
 		$vcf = new VObject\Component\VCard(
 			array(
 				'UID' => $save_data['cuid'],
-				'REV' => date('c'),
+				'REV' => gmdate("Y-m-d\TH:i:s\Z")
 			)
 		);
 	} else { // update revision
-		$vcf->REV = date("c");
+		$vcf->REV = gmdate("Y-m-d\TH:i:s\Z");
 	}
 
 	// N is mandatory
@@ -1284,9 +1324,12 @@ EOF
 
 	// normalize date fields to RFC2425 YYYY-MM-DD date values
 	foreach ($this->datefields as $key) {
-		if (array_key_exists($key, $save_data) && strlen($save_data[$key])>0) {
-			$val = rcube_utils::strtotime($save_data[$key]);
-			$save_data[$key] = date('Y-m-d',$val);
+		if (array_key_exists($key, $save_data)) {
+  			$data = (is_array($save_data[$key])) ?  $save_data[$key][0] : $save_data[$key];
+  			if (strlen($data) > 0) {
+				$val = rcube_utils::strtotime($data);
+				$save_data[$key] = date('Y-m-d',$val);
+			}
 		}
 	}
 
@@ -1311,8 +1354,9 @@ EOF
 	// process all simple attributes
 	foreach ($this->vcf2rc['simple'] as $vkey => $rckey){
 		if (array_key_exists($rckey, $save_data)) {
-			if (strlen($save_data[$rckey]) > 0) {
-				$vcf->{$vkey} = $save_data[$rckey];
+			$data = (is_array($save_data[$rckey])) ? $save_data[$rckey][0] : $save_data[$rckey];
+			if (strlen($data) > 0) {
+				$vcf->{$vkey} = $data;
 			} else { // delete the field
 				unset($vcf->{$vkey});
 			}
@@ -1772,7 +1816,7 @@ EOF
 	 * @param array  Record identifiers
 	 * @param bool   Remove records irreversible (see self::undelete)
 	 */
-	public function delete($ids)
+	public function delete($ids, $force = true)
 	{{{
 	$deleted = 0;
 	foreach ($ids as $dbid) {
@@ -1946,11 +1990,11 @@ EOF
 		$vcfstr = $vcf->serialize();
 		if(!($etag = $this->put_record_to_carddav($group['uri'], $vcfstr, $group['etag'])))
 			return false;
+		if(!$this->dbstore_group($etag,$group['uri'],$vcfstr,$group,$group_id))
+			return false;
 	}
-	if(!$this->dbstore_group($etag,$group['uri'],$vcfstr,$group,$group_id))
-		return false;
 
-	self::delete_dbrecord($ids,'group_user','contact_id', array('group_id' => $group_id));
+	$deleted = self::delete_dbrecord($ids,'group_user','contact_id', array('group_id' => $group_id));
 	return $deleted;
 	}}}
 
@@ -2019,15 +2063,28 @@ EOF
 	 * List all active contact groups of this source
 	 *
 	 * @param string  Optional search string to match group name
+	 * @param int     Search mode. Sum of self::SEARCH_* (>= 1.2.3)
+	 *                0 - partial (*abc*),
+	 *                1 - strict (=),
+	 *                2 - prefix (abc*)
+	 *
 	 * @return array  Indexed list of contact groups, each a hash array
 	 */
-	public function list_groups($search = null)
+	public function list_groups($search = null, $mode = 0)
 	{{{
 	$dbh = rcmail::get_instance()->db;
 
-	$searchextra = $search
-		? " AND " . $dbh->ilike('name',"%$search%")
-		: '';
+	$searchextra = "";
+	if ($search !== null){
+		if ($mode & 1) {
+			$searchextra = $dbh->ilike('name', $search);
+		} elseif ($mode & 2) {
+			$searchextra = $dbh->ilike('name',"$search%");
+		} else {
+			$searchextra = $dbh->ilike('name',"%$search%");
+		}
+		$searchextra = ' AND ' . $searchextra;
+	}
 
 	$sql_result = $dbh->query('SELECT id,name from ' .
 		$dbh->table_name('carddav_groups') .
@@ -2127,7 +2184,7 @@ EOF
 	 * @param string New group identifier (if changed, otherwise don't set)
 	 * @return boolean New name on success, false if no data was changed
 	 */
-	public function rename_group($group_id, $newname)
+	public function rename_group($group_id, $newname, &$newid)
 	{{{
 	// get current DB data
 	$group = self::get_dbrecord($group_id,'uri,etag,vcard,name,cuid','groups');

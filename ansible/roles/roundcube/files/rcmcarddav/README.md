@@ -8,6 +8,10 @@ Upgrading from 1.0
 
 There is no upgrade path from the 1.0 version. You need to manually remove RCMCardDAV 1.0, drop its tables from your database and start with a fresh installation.
 
+Requirements
+============
+RCMCardDAV requires at least PHP 5.6.18. Older versions might work if the version check is disabled using the `$prefs['_GLOBAL']['suppress_version_warning']` configuration entry, but this is unsupported. 
+
 Installation
 ============
 
@@ -23,7 +27,7 @@ Intallation steps:
     - Add `"roundcube/carddav": "dev-master"` to your composer.json file and install with `php composer.phar install`.
   - Via git:
     - Clone the repository:
-      `cd roundcube/plugins && git clone git@github.com:blind-coder/rcmcarddav.git carddav`
+      `cd roundcube/plugins && git clone https://github.com/blind-coder/rcmcarddav.git carddav`
     - Install dependencies:
       - Install composer as per the documentation: https://getcomposer.org/download/
       - Run `php composer.phar install`
@@ -36,7 +40,7 @@ Intallation steps:
 - Install the curl php extension if not already present:
   `sudo apt-get install php5-curl`
 - Enable RCMCardDAV in Roundcube:
-  Open the file `roundcubemail/config/main.inc.php` and add `carddav` to the array `$rcmail_config['plugins']`.
+  Open the file `roundcube/config/config.inc.php` and add `carddav` to the array `$config['plugins']`.
 - Login to Roundcube and setup your addressbook by navigation to the Settings page and click on CardDAV.
 
 In case of errors, check the files `roundcube/logs/*`.

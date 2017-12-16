@@ -7,6 +7,7 @@
       - python-mysqldb  # for ansible mysql_user module
       - roundcube
       - roundcube-mysql
+      - roundcube-plugins
       - php-curl        # carddav plugin dependency
       - curl
       - pwgen           # used for DES keys generation
@@ -15,7 +16,7 @@
   when: ansible_fqdn not in groups['roundcube']
   apt: name={{ item }} state=absent purge=yes force=yes
   with_items:
-      - python-mysqldb  # for ansible mysql_user module
       - roundcube
       - roundcube-mysql
+      - roundcube-plugins
 

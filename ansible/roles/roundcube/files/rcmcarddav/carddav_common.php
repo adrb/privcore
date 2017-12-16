@@ -1,8 +1,8 @@
 <?php
 /*
     RCM CardDAV Plugin
-    Copyright (C) 2013 Benjamin Schieder <blindcoder@scavenger.homeip.net>,
-                       Michael Stilkerich <ms@mike2k.de>
+    Copyright (C) 2011-2016 Benjamin Schieder <rcmcarddav@wegwerf.anderdonau.de>,
+                            Michael Stilkerich <ms@mike2k.de>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -155,10 +155,9 @@ class carddav_common
 	$domain = $rcmail->user->get_username('domain');
 
 	// Substitute Placeholders
-	if($username == '%u')
-		$username = $_SESSION['username'];
-	if($username == '%l')
-		$username = $local;
+	$username = str_replace( '%u', $_SESSION['username'], $username);
+	$username = str_replace( '%l', $local, $username);
+	$username = str_replace( '%d', $domain, $username);
 	if($password == '%p')
 		$password = $rcmail->decrypt($_SESSION['password']);
 	$baseurl = str_replace("%u", $username, $carddav['url']);
@@ -173,13 +172,13 @@ class carddav_common
 
 	do {
 		$isRedirect = false;
-		if (self::DEBUG){ $this->debug("$caller requesting $url [RL $redirect_limit]"); }
+		if (self::DEBUG){ $this->debug("$caller requesting $url as user $username [RL $redirect_limit]"); }
 
 		$httpful = \Httpful\Request::init();
 		$scheme = strtolower($carddav['authentication_scheme']);
 		if ($scheme != "basic" && $scheme != "digest"){
 				/* figure out authentication */
-				$httpful->addHeader("User-Agent", "RCM CardDAV plugin/1.0.0");
+				$httpful->addHeader("User-Agent", "RCM CardDAV plugin/2.0.4");
 				$httpful->uri($url);
 				$httpful->method($http_opts['method']);
 				$error = $httpful->send();
@@ -204,7 +203,7 @@ class carddav_common
 			}
 		}
 
-		$httpful->addHeader("User-Agent", "RCM CardDAV plugin/1.0.0");
+		$httpful->addHeader("User-Agent", "RCM CardDAV plugin/2.0.4");
 		$httpful->uri($url);
 
 		$httpful->method($http_opts['method']);

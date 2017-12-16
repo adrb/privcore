@@ -1,7 +1,7 @@
 <?php
 /*
     RCM CardDAV Plugin
-    Copyright (C) 2011-2013 Benjamin Schieder <blindcoder@scavenger.homeip.net>,
+    Copyright (C) 2011-2016 Benjamin Schieder <rcmcarddav@wegwerf.anderdonau.de>,
                             Michael Stilkerich <ms@mike2k.de>
 
     This program is free software; you can redistribute it and/or modify
@@ -420,14 +420,16 @@ class carddav extends rcube_plugin
 		$this->add_texts('localization/', false);
 		$prefs = carddav_common::get_adminsettings();
 
-		if (version_compare(PHP_VERSION, '5.3.0') < 0) {
-			$args['blocks']['cd_preferences'] = array(
-				'options' => array(
-					array('title'=> self::$helper->Q($this->gettext('cd_php_too_old')), 'content' => PHP_VERSION)
-				),
-				'name' => self::$helper->Q($this->gettext('cd_title'))
-			);
-			return $args;
+		if (!$prefs['_GLOBAL']['suppress_version_warning']){
+			if (version_compare(PHP_VERSION, '5.6.18', '<')) {
+				$args['blocks']['cd_preferences'] = array(
+					'options' => array(
+						array('title'=> self::$helper->Q($this->gettext('cd_php_too_old')), 'content' => PHP_VERSION)
+					),
+					'name' => self::$helper->Q($this->gettext('cd_title'))
+				);
+				return $args;
+			}
 		}
 
 		$abooks = carddav_backend::get_dbrecord($_SESSION['user_id'],'*','addressbooks',false,'user_id');
@@ -497,16 +499,16 @@ class carddav extends rcube_plugin
 
 			} else {
 				$newset = array (
-					'name' => rcube_utils::get_input_value($abookid."_cd_name", RCUBE_INPUT_POST),
-					'username' => rcube_utils::get_input_value($abookid."_cd_username", RCUBE_INPUT_POST, true),
-					'url' => rcube_utils::get_input_value($abookid."_cd_url", RCUBE_INPUT_POST),
+					'name' => rcube_utils::get_input_value($abookid."_cd_name", rcube_utils::INPUT_POST),
+					'username' => rcube_utils::get_input_value($abookid."_cd_username", rcube_utils::INPUT_POST, true),
+					'url' => rcube_utils::get_input_value($abookid."_cd_url", rcube_utils::INPUT_POST),
 					'active' => isset($_POST[$abookid.'_cd_active']) ? 1 : 0,
 					'use_categories' => isset($_POST[$abookid.'_cd_use_categories']) ? 1 : 0,
-					'refresh_time' => rcube_utils::get_input_value($abookid."_cd_refresh_time", RCUBE_INPUT_POST),
+					'refresh_time' => rcube_utils::get_input_value($abookid."_cd_refresh_time", rcube_utils::INPUT_POST),
 				);
 
 				// only set the password if the user entered a new one
-				$password = rcube_utils::get_input_value($abookid."_cd_password", RCUBE_INPUT_POST, true);
+				$password = rcube_utils::get_input_value($abookid."_cd_password", rcube_utils::INPUT_POST, true);
 				if(strlen($password) > 0) {
 					$newset['password'] = $password;
 				}
@@ -523,14 +525,14 @@ class carddav extends rcube_plugin
 		}
 
 		// add a new address book?
-		$new = rcube_utils::get_input_value('new_cd_name', RCUBE_INPUT_POST);
+		$new = rcube_utils::get_input_value('new_cd_name', rcube_utils::INPUT_POST);
 		if ( (!array_key_exists('_GLOBAL', $prefs) || !$prefs['_GLOBAL']['fixed']) && strlen($new) > 0) {
-			$srv    = rcube_utils::get_input_value('new_cd_url', RCUBE_INPUT_POST);
-			$usr    = rcube_utils::get_input_value('new_cd_username', RCUBE_INPUT_POST, true);
-			$pass   = rcube_utils::get_input_value('new_cd_password', RCUBE_INPUT_POST, true);
+			$srv    = rcube_utils::get_input_value('new_cd_url', rcube_utils::INPUT_POST);
+			$usr    = rcube_utils::get_input_value('new_cd_username', rcube_utils::INPUT_POST, true);
+			$pass   = rcube_utils::get_input_value('new_cd_password', rcube_utils::INPUT_POST, true);
 			$pass = self::$helper->encrypt_password($pass);
-			$abname = rcube_utils::get_input_value('new_cd_name', RCUBE_INPUT_POST);
-			$use_categories = intval(rcube_utils::get_input_value('new_cd_use_categories', RCUBE_INPUT_POST, true), 0);
+			$abname = rcube_utils::get_input_value('new_cd_name', rcube_utils::INPUT_POST);
+			$use_categories = intval(rcube_utils::get_input_value('new_cd_use_categories', rcube_utils::INPUT_POST, true), 0);
 
 			$discovery = new carddav_discovery();
 			$srvs = $discovery->find_addressbooks($srv, $usr, $pass);
@@ -548,7 +550,7 @@ class carddav extends rcube_plugin
 						'password' => $pass,
 						'use_categories' => $use_categories,
 						'url'      => $srv['href'],
-						'refresh_time' => rcube_utils::get_input_value('new_cd_refresh_time', RCUBE_INPUT_POST)
+						'refresh_time' => rcube_utils::get_input_value('new_cd_refresh_time', rcube_utils::INPUT_POST)
 					));
 				}
 			} else {
