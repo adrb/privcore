@@ -1,5 +1,5 @@
 
-PrivCore 1.0 (stable)
+PrivCore 2.0 (stretch)
 
 Author: Adrian Brzezinski
 
