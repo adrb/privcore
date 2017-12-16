@@ -1,15 +1,15 @@
 ---
 
 - name: install mysql server
-  when: ansible_fqdn in groups['owncloud'] or ansible_fqdn in groups['roundcube']
+  when: ansible_fqdn in groups['nextcloud'] or ansible_fqdn in groups['roundcube']
   apt: name={{ item }} state=present force=yes update_cache=yes
   with_items:
       - python-mysqldb  # for ansible mysql_user module
       - mysql-server
       - mysql-client
 
-- name: uninstall mysql server for machines without role 'owncloud' or 'roundcube' (database files will remain)
-  when: ansible_fqdn not in groups['owncloud'] and ansible_fqdn not in groups['roundcube']
+- name: uninstall mysql server for machines without role 'nextcloud' or 'roundcube' (database files will remain)
+  when: ansible_fqdn not in groups['nextcloud'] and ansible_fqdn not in groups['roundcube']
   apt: name={{ item }} state=absent force=yes
   with_items:
       - mysql-server

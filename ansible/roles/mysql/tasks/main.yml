@@ -5,7 +5,7 @@
   include: packages.yml
 
 - name: configure mysqld
-  when: ansible_fqdn in groups['owncloud'] or ansible_fqdn in groups['roundcube']
+  when: ansible_fqdn in groups['nextcloud'] or ansible_fqdn in groups['roundcube']
   tags: mysql_configure
   include: configure_mysqld.yml
 
