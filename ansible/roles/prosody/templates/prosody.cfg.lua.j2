@@ -132,8 +132,8 @@ pidfile = "/var/run/prosody/prosody.pid";
 -- These are the SSL/TLS-related settings. If you don't want
 -- to use SSL/TLS, you may comment or remove this
 ssl = {
-	key = "/etc/prosody/certs/localhost.key";
-	certificate = "/etc/prosody/certs/localhost.cert";
+	key = "/etc/ssl/private/{{ansible_fqdn}}_key.pem";
+	certificate = "/etc/ssl/certs/{{ansible_fqdn}}_cert.pem";
 }
 
 -- Force clients to use encrypted connections? This option will

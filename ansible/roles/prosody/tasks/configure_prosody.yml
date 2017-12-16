@@ -24,6 +24,18 @@
   changed_when: ("Module proxy_http already enabled" not in a2enmod_proxy_http.stdout)
   notify: restart httpd
 
+- name: enabling apache headers module
+  command: a2enmod headers
+  register: a2enmod_headers
+  changed_when: ("Module headers already enabled" not in a2enmod_headers.stdout)
+  notify: restart httpd
+
+- name: enabling apache rewrite module
+  command: a2enmod rewrite
+  register: a2enmod_rewrite
+  changed_when: ("Module rewrite already enabled" not in a2enmod_rewrite.stdout)
+  notify: restart httpd
+
 - name: generating BOSH proxy configuration for apache
   template: src=xmpp-bosh.conf.j2 dest=/etc/apache2/conf-available/xmpp-bosh.conf
 
