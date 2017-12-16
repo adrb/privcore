@@ -7,7 +7,7 @@
       - python-mysqldb  # for ansible mysql_user module
       - roundcube
       - roundcube-mysql
-      - php5-curl       # carddav plugin dependency
+      - php-curl        # carddav plugin dependency
       - curl
       - pwgen           # used for DES keys generation
 
