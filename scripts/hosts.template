@@ -5,6 +5,9 @@
 [openldap]
 %hostname%
 
+[phpldapadmin]
+%hostname%
+
 [bind_master]
 # only one server allowed
 %hostname%

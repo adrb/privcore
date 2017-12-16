@@ -20,7 +20,7 @@ ANSIBLE_ROOT = './ansible'
 ANSIBLE_CONFIG = '%s/group_vars/all.yml' % ANSIBLE_ROOT
 ANSIBLE_HOSTS = '%s/hosts' % ANSIBLE_ROOT
 ANSIBLE_PLAYBOOK = '%s/privcore.yml' % ANSIBLE_ROOT
-ANSIBLE_TAGS = [ 'ssl', 'dns', 'ldap', 'xmpp', 'cloud', 'imap', 'smtp', 'webmail' ]
+ANSIBLE_TAGS = [ 'ssl', 'dns', 'ldap', 'phpldapadmin', 'xmpp', 'cloud', 'imap', 'smtp', 'webmail' ]
 ANSIBLE_CONFIG_TEMPLATE = './scripts/all.yml.template'
 ANSIBLE_HOSTS_TEMPLATE = './scripts/hosts.template'
 
@@ -261,6 +261,7 @@ def ansible_play(playtags=[]):
             choices=[('ssl', 'Generate certificates for machines and its services',True),
                 ('dns', 'Configure bind as local DNS server',True),
                 ('ldap', 'Prepare openldap tree',True),
+                ('phpldapadmin','LDAP management interface',True),
                 ('xmpp', 'Prosody XMPP/Jabber server',True),
                 ('cloud', 'Nextcloud sharing server (file, contacts, calendar)',True),
                 ('imap', 'Dovecot IMAP server',True),

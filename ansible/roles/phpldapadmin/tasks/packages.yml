@@ -1,0 +1,32 @@
+---
+
+- name: install packages for phpldapadmin servers
+  when: ansible_fqdn in groups['openldap']
+  apt: name={{ item }} state=present force=yes
+  with_items:
+      - apache2
+      - libapache2-mod-php
+      - php-ldap
+      - php-cli
+  notify: 
+    - restart httpd
+
+- name: installing custom phpldapadmin package
+  shell: dpkg -l phpldapadmin || dpkg -i phpldapadmin_1.2.2-6.1_all.deb
+
+#- name: install phpldapadmin files
+#  when: ansible_fqdn in groups['openldap']
+#  unarchive: src={{ phpldapadmin_config.source }} dest={{ phpldapadmin_config.install_dir }} keep_newer=yes
+#
+#- name: Applying patches
+#  patch: src=php5.5-compatibility.patch basedir={{ phpldapadmin_config.install_dir }}/phpldapadmin strip=1
+
+- name: uninstall phpldapadmin for machines without role 'openldap'
+  when: ansible_fqdn not in groups['openldap']
+  apt: name={{ item }} state=absent purge=yes force=yes
+  with_items:
+      - php-ldap
+      - phpldapadmin
+  notify: 
+    - restart httpd
+

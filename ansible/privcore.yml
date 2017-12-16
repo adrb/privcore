@@ -9,6 +9,7 @@
     - { role: openssl, tags: ssl } # create CA and generate certificates for machines and its services
     - { role: bind, tags: dns } # local DNS server
     - { role: openldap, tags: ldap } # initialize directory servers and assign hosts to it
+    - { role: phpldapadmin, tags: phpldapadmin } # LDAP management interface
     - { role: prosody, tags: xmpp } # prosody XMPP/Jabber server
     - { role: nextcloud, tags: cloud } # sharing server (file, contacts, calendar)
     - { role: dovecot, tags: imap } # E-mail mailboxes

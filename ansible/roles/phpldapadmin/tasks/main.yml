@@ -1,0 +1,11 @@
+---
+
+- name: repositories and packages
+  tags: phpldapadmin_packages
+  include: packages.yml
+
+- name: configure phpldapadmin
+  when: ansible_fqdn in groups['openldap']
+  tags: phpldapadmin_configure
+  include: configure_phpldapadmin.yml
+
