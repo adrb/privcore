@@ -1,6 +1,6 @@
 ---
 
-- name: install packages for phpldapadmin servers
+- name: install packages for phpldapadmin service
   when: ansible_fqdn in groups['openldap']
   apt: name={{ item }} state=present force=yes
   with_items:
@@ -11,8 +11,16 @@
   notify: 
     - restart httpd
 
-- name: installing custom phpldapadmin package
-  shell: dpkg -l phpldapadmin || dpkg -i phpldapadmin_1.2.2-6.1_all.deb
+- name: copying custom packages
+  copy: src={{ item }} dest=/var/cache/apt/archives/
+  with_items: "{{phpldapadmin_config.packages}}"
+
+- name: installing custom phpldapadmin packages
+  command: dpkg -i /var/cache/apt/archives/{{ item }}
+  with_items: "{{phpldapadmin_config.packages}}"
+  register: ldapadmn_install_result
+  failed_when: ldapadmn_install_result.rc != 0
+  changed_when: ldapadmn_install_result.rc != 0
 
 #- name: install phpldapadmin files
 #  when: ansible_fqdn in groups['openldap']
