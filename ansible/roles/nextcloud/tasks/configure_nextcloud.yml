@@ -58,7 +58,6 @@
     - "contacts"
     - "spreed"
     - "files_clipboard"
-    - "rainloop"
     - "ojsxc"
   register: occ_app_result
   failed_when: occ_app_result.rc != 0

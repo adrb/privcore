@@ -12,8 +12,7 @@ nextcloud_config:
   apps_sources:
     - "calendar.tar.gz"
     - "contacts.tar.gz"
-#    - "mail.tar.gz" # IMAP client (disabled)
-    - "rainloop.tar.gz" # IMAP client 
     - "ojsxc-3.3.2.tar.gz" # jabber
+    - "spreed-2.0.2.tar.gz"
     - "files_clipboard.tar.gz"
 
