@@ -1,5 +1,5 @@
 [openssl_ca]
-# only one server allowed
+# inside of this group only one server allowed
 %hostname%
 
 [openldap]
@@ -9,14 +9,11 @@
 %hostname%
 
 [bind_master]
-# only one server allowed
+# inside of this group only one server allowed
 %hostname%
 
 [bind_slave]
 # not implemented yet
-
-[prosody]
-%hostname%
 
 [nextcloud]
 %hostname%
@@ -27,6 +24,9 @@
 [exim]
 %hostname%
 
-[roundcube]
+# Obsolete functionalities
+[prosody]
 %hostname%
 
+[roundcube]
+%hostname%

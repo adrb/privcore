@@ -11,20 +11,20 @@ fi
 
 #
 # check and install dependencies
-if [ ! -f /etc/apt/sources.list.d/backports.list ] && ( ! grep "jessie-backports" /etc/apt/sources.list >/dev/null ) ; then
+if [ ! -f /etc/apt/sources.list.d/backports.list ] && ( ! grep "stretch-backports" /etc/apt/sources.list >/dev/null ) ; then
   echo "Configuring debian backports..."
   cat > /etc/apt/sources.list.d/backports.list <<EOF
-deb http://httpredir.debian.org/debian jessie-backports main contrib non-free
-deb-src http://httpredir.debian.org/debian jessie-backports main contrib non-free
+deb http://httpredir.debian.org/debian stretch-backports main contrib non-free
+deb-src http://httpredir.debian.org/debian stretch-backports main contrib non-free
 EOF
 
-  echo "Updating the package index files..."
+  echo "Updating indexes of available packages..."
   apt-get update >/dev/null || exit 1
 fi
 
 if ( ! dpkg -l ansible >/dev/null 2>&1 ) ; then
-  echo "Installing ansible from jessie-backports..."
-  apt-get --yes -t jessie-backports install ansible >/dev/null || exit 1
+  echo "Installing ansible from stretch-backports..."
+  apt-get --yes -t stretch-backports install ansible >/dev/null || exit 1
 fi
 
 _install_pkgs=''

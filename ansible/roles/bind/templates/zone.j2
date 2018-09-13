@@ -18,12 +18,7 @@ ns1             A       {{ hostvars[ groups['bind_master'][0] ].default_ipv4_add
 mail            A       {{ hostvars[ groups['bind_master'][0] ].default_ipv4_address }}
 ntp1            A       {{ hostvars[ groups['bind_master'][0] ].default_ipv4_address }}
 
-; XMPP/Jabber
-{% for jabber in groups['prosody'] %}
-xmpp            A       {{ hostvars[jabber].default_ipv4_address }}
-{% endfor %}
-_xmpp-client._tcp.{{ansible_domain}}.   SRV 0 5 5222 xmpp.{{ansible_domain}}.
-_xmpp-server._tcp.{{ansible_domain}}.   SRV 0 5 5269 xmpp.{{ansible_domain}}.
+                IN TXT "v=spf1 ptr a:mail.{{ansible_domain}} ~all"
 
 ; Hosts
 {% for host in groups['all'] %}

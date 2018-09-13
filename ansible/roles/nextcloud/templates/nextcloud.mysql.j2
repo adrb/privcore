@@ -27,14 +27,6 @@ INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_group_filter","(|(objectclass
 INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_group_filter_mode","1") ON DUPLICATE KEY UPDATE configvalue="1";
 INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_group_member_assoc_attribute","memberUid") ON DUPLICATE KEY UPDATE configvalue="memberUid";
 
-INSERT INTO oc_appconfig VALUES ("ojsxc","enabled","yes") ON DUPLICATE KEY UPDATE configvalue="yes";
-INSERT INTO oc_appconfig VALUES ("ojsxc","boshUrl","https://{{config.internet_domain}}/http-bind") ON DUPLICATE KEY UPDATE configvalue="https://{{config.internet_domain}}/http-bind";
-INSERT INTO oc_appconfig VALUES ("ojsxc","iceSecret","{{coturn_auth_secret}}") ON DUPLICATE KEY UPDATE configvalue="{{coturn_auth_secret}}";
-INSERT INTO oc_appconfig VALUES ("ojsxc","iceUrl","turn:{{config.internet_domain}}:3478") ON DUPLICATE KEY UPDATE configvalue="turn:{{config.internet_domain}}:3478";
-INSERT INTO oc_appconfig VALUES ("ojsxc","serverType","external") ON DUPLICATE KEY UPDATE configvalue="external";
-INSERT INTO oc_appconfig VALUES ("ojsxc","types","prelogin") ON DUPLICATE KEY UPDATE configvalue="prelogin";
-INSERT INTO oc_appconfig VALUES ("ojsxc","xmppDomain","{{config.internet_domain}}") ON DUPLICATE KEY UPDATE configvalue="{{config.internet_domain}}";
-
 INSERT INTO oc_appconfig VALUES ("spreed","enabled","yes") ON DUPLICATE KEY UPDATE configvalue="yes";
 INSERT INTO oc_appconfig VALUES ("spreed","stun_server","{{config.internet_domain}}:3478") ON DUPLICATE KEY UPDATE configvalue="{{config.internet_domain}}:3478";
 INSERT INTO oc_appconfig VALUES ("spreed","turn_server","{{config.internet_domain}}:3478") ON DUPLICATE KEY UPDATE configvalue="{{config.internet_domain}}:3478";

@@ -58,7 +58,6 @@
     - "contacts"
     - "spreed"
     - "files_clipboard"
-    - "ojsxc"
   register: occ_app_result
   failed_when: occ_app_result.rc != 0
   changed_when: occ_app_result.rc != 0

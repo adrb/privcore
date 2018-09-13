@@ -20,7 +20,7 @@ ANSIBLE_ROOT = './ansible'
 ANSIBLE_CONFIG = '%s/group_vars/all.yml' % ANSIBLE_ROOT
 ANSIBLE_HOSTS = '%s/hosts' % ANSIBLE_ROOT
 ANSIBLE_PLAYBOOK = '%s/privcore.yml' % ANSIBLE_ROOT
-ANSIBLE_TAGS = [ 'ssl', 'dns', 'ldap', 'phpldapadmin', 'xmpp', 'cloud', 'imap', 'smtp', 'webmail' ]
+ANSIBLE_TAGS = [ 'ssl', 'dns', 'ldap', 'phpldapadmin', 'cloud', 'imap', 'smtp' ]
 ANSIBLE_CONFIG_TEMPLATE = './scripts/all.yml.template'
 ANSIBLE_HOSTS_TEMPLATE = './scripts/hosts.template'
 
@@ -52,7 +52,7 @@ def ansible_setup():
         with open(ANSIBLE_CONFIG, 'r') as f:
             ansible_config = yaml.load(f)
 
-        # let's make some 'links' to objects hidden much deeper in the ldap tree
+        # let's make some references to objects hidden much deeper in the ldap tree
         readonly_password = ansible_config['ldap_tree']['root']['dit_branch']['users']['dit_branch']['services']['dit_branch']['readonly']['userpassword']
         admin_user = ansible_config['ldap_tree']['root']['dit_branch']['users']['dit_branch']['people']['dit_branch']['admin_user']
 
@@ -87,10 +87,8 @@ def ansible_setup():
     if readonly_password == '':
         readonly_password = commands.getoutput('pwgen -N 1 -s 14')
 
-    hostname = socket.getfqdn()
-
     #
-    # set mandatory variables
+    # no need to change durring reconfiguration
     while not already_initialized:
         code, ansible_config['config']['master_passwd'] = d.passwordbox(
             "Please enter master password. It' used as administrator password "
@@ -113,6 +111,19 @@ def ansible_setup():
             break
         else:
             d.msgbox("Password missmatch!")
+
+    #
+    # set mandatory variables
+    while True:
+        code, hostname = d.inputbox("Local hostname (including local domain) where You want to deploy PrivCore installation. You need to have ssh root access.\n\n" ,
+            init=socket.getfqdn())
+
+        if code != d.OK: return 0
+
+        if len(hostname) < 2:
+            d.msgbox("Hostname should be at least two characters long!")
+        else:
+            break
 
     while True:
         code, ansible_config['config']['internet_domain'] = d.inputbox("The domain under which your machine can be accessed from the Internet network.\n\n" \
@@ -255,18 +266,18 @@ def ansible_play(playtags=[]):
         if code != d.OK: return 0
 
     #
-    # select which tasks you want to play
+    # select which tasks do you want to play
     if not playtags:
         code, playtags = d.checklist('Please slect tags/jobs you want to play:',
             choices=[('ssl', 'Generate certificates for machines and its services',True),
                 ('dns', 'Configure bind as local DNS server',True),
                 ('ldap', 'Prepare openldap tree',True),
                 ('phpldapadmin','LDAP management interface',True),
-                ('xmpp', 'Prosody XMPP/Jabber server',True),
                 ('cloud', 'Nextcloud sharing server (file, contacts, calendar)',True),
                 ('imap', 'Dovecot IMAP server',True),
                 ('smtp', 'Exim SMTP server',True),
-                ('webmail', 'Roundcube e-mail and Jabber webclient',True),
+                ('webmail', 'Roundcube e-mail and Jabber webclient (obsolete)',False),
+                ('xmpp', 'Prosody XMPP/Jabber server (obsolete)',False),
             ])
         if code != d.OK: return 0
 
@@ -278,7 +289,7 @@ def ansible_play(playtags=[]):
 
         ansible_log_file = "/tmp/privcore.log"
 
-        ansible_cmd = shlex.split('sshpass -p "%s" ansible-playbook %s -i %s -t %s -c local --ask-pass -v' %
+        ansible_cmd = shlex.split('sshpass -p "%s" ansible-playbook %s -i %s -t %s --ask-pass -v' %
             (ansible_config['config']['master_passwd'], ANSIBLE_PLAYBOOK, ANSIBLE_HOSTS, tag_name))
         ansible_proc = subprocess.Popen(ansible_cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
 

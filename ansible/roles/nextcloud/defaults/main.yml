@@ -12,7 +12,6 @@ nextcloud_config:
   apps_sources:
     - "calendar.tar.gz"
     - "contacts.tar.gz"
-    - "ojsxc-3.3.2.tar.gz" # jabber
     - "spreed-2.0.2.tar.gz"
     - "files_clipboard.tar.gz"
 
