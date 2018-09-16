@@ -48,10 +48,11 @@
   when: ansible_fqdn in groups['nextcloud']
   unarchive: src={{ nextcloud_config.source }} dest={{ nextcloud_config.install_dir }} keep_newer=yes
 
-- name: install nextcloud apps
-  when: ansible_fqdn in groups['nextcloud']
-  unarchive: src={{ item }} dest={{ nextcloud_config.install_dir }}/nextcloud/apps keep_newer=yes
-  with_items: "{{ nextcloud_config.apps_sources }}"
+# For those it's better to deploy known good versions than install it with "php -f occ app:install ..."
+#- name: install nextcloud apps from sources
+#  when: ansible_fqdn in groups['nextcloud']
+#  unarchive: src={{ item }} dest={{ nextcloud_config.install_dir }}/nextcloud/apps keep_newer=yes
+#  with_items: "{{ nextcloud_config.apps_sources }}"
 
 - name: resetting files ownerships and permissions
   when: ansible_fqdn in groups['nextcloud']

@@ -8,10 +8,15 @@ nextcloud_config:
   mysql_db: nextcloud
 
   install_dir: /var/www
-  source: "nextcloud-12.0.4.tar.bz2"
-  apps_sources:
-    - "calendar.tar.gz"
-    - "contacts.tar.gz"
-    - "spreed-2.0.2.tar.gz"
-    - "files_clipboard.tar.gz"
+  source: "nextcloud-14.0.0.tar.bz2"
 
+#  apps_sources:
+#    - "calendar.tar.gz"
+#    - "contacts.tar.gz"
+
+  apps_list:
+    - "user_ldap"
+    - "calendar"
+    - "contacts"
+    - "mail"
+    - "spreed"

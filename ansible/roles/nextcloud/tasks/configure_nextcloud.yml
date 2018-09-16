@@ -1,6 +1,6 @@
 ---
 #
-# Documentation: https://docs.nextcloud.com/server/12/admin_manual/installation/
+# Documentation: https://docs.nextcloud.com/server/14/admin_manual/installation/
 #
 
 - name: creating database {{nextcloud_config.mysql_db}}
@@ -22,8 +22,10 @@
 - name: configuring
   shell: |
     cd {{ nextcloud_config.install_dir }}/nextcloud
-    php occ maintenance:install --database "mysql" --database-name {{nextcloud_config.mysql_db}} \
-      --database-user "{{nextcloud_config.mysql_user}}" --database-pass "{{nextcloud_config.mysql_pass}}" \
+    php occ maintenance:install --database "mysql" --database "mysql" \
+      --database-name {{nextcloud_config.mysql_db}} \
+      --database-user "{{nextcloud_config.mysql_user}}" \
+      --database-pass "{{nextcloud_config.mysql_pass}}" \
       --admin-user "admin" --admin-pass "{{nextcloud_config.adminpw}}" \
       --data-dir "{{ nextcloud_config.install_dir }}/nextcloud/data"
     :
@@ -47,17 +49,12 @@
 - name: enabling privcore theme
   lineinfile: dest={{ nextcloud_config.install_dir }}/nextcloud/config/config.php regexp="'theme' => '" line="  'theme' => 'privcore_nextcloud_theme'," insertbefore="\);"
 
-- name: enabling basic apps
+- name: enabling and installing basic apps
   shell: |
     cd {{ nextcloud_config.install_dir }}/nextcloud
-    php occ app:enable {{ item }}
+    php occ app:install --no-interaction --quiet {{ item }}
     :
-  with_items:
-    - "user_ldap"
-    - "calendar"
-    - "contacts"
-    - "spreed"
-    - "files_clipboard"
+  with_items: "{{ nextcloud_config.apps_list}}"
   register: occ_app_result
   failed_when: occ_app_result.rc != 0
   changed_when: occ_app_result.rc != 0
