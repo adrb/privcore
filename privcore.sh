@@ -28,7 +28,7 @@ if ( ! dpkg -l ansible >/dev/null 2>&1 ) ; then
 fi
 
 _install_pkgs=''
-for pkt in python python-dialog python-yaml acl pwgen sshpass ; do
+for pkt in python python-dialog python-yaml python-dnspython acl pwgen sshpass ; do
   if ( ! dpkg -l $pkt 2>&1 | grep ^ii >/dev/null ) ; then
     _install_pkgs="$pkt $_install_pkgs"
   fi

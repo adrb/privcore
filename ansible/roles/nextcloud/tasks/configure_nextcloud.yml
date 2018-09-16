@@ -88,6 +88,12 @@
   template: src=apache.conf.j2 dest=/etc/apache2/conf-available/nextcloud.conf
   notify: reload httpd
 
+- name: enabling apache headers module
+  command: a2enmod headers
+  register: a2enmod_headers
+  changed_when: ("Module headers already enabled" not in a2enmod_headers.stdout)
+  notify: restart httpd
+
 - name: enabling apache configuration
   command: a2enconf nextcloud
   register: a2enconf_nextcloud

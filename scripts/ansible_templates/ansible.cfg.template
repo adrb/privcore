@@ -22,7 +22,7 @@ hash_behaviour = merge
 
 # human-readable stdout/stderr results
 stdout_callback = debug
-log_path=/tmp/privcore.log
+log_path = %log_path%
 
 [ssh_connection]
 scp_if_ssh = True

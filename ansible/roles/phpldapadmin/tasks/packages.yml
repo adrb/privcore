@@ -2,9 +2,10 @@
 
 - name: install packages for phpldapadmin service
   when: ansible_fqdn in groups['openldap']
-  apt: name={{ item }} state=present force=yes
+  apt: name={{ item }} state=present
   with_items:
       - apache2
+      - php
       - libapache2-mod-php
       - php-ldap
       - php-cli
@@ -31,7 +32,7 @@
 
 - name: uninstall phpldapadmin for machines without role 'openldap'
   when: ansible_fqdn not in groups['openldap']
-  apt: name={{ item }} state=absent purge=yes force=yes
+  apt: name={{ item }} state=absent purge=yes
   with_items:
       - php-ldap
       - phpldapadmin

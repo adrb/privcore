@@ -16,5 +16,5 @@
     - { role: privcore, tags: privcore } # Some privcore specific configuration
 
     # Obsolete and unsupported
-    - { role: prosody, tags: xmpp } # prosody XMPP/Jabber server
-    - { role: roundcube, tags: webmail } # E-mail webclient
+    - { role: obsolete_roles/prosody, tags: xmpp } # prosody XMPP/Jabber server (obsolete)
+    - { role: obsolete_roles/roundcube, tags: webmail } # E-mail webclient (obsolete)

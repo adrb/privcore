@@ -2,7 +2,7 @@
 
 - name: install dovecot server
   when: ansible_fqdn in groups['dovecot']
-  apt: name={{ item }} state=present force=yes update_cache=yes
+  apt: name={{ item }} state=present update_cache=yes
   with_items:
       - dovecot-core
       - dovecot-ldap
@@ -11,7 +11,7 @@
 
 - name: uninstall dovecot server for machines without role 'dovecot'
   when: ansible_fqdn not in groups['dovecot']
-  apt: name={{ item }} state=absent purge=yes force=yes
+  apt: name={{ item }} state=absent purge=yes
   with_items:
       - dovecot-core
       - dovecot-ldap

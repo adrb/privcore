@@ -2,7 +2,7 @@
 
 - name: install nextcloud dependencies
   when: ansible_fqdn in groups['nextcloud']
-  apt: name={{ item }} state=present force=yes update_cache=yes
+  apt: name={{ item }} state=present update_cache=yes
   with_items:
       - python-mysqldb  # for ansible mysql_user module
       - libapache2-mod-php # module for apache
@@ -59,7 +59,7 @@
 
 - name: uninstall nextcloud dependencies for machines without role 'nextcloud'
   when: ansible_fqdn not in groups['nextcloud']
-  apt: name={{ item }} state=absent purge=yes force=yes
+  apt: name={{ item }} state=absent purge=yes
   with_items:
       - python-mysqldb
 

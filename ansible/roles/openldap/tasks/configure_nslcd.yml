@@ -2,7 +2,7 @@
 
   # We can't configure/install nslcd unless we have slapd configured and running
 - name: installing nslcd
-  apt: name={{ item }} state=present force=yes update_cache=yes
+  apt: name={{ item }} state=present update_cache=yes
   with_items:
       - nslcd
 
