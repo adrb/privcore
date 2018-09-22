@@ -5,6 +5,7 @@
   with_items:
       - dnsutils
       - python-dnspython # for ansible dig lookup
+      - network-manager
 
 - name: install bind server
   when: ansible_fqdn in groups['bind_master'] or ansible_fqdn in groups['bind_slave']
