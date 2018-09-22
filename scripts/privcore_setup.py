@@ -290,7 +290,7 @@ def ansible_play(playtags=[]):
     # execute ansible playbooks
     for tag_name in playtags:
 
-        ansible_log_file = "/tmp/privcore-%s.log" % datetime.datetime.now().isoformat()
+        ansible_log_file = "/tmp/privcore-%s-%s.log" % (tag_name, datetime.datetime.now().isoformat())
         template_file(ANSIBLE_CONFIG_TEMPLATE, ANSIBLE_CONFIG_FILE, { "%log_path%": ansible_log_file, })
 
         ansible_cmd = shlex.split('sshpass -p "%s" ansible-playbook %s -i %s -t %s --ask-pass -v' %

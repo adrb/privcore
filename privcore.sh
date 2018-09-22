@@ -44,10 +44,6 @@ fi
 export ANSIBLE_CONFIG='./ansible/ansible.cfg'
 
 #
-# Clear log file
-rm -f /tmp/privcore*.log
-
-#
 # run setup
 cd $(dirname $0)
 ./scripts/privcore_setup.py $*
