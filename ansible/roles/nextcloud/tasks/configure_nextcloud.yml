@@ -91,6 +91,12 @@
   changed_when: ("Module headers already enabled" not in a2enmod_headers.stdout)
   notify: restart httpd
 
+- name: enabling apache rewrite module
+  command: a2enmod rewrite
+  register: a2enmod_rewrite
+  changed_when: ("Module rewrite already enabled" not in a2enmod_rewrite.stdout)
+  notify: restart httpd
+
 - name: enabling apache configuration
   command: a2enconf nextcloud
   register: a2enconf_nextcloud
