@@ -1,0 +1,47 @@
+---
+
+- name: setting ACL to /etc/ssl/private for user prosody
+  acl: name=/etc/ssl/private entity=prosody etype=user permissions="X" state=present
+
+- name: setting ACL to /etc/ssl/private/{{ansible_fqdn}}_key.pem for user prosody
+  acl: name=/etc/ssl/private/{{ansible_fqdn}}_key.pem entity=prosody etype=user permissions="r" state=present
+
+- name: generating /etc/prosody/conf.avail/{{config.internet_domain}}.cfg.lua
+  template: src=virtualhost.cfg.lua.j2 dest=/etc/prosody/conf.avail/{{config.internet_domain}}.cfg.lua
+  notify: reload prosody
+
+- name: generating /etc/prosody/prosody.cfg.lua
+  template: src=prosody.cfg.lua.j2 dest=/etc/prosody/prosody.cfg.lua
+  notify: restart prosody
+
+- name: enabling prosody virtualhost /etc/prosody/conf.avail/{{config.internet_domain}}.cfg.lua
+  file: src=/etc/prosody/conf.avail/{{config.internet_domain}}.cfg.lua dest=/etc/prosody/conf.d/{{config.internet_domain}}.cfg.lua state=link mode=755
+  notify: restart prosody
+
+- name: enabling apache proxy_http module
+  command: a2enmod proxy_http
+  register: a2enmod_proxy_http
+  changed_when: ("Module proxy_http already enabled" not in a2enmod_proxy_http.stdout)
+  notify: restart httpd
+
+- name: enabling apache headers module
+  command: a2enmod headers
+  register: a2enmod_headers
+  changed_when: ("Module headers already enabled" not in a2enmod_headers.stdout)
+  notify: restart httpd
+
+- name: enabling apache rewrite module
+  command: a2enmod rewrite
+  register: a2enmod_rewrite
+  changed_when: ("Module rewrite already enabled" not in a2enmod_rewrite.stdout)
+  notify: restart httpd
+
+- name: generating BOSH proxy configuration for apache
+  template: src=xmpp-bosh.conf.j2 dest=/etc/apache2/conf-available/xmpp-bosh.conf
+
+- name: enabling apache BOSH proxy configuration /etc/apache2/conf-available/xmpp-bosh.conf
+  command: a2enconf xmpp-bosh
+  register: a2enconf_xmpp_bosh
+  changed_when: ("Conf xmpp-bosh already enabled" not in a2enconf_xmpp_bosh.stdout)
+  notify: reload httpd
+

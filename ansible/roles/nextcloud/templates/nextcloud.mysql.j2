@@ -10,36 +10,27 @@ INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_base_groups","{{ldap_config.s
 INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_base_users","{{ldap_config.suffix}}") ON DUPLICATE KEY UPDATE configvalue="{{ldap_config.suffix}}";
 INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_cache_ttl","600") ON DUPLICATE KEY UPDATE configvalue="600";
 INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_configuration_active","1") ON DUPLICATE KEY UPDATE configvalue="1";
-INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_display_name","displayname") ON DUPLICATE KEY UPDATE configvalue="displayname";
+INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_display_name","cn") ON DUPLICATE KEY UPDATE configvalue="cn";
+INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_user_display_name_2","mail") ON DUPLICATE KEY UPDATE configvalue="mail";
 INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_dn","{{ldap_tree.root.dit_branch.users.dit_branch.services.dit_branch.readonly.dn}}") ON DUPLICATE KEY UPDATE configvalue="{{ldap_tree.root.dit_branch.users.dit_branch.services.dit_branch.readonly.dn}}";
 INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_email_attr","mail") ON DUPLICATE KEY UPDATE configvalue="mail";
 INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_group_display_name","cn") ON DUPLICATE KEY UPDATE configvalue="cn";
 INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_group_member_assoc_attribute","memberUid") ON DUPLICATE KEY UPDATE configvalue="memberUid";
 INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_host","{{ldap_config.local_server_uri}}") ON DUPLICATE KEY UPDATE configvalue="{{ldap_config.local_server_uri}}";
 INSERT INTO oc_appconfig VALUES ('user_ldap','ldap_port','636') ON DUPLICATE KEY UPDATE configvalue="636";
-INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_login_filter","(&(|(objectclass=inetOrgPerson))(|(uid=%uid)(|(mailPrimaryAddress=%uid)(mail=%uid))))") ON DUPLICATE KEY UPDATE configvalue="(&(|(objectclass=inetOrgPerson))(|(uid=%uid)(|(mailPrimaryAddress=%uid)(mail=%uid))))";
+INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_login_filter","(&(objectclass=inetOrgPerson)(|(uid=%uid)(|(mailPrimaryAddress=%uid)(mail=%uid))))") ON DUPLICATE KEY UPDATE configvalue="(&(objectclass=inetOrgPerson)(|(uid=%uid)(|(mailPrimaryAddress=%uid)(mail=%uid))))";
 INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_loginfilter_email","1") ON DUPLICATE KEY UPDATE configvalue="1";
 INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_loginfilter_username","1") ON DUPLICATE KEY UPDATE configvalue="1";
 INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_userfilter_objectclass","inetOrgPerson") ON DUPLICATE KEY UPDATE configvalue="inetOrgPerson";
-INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_userlist_filter","(|(objectclass=inetOrgPerson))") ON DUPLICATE KEY UPDATE configvalue="(|(objectclass=inetOrgPerson))";
+INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_userlist_filter","(&(objectclass=inetOrgPerson))") ON DUPLICATE KEY UPDATE configvalue="(&(objectclass=inetOrgPerson))";
 INSERT INTO oc_appconfig VALUES ("user_ldap","types","authentication") ON DUPLICATE KEY UPDATE configvalue="authentication";
-INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_group_filter","(|(objectclass=posixGroup))") ON DUPLICATE KEY UPDATE configvalue="(|(objectclass=posixGroup))";
+INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_group_filter","(&(objectclass=posixGroup))") ON DUPLICATE KEY UPDATE configvalue="(&(objectclass=posixGroup))";
 INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_group_filter_mode","1") ON DUPLICATE KEY UPDATE configvalue="1";
 INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_group_member_assoc_attribute","memberUid") ON DUPLICATE KEY UPDATE configvalue="memberUid";
 
-INSERT INTO oc_appconfig VALUES ("ojsxc","enabled","yes") ON DUPLICATE KEY UPDATE configvalue="yes";
-INSERT INTO oc_appconfig VALUES ("ojsxc","boshUrl","https://{{config.internet_domain}}/http-bind") ON DUPLICATE KEY UPDATE configvalue="https://{{config.internet_domain}}/http-bind";
-INSERT INTO oc_appconfig VALUES ("ojsxc","iceSecret","{{coturn_auth_secret}}") ON DUPLICATE KEY UPDATE configvalue="{{coturn_auth_secret}}";
-INSERT INTO oc_appconfig VALUES ("ojsxc","iceUrl","turn:{{config.internet_domain}}:3478") ON DUPLICATE KEY UPDATE configvalue="turn:{{config.internet_domain}}:3478";
-INSERT INTO oc_appconfig VALUES ("ojsxc","serverType","external") ON DUPLICATE KEY UPDATE configvalue="external";
-INSERT INTO oc_appconfig VALUES ("ojsxc","types","prelogin") ON DUPLICATE KEY UPDATE configvalue="prelogin";
-INSERT INTO oc_appconfig VALUES ("ojsxc","xmppDomain","{{config.internet_domain}}") ON DUPLICATE KEY UPDATE configvalue="{{config.internet_domain}}";
-
 INSERT INTO oc_appconfig VALUES ("spreed","enabled","yes") ON DUPLICATE KEY UPDATE configvalue="yes";
-INSERT INTO oc_appconfig VALUES ("spreed","stun_server","{{config.internet_domain}}:3478") ON DUPLICATE KEY UPDATE configvalue="{{config.internet_domain}}:3478";
-INSERT INTO oc_appconfig VALUES ("spreed","turn_server","{{config.internet_domain}}:3478") ON DUPLICATE KEY UPDATE configvalue="{{config.internet_domain}}:3478";
-INSERT INTO oc_appconfig VALUES ("spreed","turn_server_protocols","udp,tcp") ON DUPLICATE KEY UPDATE configvalue="udp,tcp";
-INSERT INTO oc_appconfig VALUES ("spreed","turn_server_secret","{{coturn_auth_secret}}") ON DUPLICATE KEY UPDATE configvalue="{{coturn_auth_secret}}";
+INSERT INTO oc_appconfig VALUES ("spreed","stun_servers","[\"{{config.internet_domain}}:3478\"]") ON DUPLICATE KEY UPDATE configvalue="[\"{{config.internet_domain}}:3478\"]";
+INSERT INTO oc_appconfig VALUES ("spreed","turn_servers","[{\"server\":\"{{config.internet_domain}}:3478\",\"secret\":\"{{coturn_auth_secret}}\",\"protocols\":\"udp,tcp\"}]") ON DUPLICATE KEY UPDATE configvalue="[{\"server\":\"{{config.internet_domain}}:3478\",\"secret\":\"{{coturn_auth_secret}}\",\"protocols\":\"udp,tcp\"}]";
 
 UNLOCK TABLES;
 

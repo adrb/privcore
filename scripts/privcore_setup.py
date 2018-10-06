@@ -10,19 +10,20 @@ import argparse
 import yaml
 import commands
 import socket
-import time
+import time, datetime
 import locale
 import shlex, subprocess
 from dialog import Dialog
 
 
 ANSIBLE_ROOT = './ansible'
-ANSIBLE_CONFIG = '%s/group_vars/all.yml' % ANSIBLE_ROOT
-ANSIBLE_HOSTS = '%s/hosts' % ANSIBLE_ROOT
 ANSIBLE_PLAYBOOK = '%s/privcore.yml' % ANSIBLE_ROOT
-ANSIBLE_TAGS = [ 'ssl', 'dns', 'ldap', 'phpldapadmin', 'xmpp', 'cloud', 'imap', 'smtp', 'webmail' ]
-ANSIBLE_CONFIG_TEMPLATE = './scripts/all.yml.template'
-ANSIBLE_HOSTS_TEMPLATE = './scripts/hosts.template'
+ANSIBLE_CONFIG_FILE = '%s/ansible.cfg' % ANSIBLE_ROOT
+ANSIBLE_CONFIG_TEMPLATE = './scripts/ansible_templates/ansible.cfg.template'
+ANSIBLE_GROUP_FILE = '%s/group_vars/all.yml' % ANSIBLE_ROOT
+ANSIBLE_GROUP_TEMPLATE = './scripts/ansible_templates/all.yml.template'
+ANSIBLE_HOSTS_FILE = '%s/hosts' % ANSIBLE_ROOT
+ANSIBLE_HOSTS_TEMPLATE = './scripts/ansible_templates/hosts.template'
 
 TERM_WIDTH = 78
 TERM_HEIGHT = 40
@@ -46,13 +47,13 @@ def ansible_setup():
 
     #
     # set default values
-    if os.path.isfile(ANSIBLE_CONFIG):
+    if os.path.isfile(ANSIBLE_GROUP_FILE):
         already_initialized = True
 
-        with open(ANSIBLE_CONFIG, 'r') as f:
+        with open(ANSIBLE_GROUP_FILE, 'r') as f:
             ansible_config = yaml.load(f)
 
-        # let's make some 'links' to objects hidden much deeper in the ldap tree
+        # let's make some references to objects hidden much deeper in the ldap tree
         readonly_password = ansible_config['ldap_tree']['root']['dit_branch']['users']['dit_branch']['services']['dit_branch']['readonly']['userpassword']
         admin_user = ansible_config['ldap_tree']['root']['dit_branch']['users']['dit_branch']['people']['dit_branch']['admin_user']
 
@@ -87,10 +88,8 @@ def ansible_setup():
     if readonly_password == '':
         readonly_password = commands.getoutput('pwgen -N 1 -s 14')
 
-    hostname = socket.getfqdn()
-
     #
-    # set mandatory variables
+    # no need to change durring reconfiguration
     while not already_initialized:
         code, ansible_config['config']['master_passwd'] = d.passwordbox(
             "Please enter master password. It' used as administrator password "
@@ -113,6 +112,20 @@ def ansible_setup():
             break
         else:
             d.msgbox("Password missmatch!")
+
+    #
+    # set mandatory variables
+    while True:
+        code, hostname = d.inputbox("Local hostname (including local domain), where You want to deploy PrivCore installation. \n\n" \
+            "You need to have ssh root access.\n\n" ,
+            init=socket.getfqdn())
+
+        if code != d.OK: return 0
+
+        if len(hostname) < 2:
+            d.msgbox("Hostname should be at least two characters long!")
+        else:
+            break
 
     while True:
         code, ansible_config['config']['internet_domain'] = d.inputbox("The domain under which your machine can be accessed from the Internet network.\n\n" \
@@ -227,12 +240,13 @@ def ansible_setup():
         "%nextcloud_mysql_pass%": ansible_config['nextcloud_config']['mysql_pass'],
         "%roundcube_mysql_pass%": ansible_config['roundcube_config']['mysql_pass'],
     }
-    template_file(ANSIBLE_CONFIG_TEMPLATE, ANSIBLE_CONFIG, replace_dict)
+    template_file(ANSIBLE_GROUP_TEMPLATE, ANSIBLE_GROUP_FILE, replace_dict)
 
     replace_dict = { "%hostname%": hostname, }
-    template_file(ANSIBLE_HOSTS_TEMPLATE, ANSIBLE_HOSTS, replace_dict)
+    template_file(ANSIBLE_HOSTS_TEMPLATE, ANSIBLE_HOSTS_FILE, replace_dict)
 
-    ansible_play(ANSIBLE_TAGS)
+#    ansible_play([ 'ssl', 'dns', 'ldap', 'phpldapadmin', 'cloud', 'imap', 'smtp'])
+    ansible_play()
 
     return 0
 
@@ -240,8 +254,8 @@ def ansible_play(playtags=[]):
 
     #
     # read config file
-    if os.path.isfile(ANSIBLE_CONFIG):
-        with open(ANSIBLE_CONFIG, 'r') as f:
+    if os.path.isfile(ANSIBLE_GROUP_FILE):
+        with open(ANSIBLE_GROUP_FILE, 'r') as f:
             ansible_config = yaml.load(f)
     else:
         d.msgbox("Run setup first!")
@@ -255,18 +269,18 @@ def ansible_play(playtags=[]):
         if code != d.OK: return 0
 
     #
-    # select which tasks you want to play
+    # select which tasks do you want to play
     if not playtags:
         code, playtags = d.checklist('Please slect tags/jobs you want to play:',
             choices=[('ssl', 'Generate certificates for machines and its services',True),
                 ('dns', 'Configure bind as local DNS server',True),
-                ('ldap', 'Prepare openldap tree',True),
+                ('ldap', 'Prepare openldap tree (mandatory service)',True),
                 ('phpldapadmin','LDAP management interface',True),
-                ('xmpp', 'Prosody XMPP/Jabber server',True),
-                ('cloud', 'Nextcloud sharing server (file, contacts, calendar)',True),
-                ('imap', 'Dovecot IMAP server',True),
                 ('smtp', 'Exim SMTP server',True),
-                ('webmail', 'Roundcube e-mail and Jabber webclient',True),
+                ('imap', 'Dovecot IMAP server',True),
+                ('cloud', 'Nextcloud sharing server (file, contacts, calendar)',True),
+                ('webmail', 'Roundcube e-mail and Jabber webclient (obsolete)',False),
+                ('xmpp', 'Prosody XMPP/Jabber server (obsolete)',False),
             ])
         if code != d.OK: return 0
 
@@ -276,10 +290,11 @@ def ansible_play(playtags=[]):
     # execute ansible playbooks
     for tag_name in playtags:
 
-        ansible_log_file = "/tmp/privcore.log"
+        ansible_log_file = "/tmp/privcore-%s-%s.log" % (tag_name, datetime.datetime.now().isoformat())
+        template_file(ANSIBLE_CONFIG_TEMPLATE, ANSIBLE_CONFIG_FILE, { "%log_path%": ansible_log_file, })
 
-        ansible_cmd = shlex.split('sshpass -p "%s" ansible-playbook %s -i %s -t %s -c local --ask-pass -v' %
-            (ansible_config['config']['master_passwd'], ANSIBLE_PLAYBOOK, ANSIBLE_HOSTS, tag_name))
+        ansible_cmd = shlex.split('sshpass -p "%s" ansible-playbook %s -i %s -t %s --ask-pass -v' %
+            (ansible_config['config']['master_passwd'], ANSIBLE_PLAYBOOK, ANSIBLE_HOSTS_FILE, tag_name))
         ansible_proc = subprocess.Popen(ansible_cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
 
         d.progressbox(fd=ansible_proc.stdout.fileno(),
@@ -324,7 +339,7 @@ if __name__ == '__main__':
 
     while True:
         # check whatewer something was actually configured
-        if os.path.isfile(ANSIBLE_CONFIG):
+        if os.path.isfile(ANSIBLE_GROUP_FILE):
             menu_desc = "It's seems that you already configured PrivCore.\n\n" \
                 "Note, that if you choose to edit your configuration, then you will be not allowed to change master password!\n "
             code, tag = d.menu(menu_desc,

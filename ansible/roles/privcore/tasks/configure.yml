@@ -7,7 +7,6 @@
     block: |
 
       Redirect permanent /ldapadmin https://{{config.internet_domain}}/ldapadmin
-      Redirect permanent /roundcube https://{{config.internet_domain}}/roundcube
       Redirect permanent /nextcloud  https://{{config.internet_domain}}/nextcloud
 
     insertbefore: "</VirtualHost>"
@@ -22,7 +21,6 @@
 - name: deploying privcore welcome page files
   copy: src={{ item }} dest=/var/www/html/{{ item }} force=no
   with_items:
-    - "imgs/roundcube.png"
     - "imgs/phpLDAPadmin.png"
     - "imgs/favicon.ico"
     - "imgs/privcore_logo_black2.png"

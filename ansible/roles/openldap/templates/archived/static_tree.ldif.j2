@@ -1,0 +1,31 @@
+dn: {{ ldap_config.suffix }}
+objectClass: dcObject
+objectClass: organization
+o: {{ ldap_config.organization }}
+
+dn: ou=users,{{ ldap_config.suffix }}
+objectClass: organizationalUnit
+objectclass: top
+ou: users
+
+dn: ou=people,ou=users,{{ ldap_config.suffix }}
+objectClass: organizationalUnit
+objectclass: top
+ou: people
+
+dn: ou=services,ou=users,{{ ldap_config.suffix }}
+objectClass: organizationalUnit
+objectclass: top
+ou: services
+
+dn: ou=groups,{{ ldap_config.suffix }}
+objectClass: organizationalUnit
+objectclass: top
+ou: groups
+
+dn: cn=users,ou=groups,{{ ldap_config.suffix }}
+objectClass: posixGroup
+objectClass: top
+gidNumber: 1000
+cn: users
+

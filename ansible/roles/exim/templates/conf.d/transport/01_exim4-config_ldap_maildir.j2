@@ -7,12 +7,12 @@ ldap_maildir:
   envelope_to_add
   return_path_add
 
-  mode = 0700
+  mode = 0600
   user = ${extract{uidNumber}{$address_data}}
   group = ${extract{gidNumber}{$address_data}}
 
   create_directory = true
-  directory_mode = 0600
+  directory_mode = 0700
   directory = ${if eq {${extract{mailStorageDirectory}{$address_data}}}{} \
     {/var/lib/dovecot/maildirs/${extract{uid}{$address_data}}} \
     {${extract{mailStorageDirectory}{$address_data}}} \

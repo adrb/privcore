@@ -1,7 +1,7 @@
 ---
 
 - name: install packages for all
-  apt: name={{ item }} state=present force=yes update_cache=yes
+  apt: name={{ item }} state=present update_cache=yes
   with_items:
       - ldap-utils
       - libnss-ldapd
@@ -10,7 +10,7 @@
 
 - name: install packages for directory servers
   when: ansible_fqdn in groups['openldap']
-  apt: name={{ item }} state=present force=yes
+  apt: name={{ item }} state=present
   with_items:
       - slapd
   notify: 
@@ -18,7 +18,7 @@
 
 - name: uninstall LDAP server for machines without role 'openldap'
   when: ansible_fqdn not in groups['openldap']
-  apt: name={{ item }} state=absent purge=yes force=yes
+  apt: name={{ item }} state=absent purge=yes
   with_items:
       - slapd
 

@@ -2,13 +2,13 @@
 
 - name: install exim server
   when: ansible_fqdn in groups['exim']
-  apt: name={{ item }} state=present force=yes update_cache=yes
+  apt: name={{ item }} state=present update_cache=yes
   with_items:
       - exim4-daemon-heavy
-     
+
 - name: uninstall exim server for machines without role 'exim'
   when: ansible_fqdn not in groups['exim']
-  apt: name={{ item }} state=absent purge=yes force=yes
+  apt: name={{ item }} state=absent purge=yes
   with_items:
       - exim4-daemon-heavy
 
