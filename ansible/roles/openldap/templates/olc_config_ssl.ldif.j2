@@ -9,9 +9,12 @@ olcTLSCertificateFile: /etc/ssl/certs/{{ansible_fqdn}}_cert.pem
 replace: olcTLSCertificateKeyFile
 olcTLSCertificateKeyFile: /etc/ssl/private/{{ansible_fqdn}}_key.pem
 -
+replace: olcTLSDHParamFile
+olcTLSDHParamFile: /etc/ssl/certs/dhparams.pem
+-
 replace: olcTLSCipherSuite
-olcTLSCipherSuite: SECURE256:!AES-128-CBC
+olcTLSCipherSuite: SECURE256:!AES-256-CBC
 -
 replace: olcTLSProtocolMin
-olcTLSProtocolMin: 3.1
+olcTLSProtocolMin: 3.3
 

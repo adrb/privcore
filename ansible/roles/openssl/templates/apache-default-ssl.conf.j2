@@ -13,8 +13,9 @@
   CustomLog ${APACHE_LOG_DIR}/{{ansible_fqdn}}-ssl-access.log combined
 
   SSLEngine on
-  SSLProtocol all -SSLv2 -SSLv3
-  SSLCipherSuite HIGH:!MEDIUM:!LOW:!aNULL
+  SSLProtocol all -SSLv2 -SSLv3 -TLSv1 -TLSv1.1
+  SSLCipherSuite -ALL:!NULL:!aNULL:!TLSv1.0:!SSLv3:AESGCM
+  SSLHonorCipherOrder on
 
   # Server Certificate
   SSLCertificateFile	  /etc/ssl/certs/{{ansible_fqdn}}_cert.pem

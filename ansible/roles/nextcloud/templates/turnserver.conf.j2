@@ -413,7 +413,7 @@ pkey=/etc/ssl/private/{{ansible_fqdn}}_key.pem
 # Allowed OpenSSL cipher list for TLS/DTLS connections.
 # Default value is "DEFAULT".
 #
-#cipher-list="DEFAULT"
+cipher-list="-ALL:!NULL:!aNULL:!TLSv1.0:!SSLv3:AESGCM"
 
 # CA file in OpenSSL format. 
 # Forces TURN server to verify the client SSL certificates.
@@ -440,7 +440,7 @@ CA-file=/etc/ssl/certs/ca_cert.pem
 # Use custom DH TLS key, stored in PEM format in the file.
 # Flags --dh566 and --dh2066 are ignored when the DH key is taken from a file.
 #
-#dh-file=<DH-PEM-file-name>
+dh-file=/etc/ssl/certs/dhparams.pem
 
 # Flag to prevent stdout log messages.
 # By default, all log messages are going to both stdout and to 
@@ -628,8 +628,8 @@ no-multicast-peers
 
 # Do not allow an SSL/TLS version of protocol
 #
-#no-sslv2
-#no-sslv3
-#no-tlsv1
-#no-tlsv1_1
+no-sslv2
+no-sslv3
+no-tlsv1
+no-tlsv1_1
 #no-tlsv1_2

@@ -24,7 +24,8 @@ MAIN_LOG_SELECTOR = +all
 smtp_banner = "{{ config.internet_domain }} ESMTP"
 daemon_smtp_ports = 25 : 465 : 587
 tls_on_connect_ports = 465
-tls_require_ciphers = NORMAL:!VERS-SSL3.0
+# https://gnutls.org/manual/html_node/Priority-Strings.html
+tls_require_ciphers = "SECURE256:!AES-256-CBC"
 
 ldap_default_servers = localhost
 ldap_ca_cert_file = /etc/ssl/certs/ca_cert.pem

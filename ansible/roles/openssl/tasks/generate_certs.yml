@@ -1,5 +1,8 @@
 ---
 
+- name: generating DH parameters
+  shell: openssl dhparam 2048 -out /etc/ssl/certs/dhparams.pem creates=/etc/ssl/certs/dhparams.pem
+
 - name: generating keys
   command: openssl genrsa -out private/{{item}}_key.pem 2048 chdir={{ssl_config.dir}} creates=private/{{item}}_key.pem
   with_items: "{{ groups['all'] }}"

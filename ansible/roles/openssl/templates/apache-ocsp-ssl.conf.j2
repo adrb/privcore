@@ -17,8 +17,9 @@ SSLStaplingCache "shmcb:logs/-ssl_ocsp_stapling(32768)"
   CustomLog ${APACHE_LOG_DIR}/ocsp.{{ansible_fqdn}}-ssl-access.log combined
 
   SSLEngine on
-  SSLProtocol all -SSLv2 -SSLv3
-  SSLCipherSuite HIGH:!MEDIUM:!LOW:!aNULL
+  SSLProtocol all -SSLv2 -SSLv3 -TLSv1 -TLSv1.1
+  SSLCipherSuite -ALL:!NULL:!aNULL:!TLSv1.0:!SSLv3:AESGCM
+  SSLHonorCipherOrder on
 
   # Server Certificate
   SSLCertificateFile	  /etc/ssl/CA/certs/ocsp.{{ansible_fqdn}}_cert.pem
