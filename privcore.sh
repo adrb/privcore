@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# author: Adrian Brzezinski, adrb (at) privcore.net
+# author: Adrian Brzezinski, adrb http://privcore.adrb.pl/
 # license: https://creativecommons.org/licenses/by-nc-nd/3.0/
 #
 
