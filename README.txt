@@ -1,5 +1,5 @@
 
-PrivCore 2.0 (stretch)
+PrivCore 3.0 (buster)
 
 Author: Adrian Brzezinski
 
