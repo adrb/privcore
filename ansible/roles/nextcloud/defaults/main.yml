@@ -1,26 +1,19 @@
 ---
 
 nextcloud_config:
-  ldap_server_uri: "{{ config.ldap_server_uri }}"
   suffix: "{{ config.suffix }}"
-  organization_name: "{{ config.organization_name }}"
 
   internet_domain: "{{ config.internet_domain }}"
-  local_domain: "{{ config.local_domain }}"
-  smtp_internet_domains: "{{ config.smtp_internet_domains }}"
 
   tls_ca_cert: "{{ config.tls_ca_cert }}"
   tls_cert: "{{ config.tls_cert }}"
   tls_cert_key: "{{ config.tls_cert_key }}"
 
   master_passwd: "{{ config.master_passwd }}"
-  admin_user: "{{ config.admin_user }}"
-  admin_passwd: "{{ config.admin_passwd }}"
 
   ro_user_dn: "{{ config.ro_user_dn }}"
   ro_user_pw: "{{ config.ro_user_passwd }}"
 
-  url: "https://{{ config.internet_domain }}/nextcloud"
   mysql_user: nextcloud
   mysql_pass: "{{ lookup('password', '.pc_nc_mysql_passwd chars=ascii_letters,digits,hexdigits,punctuation length=20') }}"
   mysql_db: nextcloud
