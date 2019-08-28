@@ -1,0 +1,85 @@
+dn: {{openldap_config.suffix}}
+objectClass: dcObject
+objectClass: organization
+o: {{openldap_config.organization_name}}
+
+dn: ou=users,{{openldap_config.suffix}}
+objectClass: organizationalUnit
+objectClass: top
+
+dn: ou=services,ou=users,{{openldap_config.suffix}}
+objectClass: organizationalUnit
+objectClass: top
+
+dn: {{ openldap_config.ro_user_dn }}
+objectclass: account
+objectclass: simpleSecurityObject
+objectclass: top
+userpassword: {{ openldap_config.ro_user_pw }}
+
+dn: ou=accounts,ou=users,{{openldap_config.suffix}}
+objectClass: organizationalUnit
+objectClass: top
+
+dn: cn={{openldap_config.admin_user}},ou=accounts,ou=users,{{openldap_config.suffix}}
+objectclass: inetOrgPerson
+objectclass: posixAccount
+objectclass: inetLocalMailRecipient
+objectclass: top
+givenname: {{openldap_config.admin_user}}
+sn: {{openldap_config.admin_user}}
+uidnumber: 1000
+gidnumber: 100
+homeDirectory: /home/{{openldap_config.admin_user}}
+loginshell: /bin/bash
+uid: {{openldap_config.admin_user}}
+mail: {{openldap_config.admin_user}}@{{ openldap_config.smtp_internet_domains[0] }}
+maillocaladdress: admin@{{ openldap_config.smtp_internet_domains[0] }}
+displayname: {{openldap_config.admin_user}}
+userpassword: {{openldap_config.admin_passwd}}
+
+dn: ou=groups,{{openldap_config.suffix}}
+objectClass: organizationalUnit
+objectClass: top
+
+dn: cn=DomainAdmins,ou=groups,{{openldap_config.suffix}}
+cn: DomainAdmins
+gidnumber: 1000
+objectclass: posixGroup
+objectclass: top
+memberuid: {{openldap_config.admin_user}}
+
+dn: cn=DomainUsers,ou=groups,{{openldap_config.suffix}}
+cn: DomainUsers
+gidnumber: 1001
+objectclass: posixGroup
+objectclass: top
+objectclass: labeledURIObject
+labeledURI: ldap:///ou=accounts,ou=users,{{openldap_config.suffix}}?uid?one?(objectClass=inetOrgPerson)
+
+dn: ou=Sudoers,ou=groups,{{openldap_config.suffix}}
+objectclass: organizationalUnit
+objectclass: top
+
+dn: cn=root,ou=Sudoers,ou=groups,{{openldap_config.suffix}}
+cn: root
+objectclass: sudoRole
+objectclass: top
+sudoOption: env_keep+=SSH_AUTH_SOCK
+sudoHost: ALL
+sudoRunAsUser: root
+sudoCommand: ALL
+sudoUser: %DomainAdmins
+
+dn: ou=SMTP,ou=groups,{{openldap_config.suffix}}
+objectclass: organizationalUnit
+objectclass: top
+
+dn: cn=all@{{ openldap_config.smtp_internet_domains[0] }},ou=SMTP,ou=groups,{{openldap_config.suffix}}
+cn: all@{{ openldap_config.smtp_internet_domains[0] }}
+objectclass: nisMailAlias
+objectclass: labeledURIObject
+objectclass: top
+labeledURI: ldap:///ou=accounts,ou=users,{{openldap_config.suffix}}?mail?one?(objectClass=inetOrgPerson)
+
+

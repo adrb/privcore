@@ -1,0 +1,10 @@
+---
+
+- name: install packages for all
+  apt:
+    state: present
+    name:
+      - python-dnspython
+      - rsync
+      - chrony
+

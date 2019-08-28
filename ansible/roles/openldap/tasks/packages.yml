@@ -1,24 +1,16 @@
 ---
 
-- name: install packages for all
-  apt: name={{ item }} state=present update_cache=yes
-  with_items:
+- name: install openldap
+  apt:
+    state: present
+    name:
+      - slapd
       - ldap-utils
-      - libnss-ldapd
-      - libpam-modules
-      - libpam-ldapd
+      - sudo-ldap
+      - acl
+  register: slapd_install_result
 
-- name: install packages for directory servers
-  when: ansible_fqdn in groups['openldap']
-  apt: name={{ item }} state=present
-  with_items:
-      - slapd
-  notify: 
-    - restart ldapd
-
-- name: uninstall LDAP server for machines without role 'openldap'
-  when: ansible_fqdn not in groups['openldap']
-  apt: name={{ item }} state=absent purge=yes
-  with_items:
-      - slapd
+- name: mark slapd to start on boot
+  service: name=slapd enabled=yes
+  when: slapd_install_result.changed
 

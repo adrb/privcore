@@ -1,0 +1,14 @@
+
+if [ "$UID" -eq 0 ]; then
+  PS1='(\[\033[01;31m\]\u\[\033[00m\]@\[\033[01;31m\]\H\[\033[00m\]:\[\033[33m\]\w\[\033[00m\])\n\$ '
+else
+  PS1='(\[\033[01;32m\]\u\[\033[00m\]@\[\033[01;31m\]\H\[\033[00m\]:\[\033[33m\]\w\[\033[00m\])\n\$ '
+fi
+
+# Renew SSH_AUTH_SOCK for detached console
+if [ -n "$SSH_AUTH_SOCK" -a "$SSH_AUTH_SOCK" != "$HOME/.ssh/auth_sock" ]; then
+    ln -sf $SSH_AUTH_SOCK $HOME/.ssh/auth_sock && export SSH_AUTH_SOCK=$HOME/.ssh/auth_sock
+fi
+
+alias grep='grep --color=auto'
+

@@ -21,14 +21,14 @@
 
 # LDAP URIs to use. You can use this instead of hosts list. Note that this
 # setting isn't supported by all LDAP libraries.
-uris = {{ldap_config.local_server_uri}}
+uris = {{dovecot_config.ldap_server_uri}}
 
 # Distinguished Name - the username used to login to the LDAP server.
 # Leave it commented out to bind anonymously (useful with auth_bind=yes).
-dn = {{ldap_tree.root.dit_branch.users.dit_branch.services.dit_branch.readonly.dn}}
+dn = {{dovecot_config.ro_user_dn}}
 
 # Password for LDAP server, if dn is specified.
-dnpass = {{ldap_tree.root.dit_branch.users.dit_branch.services.dit_branch.readonly.userpassword}}
+dnpass = "{{dovecot_config.ro_user_pw}}"
 
 # Use SASL binding instead of the simple binding. Note that this changes
 # ldap_version automatically to be 3 if it's lower.
@@ -42,16 +42,18 @@ dnpass = {{ldap_tree.root.dit_branch.users.dit_branch.services.dit_branch.readon
 #sasl_authz_id =
 
 # Use TLS to connect to the LDAP server.
-tls = no
+tls = {% if dovecot_config.ldap_server_uri == "ldap://localhost/" %}no
+{% else %}yes
+{% endif %}
 # TLS options, currently supported only with OpenLDAP:
-tls_ca_cert_file = /etc/ssl/certs/ca_cert.pem
-#tls_ca_cert_dir =
+#tls_ca_cert_file = {{ dovecot_config.tls_ca_cert }}
+tls_ca_cert_dir = /etc/ssl/certs
 #tls_cipher_suite =
 # TLS cert/key is used only if LDAP server requires a client certificate.
-tls_cert_file = /etc/ssl/certs/{{ansible_fqdn}}_cert.pem
-tls_key_file = /etc/ssl/private/{{ansible_fqdn}}_key.pem
+#tls_cert_file = {{ dovecot_config.tls_cert }}
+#tls_key_file =  {{ dovecot_config.tls_cert_key }}
 # Valid values: never, hard, demand, allow, try
-#tls_require_cert =
+tls_require_cert = demand
 
 # Use the given ldaprc path.
 #ldaprc_path =
@@ -89,7 +91,7 @@ auth_bind = yes
 
 # LDAP base. %variables can be used here.
 # For example: dc=mail, dc=example, dc=org
-base = {{ldap_config.suffix}}
+base = {{dovecot_config.suffix}}
 
 # Dereference: never, searching, finding, always
 #deref = never
@@ -141,3 +143,12 @@ pass_filter = (&(objectClass=posixAccount)(uid=%u))
 # List of supported schemes is in: http://wiki2.dovecot.org/Authentication
 #default_pass_scheme = CRYPT
 default_pass_scheme = SSHA
+
+# By default all LDAP lookups are performed by the auth master process.
+# If blocking=yes, auth worker processes are used to perform the lookups.
+# Each auth worker process creates its own LDAP connection so this can
+# increase parallelism. With blocking=no the auth master process can
+# keep 8 requests pipelined for the LDAP connection, while with blocking=yes
+# each connection has a maximum of 1 request running. For small systems the
+# blocking=no is sufficient and uses less resources.
+#blocking = no

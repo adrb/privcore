@@ -9,11 +9,8 @@
 #  5 logout
 #
 - name: repositories and packages
-  tags: dovecot_packages
   include: packages.yml
 
 - name: configure dovecot
-  when: ansible_fqdn in groups['dovecot']
-  tags: dovecot_configure
-  include: configure_dovecot.yml
+  include: configure.yml
 

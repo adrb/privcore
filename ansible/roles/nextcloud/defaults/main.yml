@@ -1,18 +1,32 @@
 ---
 
 nextcloud_config:
-  adminpw: "{{ config.master_passwd | default('changeme') }}"
+  ldap_server_uri: "{{ config.ldap_server_uri }}"
+  suffix: "{{ config.suffix }}"
+  organization_name: "{{ config.organization_name }}"
+
+  internet_domain: "{{ config.internet_domain }}"
+  local_domain: "{{ config.local_domain }}"
+  smtp_internet_domains: "{{ config.smtp_internet_domains }}"
+
+  tls_ca_cert: "{{ config.tls_ca_cert }}"
+  tls_cert: "{{ config.tls_cert }}"
+  tls_cert_key: "{{ config.tls_cert_key }}"
+
+  master_passwd: "{{ config.master_passwd }}"
+  admin_user: "{{ config.admin_user }}"
+  admin_passwd: "{{ config.admin_passwd }}"
+
+  ro_user_dn: "{{ config.ro_user_dn }}"
+  ro_user_pw: "{{ config.ro_user_passwd }}"
+
   url: "https://{{ config.internet_domain }}/nextcloud"
   mysql_user: nextcloud
-  mysql_pass: changeme
+  mysql_pass: "{{ lookup('password', '.pc_nc_mysql_passwd chars=ascii_letters,digits,hexdigits,punctuation length=20') }}"
   mysql_db: nextcloud
 
   install_dir: /var/www
-  source: "nextcloud-14.0.0.tar.bz2"
-
-#  apps_sources:
-#    - "calendar.tar.gz"
-#    - "contacts.tar.gz"
+  source: "nextcloud-16.0.4.tar.bz2"
 
   apps_list:
     - "user_ldap"
@@ -20,3 +34,34 @@ nextcloud_config:
     - "contacts"
     - "mail"
     - "spreed"
+
+# Example ldap_user config
+# $ php occ ldap:create-empty-config --only-print-prefix
+# s01
+# $ php occ ldap:set-config s01 <key> <value>
+#  user_ldap:
+#    - { key: "ldapAgentName", value: '{{ config.ro_user_dn }}' }
+#    - { key: "ldapAgentPassword", value: '{{ config.ro_user_passwd }}' }
+#    - { key: "ldapBase", value: '{{ config.suffix }}' }
+#    - { key: "ldapBaseGroups", value: 'ou=groups,{{ config.suffix }}' }
+#    - { key: "ldapBaseUsers", value: 'ou=accounts,ou=users,{{ config.suffix }}' }
+#    - { key: "ldapEmailAttribute", value: 'mail' }
+#    - { key: "ldapExpertUUIDGroupAttr", value: 'entryUUID' }
+#    - { key: "ldapExpertUUIDUserAttr", value: 'entryUUID' }
+#    - { key: "ldapGroupFilter", value: '(|(objectclass=posixGroup))' }
+#    - { key: "ldapGroupFilterObjectclass", value: 'posixGroup' }
+#    - { key: "ldapGroupMemberAssocAttr", value: 'memberUid' }
+#    - { key: "ldapLoginFilter", value: '(&(|(objectclass=inetOrgPerson))(|(uid=%uid)(|(mailPrimaryAddress=%uid)(mail=%uid))))' }
+#    - { key: "ldapLoginFilterEmail", value: '1' }
+#    - { key: "ldapLoginFilterUsername", value: '1' }
+#    - { key: "ldapHost", value: 'localhost' }
+#    - { key: "ldapPort", value: '389' }
+#    - { key: "ldapTLS", value: '0' }
+#    - { key: "turnOffCertCheck", value: '0' }
+#    - { key: "ldapUserDisplayName", value: 'cn' }
+#    - { key: "ldapUserDisplayName2", value: 'mail' }
+#    - { key: "ldapUserFilter", value: '(|(objectclass=inetOrgPerson))' }
+#    - { key: "ldapUserFilterObjectclass", value: 'inetOrgPerson' }
+#    - { key: "turnOnPasswordChange", value: '1' }
+#    - { key: "ldapConfigurationActive", value: '1' }
+#

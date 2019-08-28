@@ -1,19 +1,19 @@
 ; vim:set ts=8 et sw=4 sts=4:
 $ORIGIN .
 $TTL 3600       ; 1 hour
-{{default_rev_domain}}.  IN SOA  ns1.{{ansible_domain}}. hostmaster.{{ansible_domain}}. (
+{{bind_config.reverse_local_domain}}.  IN SOA  ns1.{{bind_config.local_domain}}. hostmaster.{{bind_config.local_domain}}. (
                                 {{ansible_date_time.year}}{{ansible_date_time.month}}{{ansible_date_time.day}}{{ansible_date_time.hour}} ; serial
                                 3600       ; refresh (1 hour)
                                 900        ; retry (15 minutes)
                                 604800     ; expire (1 week)
                                 600        ; minimum (10 minutes)
                                 )
-            NS      ns1.{{ansible_domain}}.
-            MX  10  mail.{{ansible_domain}}.
+            NS      ns1.{{bind_config.local_domain}}.
+            MX  10  mail.{{bind_config.local_domain}}.
 
-$ORIGIN {{default_rev_domain}}.
+$ORIGIN {{bind_config.reverse_local_domain}}.
 
 {% for host in groups['all'] %}
-{{hostvars[host].default_ipv4_address.split('.')[-1]}}   PTR   {{hostvars[host].ansible_hostname}}.{{ansible_domain}}.
+{{hostvars[host].ansible_default_ipv4.address.split('.')[-1]}}   PTR   {{hostvars[host].inventory_hostname}}.
 {% endfor %}
 

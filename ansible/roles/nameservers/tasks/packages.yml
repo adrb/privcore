@@ -1,0 +1,9 @@
+---
+
+- name: install packages
+  apt:
+    state: present
+    name:
+      - python3-dnspython # for ansible dig lookup
+      - network-manager
+

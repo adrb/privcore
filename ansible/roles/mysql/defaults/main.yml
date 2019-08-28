@@ -1,5 +1,5 @@
 ---
 
 mysql_config:
-  rootpw: "{{ config.master_passwd | default('changeme') }}"
+  master_passwd: "{{ config.master_passwd }}"
 

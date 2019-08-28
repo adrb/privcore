@@ -1,20 +1,8 @@
 ---
 
 - name: repositories and packages
-  tags: bind_packages
   include: packages.yml
 
-- name: save default IP to hostvars['{{ansible_fqdn}}'].default_ipv4_address
-  tags: bind_configure
-  set_fact:
-    default_ipv4_address: "{{ansible_default_ipv4.address}}"
-
 - name: configure bind
-  when: ansible_fqdn in groups['bind_master']
-  tags: bind_configure
-  include: configure_bind.yml
-
-- name: configure dns
-  tags: bind_configure
-  include: configure_dns.yml
+  include: configure.yml
 

@@ -1,22 +1,17 @@
 ---
 
 #
-# After copying new files to users data folder rescan files by:
+# After copying new files to users data folder rescan files:
 #
 # # su - www-data -s /bin/bash -c 'cd /var/www/nextcloud; php occ files:scan --all'
 #
 
 - name: repositories and packages
-  tags: nextcloud_packages
   include: packages.yml
 
-- name: configure coturn server
-  when: ansible_fqdn in groups['nextcloud']
-  tags: nextcloud_configure   # coturn_auth_secret net to be set
+- name: configure coturn server and set fact coturn_auth_secret
   include: coturn.yml
 
 - name: configure nextcloud
-  when: ansible_fqdn in groups['nextcloud']
-  tags: nextcloud_configure
-  include: configure_nextcloud.yml
+  include: configure.yml
 

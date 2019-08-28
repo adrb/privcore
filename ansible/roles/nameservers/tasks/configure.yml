@@ -1,0 +1,35 @@
+---
+
+- name: Using configured resolvers
+  when: nameservers_config.nameservers | length > 0
+  set_fact: _nameservers="{{ nameservers_config.nameservers }}"
+
+- name: Preparing local resolvers list
+  when: nameservers_config.nameservers | length == 0
+  set_fact: _default_nameservers="{{ _default_nameservers|default([]) + [ lookup('dig', item, '@'+hostvars[ groups['controller'][0] ].ansible_default_ipv4.address) ] }}"
+  with_items: "{{ lookup('dig', nameservers_config.local_domain+'./NS', '@'+hostvars[ groups['controller'][0] ].ansible_default_ipv4.address, wantlist=True) }}"
+
+- name: Resetting _nameservers list
+  when: nameservers_config.nameservers | length == 0
+  set_fact: _nameservers="{{ _default_nameservers }}"
+
+- name: generating /etc/resolv.conf
+  template: src=resolv.conf.j2 dest=/etc/resolv.conf
+  register: _resolv_conf
+
+- block:
+    - name: looking up for active NetworkManager connections
+      shell: nmcli -t -f UUID,DEVICE connection show --active
+      register: _nmcli_conn
+
+    - set_fact:
+        nmcli_conn: "{{ nmcli_conn|default([]) + [{ 'uuid': item.split(':')[0], 'dev': item.split(':')[1] }] }}"
+      with_items: "{{ _nmcli_conn.stdout_lines }}"
+
+    - name: reconfiguring NetworkManager dns settings for default connection
+      shell: nmcli con modify {{ item.uuid }} ipv4.dns '{{ _nameservers | join( " " )}}'
+      with_items: "{{ nmcli_conn | default( {} ) }}"
+      when: ansible_default_ipv4.interface == item.dev
+
+  when: _resolv_conf.changed
+

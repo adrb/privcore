@@ -1,0 +1,53 @@
+---
+
+- name: enabling apache ssl module
+  command: a2enmod ssl
+  register: a2enmod_ssl
+  changed_when: ("Module ssl already enabled" not in a2enmod_ssl.stdout)
+  notify: restart apache
+
+- name: generating apache default ssl configuration
+  template: src=apache-default-ssl.conf.j2 dest=/etc/apache2/sites-available/default-ssl.conf
+
+- name: enabling apache default ssl configuration
+  command: a2ensite default-ssl
+  register: a2ensite_default_ssl
+  changed_when: ("Site default-ssl already enabled" not in a2ensite_default_ssl.stdout)
+  notify: reload apache
+
+- name: forcing redirect to SSL in /etc/apache2/sites-available/000-default.conf
+  blockinfile:
+    dest: /etc/apache2/sites-available/000-default.conf
+    marker: "# {mark} ANSIBLE MANAGED BLOCK "
+    block: |
+
+      Redirect permanent / https://{{apache_config.internet_domain}}/
+      Redirect permanent /ldapadmin https://{{apache_config.internet_domain}}/ldapadmin
+      Redirect permanent /nextcloud  https://{{apache_config.internet_domain}}/nextcloud
+
+    insertbefore: "</VirtualHost>"
+  notify: reload apache
+
+- name: preparing directories
+  file: path=/var/www/html/{{ item }} state=directory mode=0755
+  with_items:
+    - "imgs"
+    - "css"
+
+- name: deploying PrivCore welcome page files
+  copy: src={{ item }} dest=/var/www/html/{{ item }} force=no
+  with_items:
+    - "imgs/phpLDAPadmin.png"
+    - "imgs/favicon.ico"
+    - "imgs/privcore_logo_black2.png"
+    - "imgs/nextcloud.png"
+    - "imgs/change_password.png"
+    - "css/bootstrap.min.css"
+    - "css/style.css"
+
+- name: generating PrivCore /var/www/html/index.html file
+  template: src=index.html.j2 dest=/var/www/html/index.html
+
+- name: generating PrivCore /var/www/html/ldap_passwd.php file
+  template: src=ldap_passwd.php.j2 dest=/var/www/html/ldap_passwd.php
+

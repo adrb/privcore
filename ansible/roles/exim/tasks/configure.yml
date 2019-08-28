@@ -1,0 +1,21 @@
+---
+
+- name: setting ACL to /etc/ssl/private for user Debian-exim
+  acl: name=/etc/ssl/private entity=Debian-exim etype=user permissions="X" state=present
+
+- name: setting ACL to {{ exim_config.tls_cert_key }} for user Debian-exim
+  acl: name="{{ exim_config.tls_cert_key }}" entity=Debian-exim etype=user permissions="r" state=present
+
+- name: generating exim configuration files
+  template: src={{item}}.j2 dest=/etc/exim4/{{item}}
+  with_items:
+    - 'update-exim4.conf.conf'
+    - 'conf.d/main/00_exim4_config_local'
+    - 'conf.d/auth/01_exim4-config_ldap_auth'
+    - 'conf.d/acl/30_exim4-config_connect'
+    - 'conf.d/acl/30_exim4-config_check_mail'
+    - 'conf.d/rewrite/01_exim4-config_local_domains'
+    - 'conf.d/router/01_exim4-config_ldap_local'
+    - 'conf.d/transport/01_exim4-config_ldap_maildir'
+  notify: restart exim
+

@@ -1,0 +1,24 @@
+---
+
+- name: creating directory /etc/bind/masters
+  file: path=/etc/bind/masters state=directory owner=root group=root mode=0755
+
+- name: generating default zone /etc/bind/masters/{{bind_config.local_domain}}
+  template: src=zone.j2 dest=/etc/bind/masters/{{bind_config.local_domain}}
+  notify: reload named
+
+- name: generating default reverse zone /etc/bind/masters/{{bind_config.reverse_local_domain}}
+  template: src=zone-in-addr.arpa.j2 dest=/etc/bind/masters/{{bind_config.reverse_local_domain}}
+  notify: reload named
+
+- name: adding local master zones definitions to /etc/bind/named.conf.local
+  blockinfile:
+    dest: /etc/bind/named.conf.local
+    marker: "# {mark} ANSIBLE MANAGED BLOCK "
+    block: |
+
+      zone "{{bind_config.local_domain}}" { type master; file "/etc/bind/masters/{{bind_config.local_domain}}"; };
+      zone "{{bind_config.reverse_local_domain}}" { type master; file "/etc/bind/masters/{{bind_config.reverse_local_domain}}"; };
+
+  notify: reload named
+

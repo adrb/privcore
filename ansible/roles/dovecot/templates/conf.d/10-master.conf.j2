@@ -48,6 +48,12 @@ service pop3-login {
   }
 }
 
+service submission-login {
+  inet_listener submission {
+    #port = 587
+  }
+}
+
 service lmtp {
   unix_listener lmtp {
     #mode = 0666
@@ -75,6 +81,11 @@ service pop3 {
   #process_limit = 1024
 }
 
+service submission {
+  # Max. number of SMTP Submission processes (connections)
+  #process_limit = 1024
+}
+
 service auth {
   # auth_socket_path points to this userdb socket by default. It's typically
   # used by dovecot-lda, doveadm, possibly imap process, etc. Users that have
@@ -92,7 +103,7 @@ service auth {
   unix_listener auth-userdb {
     #mode = 0666
     #user = 
-    #group =
+    #group = 
   }
 
   # Postfix smtp-auth

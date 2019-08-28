@@ -1,77 +1,21 @@
 ---
 
-ldap_config:
-  organization: "{{ config.organization_name | default('Home') }}"
-  suffix: "{{ config.ldap_suffix | default('dc=local') }}"
-  adminpw: "{{ config.master_passwd | default('changeme') }}"
-  local_server_uri: ldap://localhost/
-  timezone: "{{ config.timezone | default('Europe/Warsaw') }}"
+openldap_config:
 
-ldap_tree:
-  root:
-    dn: "{{ldap_config.suffix}}"
-    objectClass:
-      - dcObject
-      - organization
-    o: "{{ldap_config.organization}}"
+  ldap_server_uri: "{{ config.ldap_server_uri }}"
+  suffix: "{{ config.suffix }}"
+  organization_name: "{{ config.organization_name }}"
 
-    dit_branch:
-      users:
-        dn: "ou=users,{{ldap_config.suffix}}"
-        objectClass:
-          - organizationalUnit
-          - top
+  local_domain: "{{ config.local_domain }}"
 
-        dit_branch:
-          services:
-            dn: "ou=services,ou=users,{{ldap_config.suffix}}"
-            objectClass:
-              - organizationalUnit
-              - top
+  tls_ca_cert: "{{ config.tls_ca_cert }}"
+  tls_cert: "{{ config.tls_cert }}"
+  tls_cert_key: "{{ config.tls_cert_key }}"
 
-            dit_branch:
-              readonly:
-                dn: "uid=readonly,ou=services,ou=users,{{ldap_config.suffix}}"
-                objectclass: 
-                  - account
-                  - simpleSecurityObject
-                  - top
-                userpassword: changeme
+  master_passwd: "{{ config.master_passwd }}"
+  admin_user: "{{ config.admin_user }}"
+  admin_passwd: "{{ config.admin_passwd }}"
 
-      groups:
-        dn: "ou=groups,{{ldap_config.suffix}}"
-        objectClass:
-          - organizationalUnit
-          - top
-
-        dit_branch:
-          admins:
-            dn: "cn=admins,ou=groups,{{ldap_config.suffix}}"
-            objectclass:
-              - groupOfNames
-              - top
-            member:
-                - "cn=admin,{{ldap_config.suffix}}"
-
-          users:
-            dn: "cn=users,ou=groups,{{ldap_config.suffix}}"
-            cn: users
-            gidnumber: 1000
-            objectclass:
-              - posixGroup
-              - top
-
-          ssh:
-            dn: "cn=ssh,ou=groups,{{ldap_config.suffix}}"
-            objectclass:
-              - groupOfNames
-              - top
-            member:
-                - "cn=admin,{{ldap_config.suffix}}"
-
-          smtp_groups:
-            dn: "ou=SMTP Groups,ou=groups,{{ldap_config.suffix}}"
-            objectclass:
-              - organizationalUnit
-              - top
+  ro_user_dn: "{{ config.ro_user_dn }}"
+  ro_user_pw: "{{ config.ro_user_passwd }}"
 

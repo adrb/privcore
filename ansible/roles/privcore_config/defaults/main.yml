@@ -1,0 +1,12 @@
+---
+
+privcore_config_defaults:
+  ldap_server_uri: "{% if inventory_hostname == groups['controller'][0] %}ldap://localhost{% else %}{{ 'ldaps://'+groups['controller'][0] }}{% endif %}"
+  suffix: "{% if config.local_domain is defined %}{{ 'dc='+config.local_domain.split('.')|join(',dc=') }}{% else %}dc=local{% endif %}"
+
+  tls_ca_cert: "/etc/ssl/certs/{{config.local_domain | default('local') }}_ca_cert.pem"
+  tls_cert: "/etc/ssl/certs/{{inventory_hostname}}_cert.pem"
+  tls_cert_key: "/etc/ssl/private/{{inventory_hostname}}_key.pem"
+
+config:
+

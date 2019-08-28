@@ -1,27 +1,27 @@
 ; vim:set ts=8 et sw=4 sts=4:
 $ORIGIN .
 $TTL 3600       ; 1 hour
-{{ansible_domain}}.  IN SOA  {{ansible_domain}}. hostmaster.{{ansible_domain}}. (
+{{bind_config.local_domain}}.  IN SOA  {{bind_config.local_domain}}. hostmaster.{{bind_config.local_domain}}. (
                                 {{ansible_date_time.year}}{{ansible_date_time.month}}{{ansible_date_time.day}}{{ansible_date_time.hour}} ; serial
                                 3600       ; refresh (1 hour)
                                 900        ; retry (15 minutes)
                                 604800     ; expire (1 week)
                                 600        ; minimum (10 minutes)
                                 )
-            A       {{ hostvars[ groups['bind_master'][0] ].default_ipv4_address }}
-            NS      ns1.{{ansible_domain}}.
-            MX  10  mail.{{ansible_domain}}.
+            A       {{ hostvars[ inventory_hostname ].ansible_default_ipv4.address }}
+            NS      ns1.{{bind_config.local_domain}}.
+            MX  10  mail.{{bind_config.local_domain}}.
 
-$ORIGIN {{ansible_domain}}.
+$ORIGIN {{bind_config.local_domain}}.
 
-ns1             A       {{ hostvars[ groups['bind_master'][0] ].default_ipv4_address }}
-mail            A       {{ hostvars[ groups['bind_master'][0] ].default_ipv4_address }}
-ntp1            A       {{ hostvars[ groups['bind_master'][0] ].default_ipv4_address }}
+ns1             A       {{ hostvars[ inventory_hostname ].ansible_default_ipv4.address }}
+mail            A       {{ hostvars[ inventory_hostname ].ansible_default_ipv4.address }}
+ntp1            A       {{ hostvars[ inventory_hostname ].ansible_default_ipv4.address }}
 
-                IN TXT "v=spf1 ptr a:mail.{{ansible_domain}} ~all"
+                IN TXT "v=spf1 ptr a:mail.{{bind_config.local_domain}} ~all"
 
 ; Hosts
 {% for host in groups['all'] %}
-{{hostvars[host].ansible_hostname}}       A       {{hostvars[host].default_ipv4_address}}
+{{hostvars[host].inventory_hostname}}       A       {{hostvars[host].ansible_default_ipv4.address}}
 {% endfor %}
 

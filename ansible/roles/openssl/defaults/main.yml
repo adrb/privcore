@@ -1,5 +1,8 @@
 ---
 
-ssl_config:
-  dir: /etc/ssl/CA
+openssl_config:
+  organization_name: "{{ config.organization_name }}"
+  local_domain: "{{ config.local_domain }}"
+
+  ca_dir: /etc/ssl/CA
 

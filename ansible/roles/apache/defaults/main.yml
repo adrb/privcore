@@ -1,0 +1,17 @@
+---
+
+apache_config:
+  ldap_server_uri: "{{ config.ldap_server_uri }}"
+  suffix: "{{ config.suffix }}"
+  organization_name: "{{ config.organization_name }}"
+
+  internet_domain: "{{ config.internet_domain }}"
+  local_domain: "{{ config.local_domain }}"
+
+  tls_ca_cert: "{{ config.tls_ca_cert }}"
+  tls_cert: "{{ config.tls_cert }}"
+  tls_cert_key: "{{ config.tls_cert_key }}"
+
+  ro_user_dn: "{{ config.ro_user_dn }}"
+  ro_user_pw: "{{ config.ro_user_passwd }}"
+

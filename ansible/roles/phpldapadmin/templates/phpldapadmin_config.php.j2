@@ -81,7 +81,7 @@
    This is to make sure that when we ask the system for the current time, we
    get the right local time. If this is not set, all time() calculations will
    assume UTC if you have not set PHP date.timezone. */
- $config->custom->appearance['timezone'] = '{{ldap_config.timezone}}';
+ $config->custom->appearance['timezone'] = '{{phpldapadmin_config.timezone}}';
 #  $config->custom->appearance['timezone'] = 'Australia/Melbourne';
 
 /*********************************************
@@ -283,21 +283,21 @@ $servers->newServer('ldap_pla');
 
 /* A convenient name that will appear in the tree viewer and throughout
    phpLDAPadmin to identify this LDAP server to users. */
-$servers->setValue('server','name','{{ansible_fqdn}}');
+$servers->setValue('server','name','{{inventory_hostname}}');
 
 /* Examples:
    'ldap.example.com',
    'ldaps://ldap.example.com/',
    'ldapi://%2fusr%local%2fvar%2frun%2fldapi'
            (Unix socket at /usr/local/var/run/ldap) */
-$servers->setValue('server','host','ldapi:///');
+$servers->setValue('server','host','{{phpldapadmin_config.ldap_server_uri}}');
 
 /* The port your LDAP server listens on (no quotes). 389 is standard. */
 // $servers->setValue('server','port',389);
 
 /* Array of base DNs of your LDAP server. Leave this blank to have phpLDAPadmin
    auto-detect it for you. */
-$servers->setValue('server','base',array('{{ldap_config.suffix}}'));
+$servers->setValue('server','base',array('{{phpldapadmin_config.suffix}}'));
 
 /* Five options for auth_type:
    1. 'cookie': you will login via a web form, and a client-side cookie will
@@ -323,12 +323,12 @@ $servers->setValue('login','auth_type','session');
    auth_type, then you can also specify the bind_id/bind_pass here for searching
    the directory for users (ie, if your LDAP server does not allow anonymous
    binds. */
-$servers->setValue('login','bind_id','{{ldap_tree.root.dit_branch.users.dit_branch.services.dit_branch.readonly.dn}}');
+$servers->setValue('login','bind_id','{{phpldapadmin_config.ro_user_dn}}');
 #  $servers->setValue('login','bind_id','cn=Manager,dc=example,dc=com');
 
 /* Your LDAP password. If you specified an empty bind_id above, this MUST also
    be blank. */
- $servers->setValue('login','bind_pass','{{ldap_tree.root.dit_branch.users.dit_branch.services.dit_branch.readonly.userpassword}}');
+ $servers->setValue('login','bind_pass','{{phpldapadmin_config.ro_user_pw}}');
 #  $servers->setValue('login','bind_pass','secret');
 
 /* Use TLS (Transport Layer Security) to connect to the LDAP server. */
@@ -379,7 +379,7 @@ $servers->setValue('login','bind_id','{{ldap_tree.root.dit_branch.users.dit_bran
 
 /* Default password hashing algorithm. One of md5, ssha, sha, md5crpyt, smd5,
    blowfish, crypt or leave blank for now default algorithm. */
- $servers->setValue('appearance','password_hash_custom','ssha');
+ $servers->setValue('appearance','pla_password_hash','ssha');
 
 /* If you specified 'cookie' or 'session' as the auth_type above, you can
    optionally specify here an attribute to use when logging in. If you enter

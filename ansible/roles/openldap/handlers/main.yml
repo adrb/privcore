@@ -1,14 +1,8 @@
 ---
 
-- name: reload ldapd
+- name: reload slapd
   service: name=slapd state=reloaded
 
-- name: restart ldapd
+- name: restart slapd
   service: name=slapd state=restarted
-
-- name: reload nslcd
-  service: name=nslcd state=reloaded
-
-- name: restart nslcd
-  service: name=nslcd state=restarted
 

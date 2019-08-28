@@ -2,3 +2,17 @@
 
 exim_config:
 
+  internet_domain: "{{ config.internet_domain }}"
+  smtp_internet_domains: "{{ config.smtp_internet_domains }}"
+  local_domain: "{{ config.local_domain }}"
+
+  ldap_server_uri: "{{ config.ldap_server_uri }}"
+  suffix: "{{ config.suffix }}"
+
+  ro_user_dn: "{{ config.ro_user_dn }}"
+  ro_user_pw: "{{ config.ro_user_passwd }}"
+
+  tls_ca_cert: "{{ config.tls_ca_cert }}"
+  tls_cert: "{{ config.tls_cert }}"
+  tls_cert_key: "{{ config.tls_cert_key }}"
+

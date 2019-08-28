@@ -1,0 +1,104 @@
+---
+
+- name: hashing admin password with SSHA
+  shell: slappasswd -h "{SSHA}" -s "{{openldap_config.master_passwd}}"
+  changed_when: false
+  register: _master_passwd_hash
+
+- name: creating variable ldap_master_passwd_hash
+  set_fact:
+    ldap_master_passwd_hash: "{{_master_passwd_hash.stdout_lines[0]}}"
+
+- name: Performing OLC configuration
+  shell: |
+    ldapmodify -c -a -Y EXTERNAL -Q -H ldapi:/// <<EOF
+    {{ lookup('template', 'olc_config.ldif.j2') }}
+    EOF
+    :
+  args:
+    executable: /bin/bash
+  register: olc_result
+  failed_when: olc_result.rc != 0 and olc_result.rc != 80 and olc_result.rc != 20 # 80 - "Duplicate attributeType", 20 - "Type or value exists"
+  changed_when: olc_result.rc != 80 and olc_result.rc != 20
+  notify:
+    - restart slapd
+
+#- debug: msg="{{olc_result.rc}}" # {{olc_result.stdout_lines | join('\n') }}"
+
+- name: linking external schemas in /etc/ldap/schema/
+  file: src={{item.src}} dest=/etc/ldap/schema/{{ item.dest }} state=link owner=root group=root force=yes
+  with_items:
+    - { src: "/usr/share/doc/sudo-ldap/schema.OpenLDAP", dest: "sudo.schema" }
+    - { src: "/usr/share/doc/sudo-ldap/schema.olcSudo", dest: "sudo.ldif" }
+
+- name: Importing schemas
+  shell: ldapmodify -c -a -Y EXTERNAL -Q -H ldapi:/// < "/etc/ldap/schema/{{item}}"
+  register: schema_result
+  failed_when: schema_result.rc != 0 and schema_result.rc != 80 # 80 - "Duplicate attributeType"
+  changed_when: schema_result.rc != 80
+  with_items:
+    - misc.ldif
+    - dyngroup.ldif
+    - sudo.ldif
+  notify:
+    - restart slapd
+
+- name: Performing olcOverlay configuration
+  shell: |
+    ldapmodify -c -a -Y EXTERNAL -Q -H ldapi:/// <<EOF
+    {{ lookup('template', 'olc_overlay.ldif.j2') }}
+    EOF
+    :
+  args:
+    executable: /bin/bash
+  register: olcoverlay_result
+  failed_when: olcoverlay_result.rc != 0 and olcoverlay_result.rc != 80 and olcoverlay_result.rc != 20 # 80 - "Duplicate attributeType", 20 - "Type or value exists"
+  changed_when: olcoverlay_result.rc != 80 and olcoverlay_result.rc != 20
+  notify:
+    - restart slapd
+
+- name: forcing slapd restart
+  meta: flush_handlers
+
+#- name: Generating LDAP tree file to /tmp/tree.ldif
+#  template: src=ldap_tree.ldif.j2 dest=/tmp/tree.ldif
+
+- name: Populating LDAP tree
+  shell: |
+    ldapmodify -c -a -x -D "cn=admin,{{openldap_config.suffix}}" -w "{{openldap_config.master_passwd}}" -H ldapi:/// <<EOF
+    {{ lookup('template', 'ldap_tree.ldif.j2') }}
+    EOF
+    :
+  args:
+    executable: /bin/bash
+  register: tree_result
+  failed_when: tree_result.rc != 0 and tree_result.rc != 68 # 68 mean "already exists"
+  changed_when: tree_result.rc != 68
+
+#- name: Generating /tmp/ssl.ldif file
+#  template: src=olc_config_ssl.ldif.j2 dest=/tmp/ssl.ldif
+
+- name: setting ACL to /etc/ssl/private for user openldap
+  acl: name=/etc/ssl/private entity=openldap etype=user permissions="X" state=present
+
+- name: setting ACL to /etc/ssl/private/{{inventory_hostname}}_key.pem for user openldap
+  acl: name=/etc/ssl/private/{{inventory_hostname}}_key.pem entity=openldap etype=user permissions="r" state=present
+
+- name: configure slapd services
+  lineinfile: dest=/etc/default/slapd regexp='^SLAPD_SERVICES=' line='SLAPD_SERVICES="ldap://127.0.0.1:389/ ldaps:/// ldapi:///"'
+  notify:
+    - restart slapd
+
+- name: forcing slapd restart before SSL configuration
+  meta: flush_handlers
+
+- name: enabling SSL support
+  shell: |
+    ldapmodify -c -a -Y EXTERNAL -Q -H ldapi:/// <<EOF
+    {{ lookup('template', 'olc_config_tls.ldif.j2') }} 
+    EOF
+    :
+  args:
+    executable: /bin/bash
+  register: olc_ssl_result
+

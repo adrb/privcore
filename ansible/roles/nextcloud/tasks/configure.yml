@@ -1,0 +1,96 @@
+---
+#
+# Documentation: https://docs.nextcloud.com/server/16/admin_manual/installation/
+#
+
+- name: creating database {{nextcloud_config.mysql_db}}
+  mysql_db: name={{nextcloud_config.mysql_db}} state=present
+
+- name: creating user {{nextcloud_config.mysql_user}}@localhost with full access to {{nextcloud_config.mysql_db}} database
+  mysql_user: name={{nextcloud_config.mysql_user}} host=localhost password={{nextcloud_config.mysql_pass}} priv={{nextcloud_config.mysql_db}}.*:ALL state=present
+
+- name: resetting files ownerships and permissions
+  file: path={{ nextcloud_config.install_dir }}/nextcloud owner=www-data group=www-data mode=0750 recurse=yes
+
+- name: configuring
+  shell: |
+    cd {{ nextcloud_config.install_dir }}/nextcloud
+    php occ maintenance:install --no-interaction --database="mysql" \
+      --database-name="{{nextcloud_config.mysql_db}}" \
+      --database-user="{{nextcloud_config.mysql_user}}" \
+      --database-pass="{{nextcloud_config.mysql_pass}}" \
+      --admin-user="admin" --admin-pass="{{nextcloud_config.master_passwd}}" \
+      --data-dir="{{ nextcloud_config.install_dir }}/nextcloud/data"
+    :
+  register: occ_install_result
+  failed_when: occ_install_result.rc != 0
+  changed_when: occ_install_result.rc != 0
+  become: true
+  become_method: su
+  become_user: www-data
+  become_flags: '-s /bin/bash'
+
+- name: fixing configured cli.url
+  lineinfile: dest={{ nextcloud_config.install_dir }}/nextcloud/config/config.php regexp="'overwrite.cli.url' => '" line="  'overwrite.cli.url' => 'https://{{ nextcloud_config.internet_domain }}'," insertbefore="\);"
+
+- name: changing trusted domain
+  lineinfile: dest={{ nextcloud_config.install_dir }}/nextcloud/config/config.php regexp="0 => " line="    0 => '{{ nextcloud_config.internet_domain }}'," insertbefore="\);"
+
+- name: enabling php-apcu data cache
+  lineinfile: dest={{ nextcloud_config.install_dir }}/nextcloud/config/config.php regexp="'memcache.local' => '" line="  'memcache.local' => '\OC\Memcache\APCu'," insertbefore="\);"
+
+- name: enabling and installing basic apps
+  shell: |
+    cd {{ nextcloud_config.install_dir }}/nextcloud
+    php occ app:install --no-interaction --quiet {{ item }}
+    php occ app:enable --no-interaction --quiet {{ item }}
+    :
+  with_items: "{{ nextcloud_config.apps_list}}"
+  register: occ_app_result
+  failed_when: occ_app_result.rc != 0
+  changed_when: occ_app_result.rc != 0
+  become: true
+  become_method: su
+  become_user: www-data
+  become_flags: '-s /bin/bash'
+
+- name: hashing LDAP user password with BASE64
+  shell: echo -n "{{nextcloud_config.ro_user_pw}}" | base64
+  changed_when: false
+  register: _ldap_userpw_base64
+
+- name: creating variable ldap_userpw_base64
+  set_fact:
+    ldap_userpw_base64: "{{_ldap_userpw_base64.stdout_lines[0]}}"
+
+- name: Generating apps settings file to /tmp/nextcloud.mysql
+  template: src=nextcloud.mysql.j2 dest=/tmp/nextcloud.mysql
+
+- name: importing configuration from /tmp/nextcloud.mysql
+  shell: |
+    mysql --force {{nextcloud_config.mysql_db}} < /tmp/nextcloud.mysql
+  args:
+    executable: /bin/bash
+
+- name: generating apache configuration
+  template: src=apache.conf.j2 dest=/etc/apache2/conf-available/nextcloud.conf
+  notify: reload apache
+
+- name: enabling apache headers module
+  command: a2enmod headers
+  register: a2enmod_headers
+  changed_when: ("Module headers already enabled" not in a2enmod_headers.stdout)
+  notify: restart apache
+
+- name: enabling apache rewrite module
+  command: a2enmod rewrite
+  register: a2enmod_rewrite
+  changed_when: ("Module rewrite already enabled" not in a2enmod_rewrite.stdout)
+  notify: restart apache
+
+- name: enabling apache configuration
+  command: a2enconf nextcloud
+  register: a2enconf_nextcloud
+  changed_when: ("Conf nextcloud already enabled" not in a2enconf_nextcloud.stdout)
+  notify: reload apache
+

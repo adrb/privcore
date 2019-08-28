@@ -1,0 +1,14 @@
+---
+
+- name: install packages
+  apt:
+    state: present
+    name:
+      - sssd
+      - libldap-common
+  register: sssd_install_result
+
+- name: mark sssd to start on boot
+  service: name=sssd enabled=yes
+  when: sssd_install_result.changed
+

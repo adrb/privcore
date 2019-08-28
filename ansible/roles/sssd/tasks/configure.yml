@@ -1,0 +1,13 @@
+---
+
+- name: generating /etc/sssd/sssd.conf
+  template: src=sssd.conf.j2 dest=/etc/sssd/sssd.conf
+  notify: restart sssd
+
+- name: enable pam_mkhomedir.so for sshd
+  blockinfile:
+    dest: /etc/pam.d/sshd
+    block: |
+      session required pam_mkhomedir.so skel=/etc/skel/ umask=0022
+    marker: "# {mark} ANSIBLE MANAGED BLOCK "
+

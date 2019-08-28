@@ -11,7 +11,7 @@ ldap_address_data:
   domains = +local_domains
   address_data = ${lookup ldap{ \
     USER=LDAP_USER PASS=LDAP_PASS \
-    {{ldap_config.local_server_uri}}/ou=users,LDAP_BASE?LDAP_ADDRESS_DATA_ATTRS?sub?LDAP_ADDRESS_DATA_FILTER} {$value} fail}
+    {{exim_config.ldap_server_uri}}/ou=users,LDAP_BASE?LDAP_ADDRESS_DATA_ATTRS?sub?LDAP_ADDRESS_DATA_FILTER} {$value} fail}
 
   transport = ldap_devnull
   unseen
@@ -38,7 +38,7 @@ ldap_groups:
   allow_defer
   data = ${lookup ldapm{ \
     USER=LDAP_USER PASS=LDAP_PASS \
-    {{ldap_config.local_server_uri}}/ou=SMTP Groups,ou=groups,LDAP_BASE?rfc822MailMember?sub?(&(objectClass=nisMailAlias)(cn=${quote_ldap:$local_part@$domain}))} \
+    {{exim_config.ldap_server_uri}}/ou=SMTP,ou=groups,LDAP_BASE?mail?sub?(&(objectClass=nisMailAlias)(cn=${quote_ldap:$local_part@$domain}))} \
     {$value} fail}
   file_transport = address_file
   pipe_transport = address_pipe

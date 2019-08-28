@@ -1,0 +1,17 @@
+dn: cn=config
+changetype: modify
+replace: olcTLSCACertificateFile
+olcTLSCACertificateFile: {{openldap_config.tls_ca_cert}}
+-
+replace: olcTLSCertificateFile
+olcTLSCertificateFile: {{openldap_config.tls_cert}}
+-
+replace: olcTLSCertificateKeyFile
+olcTLSCertificateKeyFile: {{openldap_config.tls_cert_key}}
+-
+replace: olcTLSCipherSuite
+olcTLSCipherSuite: SECURE256:!AES-128-CBC
+-
+replace: olcTLSProtocolMin
+olcTLSProtocolMin: 3.3
+

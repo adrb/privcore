@@ -1,0 +1,22 @@
+#
+# LDAP Defaults
+#
+
+# See ldap.conf(5) for details
+# This file should be world readable but not world writable.
+
+BASE  {{ sssd_config.suffix }}
+URI   {{ sssd_config.ldap_server_uri }}
+
+#SIZELIMIT	12
+#TIMELIMIT	15
+#DEREF		never
+
+# TLS certificates (needed for GnuTLS)
+TLS_CACERT {{ sssd_config.tls_ca_cert }}
+TLS_CACERTDIR /etc/ssl/certs  # ignored by GnuTLS
+TLS_REQCERT demand
+
+# Use TLS1.2 or never
+TLS_PROTOCOL_MIN 3.3
+TLS_CIPHER_SUITE SECURE256:!AES-128-CBC

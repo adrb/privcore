@@ -1,28 +1,28 @@
 
 LDAP_PLAIN_QUERY_USER_DN = ${lookup ldapdn{ \
     USER=LDAP_USER PASS=LDAP_PASS \
-    {{ldap_config.local_server_uri}}/ou=users,LDAP_BASE?dn?sub?(&(objectClass=posixAccount)(uid=${quote_ldap:$auth2}))} {$value} fail}
+    {{exim_config.ldap_server_uri}}/ou=users,LDAP_BASE?dn?sub?(&(objectClass=posixAccount)(uid=${quote_ldap:$auth2}))} {$value} fail}
 
 ldap_plain_auth:
   driver = plaintext
   public_name = PLAIN
   server_set_id = $auth2
   server_prompts = :
-  server_condition = ${if ldapauth {USER="LDAP_PLAIN_QUERY_USER_DN" PASS=${quote:${auth3}} {{ldap_config.local_server_uri}}/LDAP_BASE/} {yes}{no}}
+  server_condition = ${if ldapauth {USER="LDAP_PLAIN_QUERY_USER_DN" PASS=${quote:${auth3}} {{exim_config.ldap_server_uri}}/LDAP_BASE/} {yes}{no}}
 
 # do not offer authentication over unencrypted sessions
   server_advertise_condition = ${if eq{$tls_in_cipher}{} {}{yes}}
 
 LDAP_LOGIN_QUERY_USER_DN = ${lookup ldapdn{ \
     USER=LDAP_USER PASS=LDAP_PASS \
-    {{ldap_config.local_server_uri}}/ou=users,LDAP_BASE?dn?sub?(&(objectClass=posixAccount)(uid=${quote_ldap:$auth1}))} {$value} fail}
+    {{exim_config.ldap_server_uri}}/ou=users,LDAP_BASE?dn?sub?(&(objectClass=posixAccount)(uid=${quote_ldap:$auth1}))} {$value} fail}
 
 ldap_login_auth:
   driver = plaintext
   public_name = LOGIN
   server_set_id = $auth1
   server_prompts = Username:: : Password::
-  server_condition = ${if ldapauth {USER="LDAP_LOGIN_QUERY_USER_DN" PASS=${quote:${auth2}} {{ldap_config.local_server_uri}}/LDAP_BASE/} {yes}{no}}
+  server_condition = ${if ldapauth {USER="LDAP_LOGIN_QUERY_USER_DN" PASS=${quote:${auth2}} {{exim_config.ldap_server_uri}}/LDAP_BASE/} {yes}{no}}
 
 # do not offer authentication over unencrypted sessions
   server_advertise_condition = ${if eq{$tls_in_cipher}{} {}{yes}}

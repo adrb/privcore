@@ -1,4 +1,4 @@
 
-*@*.{{ansible_domain}}  $1-$domain@{{ config.internet_domain }} Ffrs
-*@{{ansible_domain}}    $1-$domain@{{ config.internet_domain }} Ffrs
+*@*.{{ exim_config.local_domain }}  $1-$domain@{{ exim_config.smtp_internet_domains[0] }} Ffrs
+*@{{ exim_config.local_domain }}    $1-$domain@{{ exim_config.smtp_internet_domains[0] }} Ffrs
 

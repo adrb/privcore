@@ -1,20 +1,16 @@
 ---
 
 - name: install dovecot server
-  when: ansible_fqdn in groups['dovecot']
-  apt: name={{ item }} state=present update_cache=yes
-  with_items:
+  apt:
+    state: present
+    name:
       - dovecot-core
       - dovecot-ldap
       - dovecot-imapd
       - dovecot-lmtpd
+  register: dovecot_install_result
 
-- name: uninstall dovecot server for machines without role 'dovecot'
-  when: ansible_fqdn not in groups['dovecot']
-  apt: name={{ item }} state=absent purge=yes
-  with_items:
-      - dovecot-core
-      - dovecot-ldap
-      - dovecot-imapd
-      - dovecot-lmtpd
+- name: mark dovecot to start on boot
+  service: name=dovecot enabled=yes
+  when: dovecot_install_result.changed
 

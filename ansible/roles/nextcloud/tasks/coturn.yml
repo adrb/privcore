@@ -13,5 +13,5 @@
   template: src=turnserver.conf.j2 dest=/etc/turnserver.conf
 
 - name: Enabling coturn server in /etc/default/coturn
-  lineinfile: dest=/etc/default/coturn regexp="TURNSERVER_ENABLED" line="TURNSERVER_ENABLED=1"
+  lineinfile: dest=/etc/default/coturn regexp="^#?TURNSERVER_ENABLED" line="TURNSERVER_ENABLED=1"
 

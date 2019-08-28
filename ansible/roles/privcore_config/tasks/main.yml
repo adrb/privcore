@@ -1,0 +1,11 @@
+---
+
+- name: preparing global config hash
+  set_fact: config="{{ privcore_config |combine(privcore_config_defaults) }}"
+
+- name: repositories and packages
+  include: packages.yml
+
+- name: configure
+  include: configure.yml
+

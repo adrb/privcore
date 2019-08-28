@@ -1,0 +1,14 @@
+
+options single-request-reopen rotate
+
+domain {{nameservers_config.local_domain}}
+search {{nameservers_config.local_domain}}
+
+{% if _nameservers is defined %}
+{%- for ns in _nameservers %}
+nameserver {{ ns }}
+{% endfor %}
+{% else %}
+nameserver {{ hostvars[ groups['controller'][0] ].ansible_default_ipv4.address }}
+{% endif %}
+

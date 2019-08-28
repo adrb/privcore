@@ -1,0 +1,22 @@
+---
+
+- name: deploying CA to all machines
+  shell: 'scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {{openssl_config.ca_dir}}/certs/{{openssl_config.local_domain}}_ca_cert.pem {{item}}:/etc/ssl/certs/{{openssl_config.local_domain}}_ca_cert.pem'
+  loop: "{{ groups['all'] }}"
+  delegate_to: "{{ inventory_hostname }}"
+
+- name: deploying certs to all machines
+  shell: 'scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {{openssl_config.ca_dir}}/certs/{{item}}_cert.pem {{item}}:/etc/ssl/certs/{{item}}_cert.pem'
+  loop: "{{ groups['all'] }}"
+  delegate_to: "{{ inventory_hostname }}"
+
+- name: deploying private keys to all machines
+  shell: 'scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {{openssl_config.ca_dir}}/private/{{item}}_key.pem {{item}}:/etc/ssl/private/{{item}}_key.pem'
+  loop: "{{ groups['all'] }}"
+  delegate_to: "{{ inventory_hostname }}"
+
+- name: changing private keys mode to 0440
+  file: path=/etc/ssl/private/{{item}}_key.pem owner=root group=root mode=0440
+  delegate_to: "{{ item }}"
+  loop: "{{ groups['all'] }}"
+

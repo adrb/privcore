@@ -1,0 +1,20 @@
+---
+
+- name: deploying local CA directory tree
+  synchronize: src=CA/ dest={{openssl_config.ca_dir}}/ recursive=yes
+
+- name: deploying serial file
+  copy: src=serial dest={{openssl_config.ca_dir}}/serial force=no
+
+- name: deploying crlnumber file
+  copy: src=crlnumber dest={{openssl_config.ca_dir}}/crlnumber force=no
+
+- name: deploying index.txt file
+  copy: src=index.txt dest={{openssl_config.ca_dir}}/index.txt force=no
+
+- name: generating {{openssl_config.ca_dir}}/openssl.cnf
+  template: src=openssl.cnf.j2 dest={{openssl_config.ca_dir}}/openssl.cnf
+
+- name: linking to /etc/ssl/openssl.cnf
+  file: src={{openssl_config.ca_dir}}/openssl.cnf dest=/etc/ssl/openssl.cnf state=link owner=root group=root force=yes
+

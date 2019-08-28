@@ -1,5 +1,17 @@
 ---
 
 phpldapadmin_config:
-  packages:
-    - "phpldapadmin_1.2.2-6.1_all.deb"
+  internet_domain: "{{ config.internet_domain }}"
+  local_domain: "{{ config.local_domain }}"
+
+  ldap_server_uri: "{{ config.ldap_server_uri }}"
+  suffix: "{{ config.suffix }}"
+  timezone: "{{ config.timezone }}"
+
+  ro_user_dn: "{{ config.ro_user_dn }}"
+  ro_user_pw: "{{ config.ro_user_passwd }}"
+
+  sources:
+    # https://github.com/leenooks/phpLDAPadmin/archive/1.2.5.zip
+    - { src: "1.2.5.zip", dest: "/var/www" }
+

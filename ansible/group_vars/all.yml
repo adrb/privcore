@@ -1,0 +1,30 @@
+---
+
+# Global default setting for all roles
+privcore_config:
+  # Local domain DNS name. Defaults to localhost domain
+  local_domain: "{{ ansible_domain }}"
+
+  organization_name: "PrivCore"
+  timezone: "Europe/Warsaw"
+
+  # Master password for all services. Because we need set something
+  # before domain authorization can be configured
+  master_passwd: "{{ lookup('password', '.pc_master_passwd chars=ascii_letters,digits,hexdigits,punctuation length=20') }}"
+
+  # Domain admin user
+  admin_user: Administrator
+  admin_passwd: changeme
+
+  # Domain readonly user, for services that need query directory data
+  ro_user_dn: "uid=readonly,ou=services,ou=users,dc=local"
+  ro_user_passwd: "{{ lookup('password', '.pc_ro_user_passwd chars=ascii_letters,digits,hexdigits,punctuation length=20') }}"
+
+  # App server public domain for HTTPS and other services
+  internet_domain: "privcore.example.org"
+
+  # List of internet domains supported by mail server.
+  # The first on the list is default
+  smtp_internet_domains:
+      - "example.org"
+

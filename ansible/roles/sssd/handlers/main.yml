@@ -1,0 +1,8 @@
+---
+
+- name: reload sssd
+  service: name=sssd state=reloaded
+
+- name: restart sssd
+  service: name=sssd state=restarted
+

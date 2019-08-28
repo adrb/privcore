@@ -1,7 +1,6 @@
 ---
 
-dns_config:
-  nameservers: [ ]
-#    - 127.0.0.1
-#    - 8.8.8.8
+bind_config:
+  local_domain: "{{ config.local_domain }}"
+  reverse_local_domain: "{{ config.reverse_local_domain | default( ansible_default_ipv4.address.split('.')[2] + '.' + ansible_default_ipv4.address.split('.')[1] + '.' + ansible_default_ipv4.address.split('.')[0] + '.in-addr.arpa' ) }}"
 

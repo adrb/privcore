@@ -1,8 +1,8 @@
 ---
 
-- name: reload httpd
+- name: reload apache
   service: name=apache2 state=reloaded
 
-- name: restart httpd
+- name: restart apache
   service: name=apache2 state=restarted
 

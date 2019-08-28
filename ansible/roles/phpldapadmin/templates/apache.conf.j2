@@ -1,9 +1,9 @@
 # Define /phpldapadmin alias, this is the default
 <IfModule mod_alias.c>
-    Alias /ldapadmin /usr/share/phpldapadmin/htdocs
+    Alias /ldapadmin /var/www/phpldapadmin/htdocs
 </IfModule>
 
-<Directory /usr/share/phpldapadmin/htdocs/>
+<Directory /var/www/phpldapadmin/htdocs/>
 
     DirectoryIndex index.php
     Options +FollowSymLinks

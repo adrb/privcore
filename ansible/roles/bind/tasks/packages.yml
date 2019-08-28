@@ -1,22 +1,14 @@
 ---
 
-- name: install packages for all
-  apt: name={{ item }} state=present update_cache=yes
-  with_items:
-      - dnsutils
-      - python-dnspython # for ansible dig lookup
-      - network-manager
-
-- name: install bind server
-  when: ansible_fqdn in groups['bind_master'] or ansible_fqdn in groups['bind_slave']
-  apt: name={{ item }} state=present
-  with_items:
+- name: install packages
+  apt:
+    state: present
+    name:
       - bind9
 #      - bind9-dyndb-ldap # https://pagure.io/bind-dyndb-ldap https://blogs.mindspew-age.com/2013/06/07/bind-dns-openldap-mdb-dynamic-domainsub-domain-configuration-of-dns/
+  register: bind9_install_result
 
-- name: uninstall DNS server for machines without roles 'bind_master' and 'bind_slave'
-  when: ansible_fqdn not in groups['bind_master'] and ansible_fqdn not in groups['bind_slave']
-  apt: name={{ item }} state=absent purge=yes
-  with_items:
-    - bind9
+- name: mark bind9 to start on boot
+  service: name=bind9 enabled=yes
+  when: bind9_install_result.changed
 

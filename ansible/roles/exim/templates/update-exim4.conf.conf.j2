@@ -17,10 +17,10 @@
 # This is a Debian specific file
 
 dc_eximconfig_configtype='internet'
-dc_other_hostnames='{{ config.internet_domain }};{{ ansible_fqdn }}'
+dc_other_hostnames='{{ exim_config.internet_domain }};{{ inventory_hostname }};{% for smtp_domain in exim_config.smtp_internet_domains %}{{ smtp_domain }};{% endfor %}'
 dc_local_interfaces=''
 dc_readhost=''
-dc_relay_domains='{{ config.internet_domain }}'
+dc_relay_domains=''
 dc_minimaldns='false'
 dc_relay_nets='{{ ansible_default_ipv4.network }}/{{ ansible_default_ipv4.netmask }}'
 dc_smarthost=''

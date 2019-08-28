@@ -1,0 +1,11 @@
+
+[controller]
+# inside of this group only one server allowed
+privcore.local
+
+[app]
+privcore.local
+
+[mail]
+privcore.local
+

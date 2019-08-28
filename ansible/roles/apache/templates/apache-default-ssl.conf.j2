@@ -1,0 +1,33 @@
+<IfModule mod_ssl.c>
+<VirtualHost _default_:443>
+
+  DocumentRoot /var/www/html
+
+  # Available loglevels: trace8, ..., trace1, debug, info, notice, warn,
+  # error, crit, alert, emerg.
+  # It is also possible to configure the loglevel for particular
+  # modules, e.g.
+  #LogLevel info ssl:debug
+
+  ErrorLog ${APACHE_LOG_DIR}/ssl-error.log
+  CustomLog ${APACHE_LOG_DIR}/ssl-access.log combined
+
+  SSLEngine on
+  SSLProtocol all -SSLv2 -SSLv3 -TLSv1 -TLSv1.1
+  SSLCipherSuite HIGH:!MEDIUM:!LOW:!NULL:!aNULL
+  SSLHonorCipherOrder On
+
+  # Server Certificate
+  SSLCertificateFile    {{ apache_config.tls_cert }}
+  SSLCertificateKeyFile {{ apache_config.tls_cert_key }}
+
+  # Certificate Authority (CA)
+  SSLCACertificateFile {{ apache_config.tls_ca_cert }}
+
+  # Certificate Revocation Lists (CRL)
+  #SSLCARevocationFile /etc/ssl/CA/certs/ca_crl.pem
+
+</VirtualHost>
+</IfModule>
+
+# vim: syntax=apache ts=2 sw=2 sts=2 sr noet

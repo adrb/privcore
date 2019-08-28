@@ -1,20 +1,41 @@
 ---
 
-- name: privcore
-  hosts:
-    - all
+- name: PrivCore common configuration setup
+  hosts: all
   gather_facts: yes
-
   roles:
-    - { role: openssl, tags: ssl } # create CA and generate certificates for machines and its services
-    - { role: bind, tags: dns } # local DNS server
-    - { role: openldap, tags: ldap } # initialize directory servers and assign hosts to it
-    - { role: phpldapadmin, tags: phpldapadmin } # LDAP management interface
-    - { role: nextcloud, tags: cloud } # sharing server (file, contacts, calendar)
-    - { role: dovecot, tags: imap } # E-mail mailboxes
-    - { role: exim, tags: smtp } # E-mail transport
-    - { role: privcore, tags: privcore } # Some privcore specific configuration
+    - { role: privcore_config, tags: always }
 
-    # Obsolete and unsupported
-    - { role: obsolete_roles/prosody, tags: xmpp } # prosody XMPP/Jabber server (obsolete)
-    - { role: obsolete_roles/roundcube, tags: webmail } # E-mail webclient (obsolete)
+- name: Domain controller
+  hosts: controller
+  gather_facts: yes
+  roles:
+    - { role: openssl, tags: openssl }
+    - { role: openldap, tags: openldap }
+    - { role: bind, tags: bind }
+
+- name: Join all machines to the domain controller
+  hosts: all
+  gather_facts: yes
+  roles:
+    - { role: nameservers, tags: nameservers }
+    - { role: sssd, tags: sssd }
+
+- name: Aplication server
+  hosts: app
+  gather_facts: yes
+  roles:
+    # Basic apache configuration
+    - { role: apache, tags: apache }
+    # LDAP management interface
+    - { role: phpldapadmin, tags: phpldapadmin }
+    # Collaboration server (file, contacts, calendar)
+    - { role: nextcloud, tags: nextcloud }
+
+- name: Mailboxes and SMTP relay server
+  hosts: mail
+  gather_facts: yes
+  roles:
+    - { role: dovecot, tags: dovecot }
+    - { role: exim, tags: exim }
+

@@ -1,0 +1,11 @@
+---
+
+- name: install apache
+  apt:
+    state: present
+    name:
+      - apache2
+      # for change password script
+      - php-ldap
+      - libapache2-mod-php
+

@@ -1,0 +1,69 @@
+[sssd]
+config_file_version = 2
+reconnection_retries = 3
+services = nss, pam, ssh, autofs, sudo
+
+# List of domains in the order you want them to be queried
+domains = local
+#debug_level = 10
+
+[nss]
+filter_users = root,daemon,bin,mail,www-data,nobody,sshd,bind,openldap,sssd
+reconnection_retries = 3
+
+[pam]
+reconnection_retries = 3
+
+[ssh]
+
+[autofs]
+
+[sudo]
+
+[domain/local]
+entry_cache_timeout = 600
+# Allow offline logins by locally storing password hashes (default: false)
+cache_credentials = True
+# Note that enabling enumeration will have a moderate performance impact (default: false)
+enumerate = true
+
+auth_provider = ldap
+ldap_schema = rfc2307
+ldap_uri = {{ sssd_config.ldap_server_uri }}
+ldap_network_timeout = 10
+ldap_tls_cacertdir = /etc/ssl/certs
+ldap_tls_reqcert = demand
+ldap_default_bind_dn = {{ sssd_config.ro_user_dn }}
+ldap_default_authtok_type = password
+ldap_default_authtok = {{ sssd_config.ro_user_pw }}
+ldap_search_base = {{ sssd_config.suffix }}
+
+# Enable group mapping otherwise only the user's primary group will map correctly. Without this
+# defined group membership won't work
+ldap_group_object_class = posixGroup
+ldap_group_search_base = ou=groups,{{ sssd_config.suffix }}
+ldap_group_name = cn
+ldap_group_member = memberUid
+
+access_provider = ldap
+ldap_access_filter = (objectclass=posixAccount)
+
+id_provider = ldap
+ldap_id_use_start_tls = False
+
+chpass_provider = ldap
+ldap_chpass_uri = {{ sssd_config.ldap_server_uri }}
+
+autofs_provider = ldap
+ldap_autofs_search_base = {{ sssd_config.suffix }}
+ldap_autofs_map_object_class = automountMap
+ldap_autofs_map_name = ou
+ldap_autofs_entry_object_class = automount
+ldap_autofs_entry_key = cn
+ldap_autofs_entry_value = automountInformation
+
+sudo_provider = ldap
+ldap_sudo_search_base = ou=Sudoers,ou=groups,{{ sssd_config.suffix }}
+ldap_sudo_full_refresh_interval=86400
+ldap_sudo_smart_refresh_interval=3600
+

@@ -1,11 +1,8 @@
 ---
 
 - name: repositories and packages
-  tags: mysql_packages
   include: packages.yml
 
 - name: configure mysqld
-  when: ansible_fqdn in groups['nextcloud'] or ansible_fqdn in groups['roundcube']
-  tags: mysql_configure
-  include: configure_mysqld.yml
+  include: configure.yml
 

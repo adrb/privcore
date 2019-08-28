@@ -1,16 +1,9 @@
 ---
 
-- name: install packages for all
-  apt: name={{ item }} state=present
-  with_items:
-      - openssl
-
-- name: install packages for CA Server
-  when: ansible_fqdn in groups['openssl_ca']
-  apt: name={{ item }} state=present update_cache=yes
-  with_items:
-      - rsync     # rsync for ansible synchronize module
-      - apache2
-  notify: 
-    - restart httpd
+- name: install packages
+  apt:
+    state: present
+    name:
+      - 'openssl'
+      - 'rsync'
 

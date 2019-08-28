@@ -24,7 +24,7 @@
 # endpoints (the "plain" one and the "tls" one) are equivalent in terms of
 # functionality; but we keep both endpoints to satisfy the RFC 5766 specs.
 # For secure TCP connections, we currently support SSL version 3 and 
-# TLS version 1.0, 1.1 and 1.2. SSL2 "encapculation mode" is also supported.
+# TLS version 1.0, 1.1 and 1.2.
 # For secure UDP connections, we support DTLS version 1.
 #
 #tls-listening-port=5349
@@ -119,7 +119,7 @@ listening-ip=0.0.0.0
 # By default, this value is empty, and no address mapping is used.
 #
 #external-ip=60.70.80.91
-external-ip={{ lookup('dig', config.internet_domain) }}
+external-ip={{ lookup('dig', nextcloud_config.internet_domain) }}
 #
 #OR:
 #
@@ -127,15 +127,21 @@ external-ip={{ lookup('dig', config.internet_domain) }}
 #external-ip=60.70.80.92/172.17.19.102
 
 
-# Number of relay threads to handle the established connections
+# Number of the relay threads to handle the established connections
 # (in addition to authentication thread and the listener thread).
-# If set to 0 then application runs relay process in a single thread,
-# in the same thread with the listener process (the authentication thread will 
-# still be a separate thread).
+# If explicitly set to 0 then application runs relay process in a 
+# single thread, in the same thread with the listener process 
+# (the authentication thread will still be a separate thread).
+#
+# If this parameter is not set, then the default OS-dependent 
+# thread pattern algorithm will be employed. Usually the default
+# algorithm is the most optimal, so you have to change this option
+# only if you want to make some fine tweaks. 
 #
 # In the older systems (Linux kernel before 3.9),
-# the number of UDP threads is always one thread per network listening endpoint - 
-# including the auxiliary endpoints - unless 0 (zero) or 1 (one) value is set.
+# the number of UDP threads is always one thread per network listening
+# endpoint - including the auxiliary endpoints - unless 0 (zero) or 
+# 1 (one) value is set.
 #
 relay-threads=1
 
@@ -162,19 +168,10 @@ relay-threads=1
 
 # Uncomment to use long-term credential mechanism.
 # By default no credentials mechanism is used (any user allowed).
-# This option can be used with either flat file user database or 
-# PostgreSQL DB or MySQL DB or MongoDB or Redis DB for user keys storage.
 #
 lt-cred-mech
 
-# Uncomment to use short-term credential mechanism.
-# By default no credentials mechanism is used (any user allowed).
-# For short-term credential mechanism you have to use PostgreSQL or 
-# MySQL or MongoDB or Redis database for user password storage.
-#
-#st-cred-mech
-
-# This option is opposite to lt-cred-mech or st-cred-mech. 
+# This option is opposite to lt-cred-mech. 
 # (TURN Server with no-auth option allows anonymous access).
 # If neither option is defined, and no users are defined,
 # then no-auth is default. If at least one user is defined, 
@@ -184,11 +181,12 @@ lt-cred-mech
 #no-auth
 
 # TURN REST API flag.
+# (Time Limited Long Term Credential)
 # Flag that sets a special authorization option that is based upon authentication secret.
-# This feature can be used with the long-term authentication mechanism, only.
-# This feature purpose is to support "TURN Server REST API", see
+#
+# This feature's purpose is to support "TURN Server REST API", see
 # "TURN REST API" link in the project's page 
-# http://code.google.com/p/coturn/.
+# https://github.com/coturn/coturn/
 #
 # This option is used with timestamp:
 # 
@@ -202,6 +200,22 @@ lt-cred-mech
 # The actual value of the secret is defined either by option static-auth-secret,
 # or can be found in the turn_secret table in the database (see below).
 # 
+# Read more about it:
+#  - https://tools.ietf.org/html/draft-uberti-behave-turn-rest-00
+#  - https://www.ietf.org/proceedings/87/slides/slides-87-behave-10.pdf
+#
+# Be aware that use-auth-secret overrides some part of lt-cred-mech.
+# Notice that this feature depends internally on lt-cred-mech, so if you set
+# use-auth-secret then it enables internally automatically lt-cred-mech option
+# like if you enable both.
+#
+# You can use only one of the to auth mechanisms in the same time because,
+# both mechanism use the username and password validation in different way.
+#
+# This way be aware that you can't use both auth mechnaism in the same time!
+# Use in config either the lt-cred-mech or the use-auth-secret
+# to avoid any confusion.
+#
 use-auth-secret
 
 # 'Static' authentication secret value (a string) for TURN REST API only. 
@@ -219,13 +233,12 @@ static-auth-secret={{coturn_auth_secret}}
 #
 #server-name=blackdow.carleon.gov
 
-# Flag to support oAuth authentication.
+# Flag that allows oAuth authentication.
 #
 #oauth
 
 # 'Static' user accounts for long term credentials mechanism, only.
-# This option cannot be used with TURN REST API or with short-term credentials
-# mechanism.
+# This option cannot be used with TURN REST API.
 # 'Static' user accounts are NOT dynamically checked by the turnserver process, 
 # so that they can NOT be changed while the turnserver is running.
 #
@@ -251,20 +264,16 @@ static-auth-secret={{coturn_auth_secret}}
 #user=ninefingers:youhavetoberealistic
 #
 
-# 'Dynamic' user accounts database file name.
-# Only users for long-term mechanism can be stored in a flat file,
-# short-term mechanism will not work with option, the short-term
-# mechanism required PostgreSQL or MySQL or MongoDB or Redis database.
-# 'Dynamic' long-term user accounts are dynamically checked by the turnserver process, 
-# so that they can be changed while the turnserver is running.
+# SQLite database file name.
 #
-# Default file name is turnuserdb.conf.
+# Default file name is /var/db/turndb or /usr/local/var/db/turndb or
+# /var/lib/turn/turndb.
 # 
 userdb=/etc/turnuserdb.conf
 
 # PostgreSQL database connection string in the case that we are using PostgreSQL
 # as the user database.
-# This database can be used for long-term and short-term credential mechanisms
+# This database can be used for long-term credential mechanism
 # and it can store the secret value for secret-based timed authentication in TURN RESP API. 
 # See http://www.postgresql.org/docs/8.4/static/libpq-connect.html for 8.x PostgreSQL
 # versions connection string format, see 
@@ -275,7 +284,7 @@ userdb=/etc/turnuserdb.conf
 
 # MySQL database connection string in the case that we are using MySQL
 # as the user database.
-# This database can be used for long-term and short-term credential mechanisms
+# This database can be used for long-term credential mechanism
 # and it can store the secret value for secret-based timed authentication in TURN RESP API.
 #
 # Optional connection string parameters for the secure communications (SSL): 
@@ -285,11 +294,21 @@ userdb=/etc/turnuserdb.conf
 #
 # Use string format as below (space separated parameters, all optional):
 #
-#mysql-userdb="host=<host> dbname=<database-name> user=<database-user> password=<database-user-password> port=<port> connect_timeout=<seconds>"
+#mysql-userdb="host=<host> dbname=<database-name> user=<database-user> password=<database-user-password> port=<port> connect_timeout=<seconds> read_timeout=<seconds>"
+
+# If you want to use in the MySQL connection string the password in encrypted format,
+# then set in this option the MySQL password encryption secret key file.
+#
+# Warning: If this option is set, then mysql password must be set in "mysql-userdb" in encrypted format! 
+# If you want to use cleartext password then do not set this option!
+#
+# This is the file path which contain secret key of aes encryption while using password encryption.
+#
+#secret-key-file=/path/
 
 # MongoDB database connection string in the case that we are using MongoDB
 # as the user database.
-# This database can be used for long-term and short-term credential mechanisms
+# This database can be used for long-term credential mechanism
 # and it can store the secret value for secret-based timed authentication in TURN RESP API. 
 # Use string format is described at http://hergert.me/docs/mongo-c-driver/mongoc_uri.html
 #
@@ -297,7 +316,7 @@ userdb=/etc/turnuserdb.conf
 
 # Redis database connection string in the case that we are using Redis
 # as the user database.
-# This database can be used for long-term and short-term credential mechanisms
+# This database can be used for long-term credential mechanism
 # and it can store the secret value for secret-based timed authentication in TURN RESP API. 
 # Use string format as below (space separated parameters, all optional):
 #
@@ -317,7 +336,10 @@ userdb=/etc/turnuserdb.conf
 # and the userdb file). Must be used with long-term credentials 
 # mechanism or with TURN REST API.
 #
-realm={{config.internet_domain}}
+# Note: If default realm is not specified at all, then realm falls back to the host domain name.
+#       If domain name is empty string, or '(None)', then it is initialized to am empty string.
+#
+realm={{nextcloud_config.internet_domain}}
 
 # The flag that sets the origin consistency 
 # check: across the session, all requests must have the same
@@ -330,7 +352,7 @@ realm={{config.internet_domain}}
 # default value is 0 (no quota, unlimited number of sessions per user).
 # This option can also be set through the database, for a particular realm.
 #
-#user-quota=10
+#user-quota=0
 
 # Total allocation quota.
 # default value is 0 (no quota).
@@ -384,26 +406,47 @@ realm={{config.internet_domain}}
 #no-tcp-relay
 
 # Uncomment if extra security is desired,
-# with nonce value having limited lifetime (600 secs).
+# with nonce value having limited lifetime.
 # By default, the nonce value is unique for a session,
-# but it has unlimited lifetime. With this option,
-# the nonce lifetime is limited to 600 seconds, after that 
+# and has unlimited lifetime. 
+# Set this option to limit the nonce lifetime. 
+# It defaults to 600 secs (10 min) if no value is provided. After that delay, 
 # the client will get 438 error and will have to re-authenticate itself.
 #
-#stale-nonce
+#stale-nonce=600
+
+# Uncomment if you want to set the maximum allocation
+# time before it has to be refreshed.
+# Default is 3600s.
+#
+#max-allocate-lifetime=3600
+
+
+# Uncomment to set the lifetime for the channel.
+# Default value is 600 secs (10 minutes).
+# This value MUST not be changed for production purposes.
+#
+#channel-lifetime=600
+
+# Uncomment to set the permission lifetime.
+# Default to 300 secs (5 minutes).
+# In production this value MUST not be changed,
+# however it can be useful for test purposes.
+#
+#permission-lifetime=300
 
 # Certificate file.
 # Use an absolute path or path relative to the 
 # configuration file.
 #
-cert=/etc/ssl/certs/{{ansible_fqdn}}_cert.pem
+cert={{ nextcloud_config.tls_cert }}
 
 # Private key file.
 # Use an absolute path or path relative to the 
 # configuration file.
 # Use PEM file format.
 #
-pkey=/etc/ssl/private/{{ansible_fqdn}}_key.pem
+pkey={{ nextcloud_config.tls_cert_key }}
 
 # Private key file password, if it is in encoded format.
 # This option has no default value.
@@ -422,10 +465,12 @@ pkey=/etc/ssl/private/{{ansible_fqdn}}_key.pem
 #
 # Example:
 #CA-file=/etc/ssh/id_rsa.cert
-CA-file=/etc/ssl/certs/ca_cert.pem
 
-# Curve name for EC ciphers, if supported by OpenSSL library (TLS and DTLS).
-# The default value is prime256v1.
+# Curve name for EC ciphers, if supported by OpenSSL 
+# library (TLS and DTLS). The default value is prime256v1, 
+# if pre-OpenSSL 1.0.2 is used. With OpenSSL 1.0.2+,
+# an optimal curve will be automatically calculated, if not defined
+# by this option.
 #
 #ec-curve-name=prime256v1
 
@@ -435,7 +480,7 @@ CA-file=/etc/ssl/certs/ca_cert.pem
 
 # Use 2066 bits predefined DH TLS key. Default size of the key is 1066.
 #
-#dh2066
+dh2066
 
 # Use custom DH TLS key, stored in PEM format in the file.
 # Flags --dh566 and --dh2066 are ignored when the DH key is taken from a file.
@@ -527,10 +572,17 @@ syslog
 # The default value is ':'.
 # rest-api-separator=:	
 
-# Flag that can be used to disallow peers on the loopback addresses (127.x.x.x and ::1).
+# Flag that can be used to allow peers on the loopback addresses (127.x.x.x and ::1).
 # This is an extra security measure.
 #
-#no-loopback-peers
+# (To avoid any security issue that allowing loopback access may raise,
+# the no-loopback-peers option is replaced by allow-loopback-peers.)
+#
+# Allow it only for testing in a development environment! 
+# In production it adds a possible security vulnerability, so for security reasons 
+# it is not allowed using it together with empty cli-password. 
+#
+#allow-loopback-peers
 
 # Flag that can be used to disallow peers on well-known broadcast addresses (224.0.0.0 and above, and FFXX:*).
 # This is an extra security measure.
@@ -564,21 +616,20 @@ no-multicast-peers
 # Require authentication of the STUN Binding request.
 # By default, the clients are allowed anonymous access to the STUN Binding functionality.
 #
-#secure-stun
-
-# Require SHA256 digest function to be used for the message integrity.
-# By default, the server uses SHA1 (as per TURN standard specs). 
-# With this option, the server 
-# always requires the stronger SHA256 function. The client application
-# must support SHA256 hash function if this option is used. If the server obtains 
-# a message from the client with a weaker (SHA1) hash function then the 
-# server returns error code 426.
-#
-#sha256
+secure-stun
 
 # Mobility with ICE (MICE) specs support.
 #
 #mobility
+
+# Allocate Address Family according 
+# If enabled then TURN server allocates address family according  the TURN 
+# Client <=> Server communication address family.
+# (By default coTURN works according RFC 6156.)
+# !!Warning: Enabling this option breaks RFC6156 section-4.2 (violates use default IPv4)!!
+#
+#keep-address-family
+
 
 # User name to run the process. After the initialization, the turnserver process
 # will make an attempt to change the current user ID to that user.
@@ -606,8 +657,35 @@ no-multicast-peers
 #cli-port=5766
 
 # CLI access password. Default is empty (no password).
+# For the security reasons, it is recommended to use the encrypted
+# for of the password (see the -P command in the turnadmin utility).
 #
-#cli-password=logen
+# Secure form for password 'qwerty':
+#
+#cli-password=$5$79a316b350311570$81df9cfb9af7f5e5a76eada31e7097b663a0670f99a3c07ded3f1c8e59c5658a
+#
+# Or unsecure form for the same password:
+#
+#cli-password=qwerty
+
+# Enable Web-admin support on https. By default it is Disabled.
+# If it is enabled it also enables a http a simple static banner page
+# with a small reminder that the admin page is available only on https.
+#
+#web-admin
+
+# Local system IP address to be used for Web-admin server endpoint. Default value is 127.0.0.1.
+#
+#web-admin-ip=127.0.0.1
+
+# Web-admin server port. Default is 8080.
+#
+#web-admin-port=8080
+
+# Web-admin server listen on STUN/TURN worker threads
+# By default it is disabled for security resons! (Not recommended in any production environment!)
+#
+#web-admin-listen-on-workers
 
 # Server relay. NON-STANDARD AND DANGEROUS OPTION. 
 # Only for those applications when we want to run 
@@ -626,10 +704,8 @@ no-multicast-peers
 #
 #ne=[1|2|3]
 
-# Do not allow an SSL/TLS version of protocol
+# Do not allow an TLS/DTLS version of protocol
 #
-#no-sslv2
-#no-sslv3
-#no-tlsv1
-#no-tlsv1_1
+no-tlsv1
+no-tlsv1_1
 #no-tlsv1_2
