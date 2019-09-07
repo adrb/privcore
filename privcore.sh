@@ -10,25 +10,33 @@ if [ "$(id -u)" -ne 0 ] ; then
 fi
 
 #
+# get Debian's codename
+if ( ! dpkg -l lsb-release >/dev/null 2>&1 ) ; then
+  echo "Installing lsb-release..."
+  apt-get --yes install lsb-release >/dev/null || exit 1
+fi
+
+CODENAME=$(lsb_release --codename --short)
+if [ -z "$CODENAME" ] ; then
+  echo "I can't get system codename!" >&2
+  exit 1
+fi
+
+#
 # check and install dependencies
-if [ ! -f /etc/apt/sources.list.d/backports.list ] && ( ! grep "buster-backports" /etc/apt/sources.list >/dev/null ) ; then
+if [ ! -f /etc/apt/sources.list.d/backports.list ] && ( ! grep "${CODENAME}-backports" /etc/apt/sources.list >/dev/null ) ; then
   echo "Configuring debian backports..."
   cat > /etc/apt/sources.list.d/backports.list <<EOF
-deb http://httpredir.debian.org/debian buster-backports main contrib non-free
-deb-src http://httpredir.debian.org/debian buster-backports main contrib non-free
+deb http://httpredir.debian.org/debian ${CODENAME}-backports main contrib non-free
+deb-src http://httpredir.debian.org/debian ${CODENAME}-backports main contrib non-free
 EOF
 
   echo "Updating indexes of available packages..."
   apt-get update >/dev/null || exit 1
 fi
 
-if ( ! dpkg -l ansible >/dev/null 2>&1 ) ; then
-  echo "Installing ansible from buster-backports..."
-  apt-get --yes -t buster-backports install ansible >/dev/null || exit 1
-fi
-
 _install_pkgs=''
-for pkt in python python-dialog python-yaml python-dnspython acl pwgen sshpass ; do
+for pkt in ansible python python-dnspython python3-dnspython acl ; do
   if ( ! dpkg -l $pkt 2>&1 | grep ^ii >/dev/null ) ; then
     _install_pkgs="$pkt $_install_pkgs"
   fi
@@ -39,12 +47,8 @@ if [ -n "$_install_pkgs" ]; then
 fi
 
 #
-# Reset some env vars
-#export TERM=xterm-color
-export ANSIBLE_CONFIG='./ansible/ansible.cfg'
-
-#
 # run setup
-cd $(dirname $0)
-./scripts/privcore_setup.py $*
+cd $(dirname $0)/ansible
+export ANSIBLE_CONFIG='./ansible.cfg'
+ansible-playbook privcore.yml $*
 

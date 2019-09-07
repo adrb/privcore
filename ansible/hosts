@@ -1,11 +1,16 @@
 
+# Core services
+# Inside of this group only one server allowed
 [controller]
-# inside of this group only one server allowed
 privcore.local
 
+#
+# Application/Storage server
 [app]
 privcore.local
 
+#
+# Mail server
 [mail]
 privcore.local
 
