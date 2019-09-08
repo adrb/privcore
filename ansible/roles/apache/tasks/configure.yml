@@ -2,6 +2,7 @@
 
 - name: configuring PHP opcache
   template: src=opcache.ini.j2 dest=/etc/php/7.3/mods-available/opcache.ini
+  notify: restart apache
 
 - name: enabling apache ssl module
   command: a2enmod ssl
