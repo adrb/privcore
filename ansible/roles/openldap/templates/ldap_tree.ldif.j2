@@ -54,8 +54,7 @@ cn: DomainUsers
 gidnumber: 1001
 objectclass: posixGroup
 objectclass: top
-objectclass: labeledURIObject
-labeledURI: ldap:///ou=accounts,ou=users,{{openldap_config.suffix}}?uid?one?(objectClass=inetOrgPerson)
+memberuid: {{openldap_config.admin_user}}
 
 dn: ou=Sudoers,ou=groups,{{openldap_config.suffix}}
 objectclass: organizationalUnit
@@ -78,8 +77,6 @@ objectclass: top
 dn: cn=all@{{ openldap_config.smtp_internet_domains[0] }},ou=SMTP,ou=groups,{{openldap_config.suffix}}
 cn: all@{{ openldap_config.smtp_internet_domains[0] }}
 objectclass: nisMailAlias
-objectclass: labeledURIObject
 objectclass: top
-labeledURI: ldap:///ou=accounts,ou=users,{{openldap_config.suffix}}?mail?one?(objectClass=inetOrgPerson)
-
+memberuid: {{openldap_config.admin_user}}@{{ openldap_config.smtp_internet_domains[0] }}
 
