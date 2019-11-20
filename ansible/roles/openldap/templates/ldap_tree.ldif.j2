@@ -78,5 +78,5 @@ dn: cn=all@{{ openldap_config.smtp_internet_domains[0] }},ou=SMTP,ou=groups,{{op
 cn: all@{{ openldap_config.smtp_internet_domains[0] }}
 objectclass: nisMailAlias
 objectclass: top
-memberuid: {{openldap_config.admin_user}}@{{ openldap_config.smtp_internet_domains[0] }}
+mail: {{openldap_config.admin_user}}@{{ openldap_config.smtp_internet_domains[0] }}
 
