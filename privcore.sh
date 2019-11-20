@@ -63,5 +63,5 @@ if [ ! -d plugins ] ; then
 fi
 
 export ANSIBLE_CONFIG='./ansible.cfg'
-ansible-playbook privcore.yml $*
+ansible-playbook privcore.yml "$@"
 
