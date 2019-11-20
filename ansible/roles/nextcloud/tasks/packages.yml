@@ -39,6 +39,8 @@
       - php-intl
       - php-mysqlnd
       - php-zip
+      # samba support
+      - php-smbclient
 
 - name: install nextcloud files
   unarchive: src={{ nextcloud_config.source }} dest={{ nextcloud_config.install_dir }} keep_newer=yes

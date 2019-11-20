@@ -14,6 +14,7 @@
 
 - name: configuring
   shell: |
+    su - www-data -s /bin/bash
     cd {{ nextcloud_config.install_dir }}/nextcloud
     php occ maintenance:install --no-interaction --database="mysql" \
       --database-name="{{nextcloud_config.mysql_db}}" \
@@ -25,10 +26,13 @@
   register: occ_install_result
   failed_when: occ_install_result.rc != 0
   changed_when: occ_install_result.rc != 0
-  become: true
-  become_method: su
-  become_user: www-data
-  become_flags: '-s /bin/bash'
+# become_flags seems not working properly with mitogen plugin
+  args:
+    warn: false
+#  become: true
+#  become_method: su
+#  become_user: www-data
+#  become_flags: '-s /bin/bash'
 
 - name: fixing configured cli.url
   lineinfile: dest={{ nextcloud_config.install_dir }}/nextcloud/config/config.php regexp="'overwrite.cli.url' => '" line="  'overwrite.cli.url' => 'https://{{ nextcloud_config.internet_domain }}'," insertbefore="\);"
@@ -41,6 +45,7 @@
 
 - name: enabling and installing basic apps
   shell: |
+    su - www-data -s /bin/bash
     cd {{ nextcloud_config.install_dir }}/nextcloud
     php occ app:install --no-interaction --quiet {{ item }}
     php occ app:enable --no-interaction --quiet {{ item }}
@@ -49,10 +54,13 @@
   register: occ_app_result
   failed_when: occ_app_result.rc != 0
   changed_when: occ_app_result.rc != 0
-  become: true
-  become_method: su
-  become_user: www-data
-  become_flags: '-s /bin/bash'
+# become_flags Seems not working properly with mitogen plugin
+  args:
+    warn: false
+#  become: true
+#  become_method: su
+#  become_user: www-data
+#  become_flags: '-s /bin/bash'
 
 - name: hashing LDAP user password with BASE64
   shell: echo -n "{{nextcloud_config.ro_user_pw}}" | base64
@@ -64,7 +72,7 @@
     ldap_userpw_base64: "{{_ldap_userpw_base64.stdout_lines[0]}}"
 
 - name: Generating apps settings file to /tmp/nextcloud.mysql
-  template: src=nextcloud.mysql.j2 dest=/tmp/nextcloud.mysql
+  template: src=nextcloud.mysql.j2 dest=/tmp/nextcloud.mysql mode=0400
 
 - name: importing configuration from /tmp/nextcloud.mysql
   shell: |
