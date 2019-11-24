@@ -1,25 +1,3 @@
-[sssd]
-config_file_version = 2
-reconnection_retries = 3
-services = nss, pam, ssh, autofs, sudo
-
-# List of domains in the order you want them to be queried
-domains = local
-#debug_level = 10
-
-[nss]
-filter_users = root,daemon,bin,mail,www-data,nobody,sshd,bind,openldap,sssd
-reconnection_retries = 3
-
-[pam]
-reconnection_retries = 3
-
-[ssh]
-
-[autofs]
-
-[sudo]
-
 [domain/local]
 entry_cache_timeout = 600
 # Allow offline logins by locally storing password hashes (default: false)
@@ -63,7 +41,30 @@ ldap_autofs_entry_key = cn
 ldap_autofs_entry_value = automountInformation
 
 sudo_provider = ldap
-ldap_sudo_search_base = ou=Sudoers,ou=groups,{{ sssd_config.suffix }}
+ldap_sudo_search_base = ou=SUDOers,ou=groups,{{ sssd_config.suffix }}
 ldap_sudo_full_refresh_interval=86400
 ldap_sudo_smart_refresh_interval=3600
+
+[nss]
+filter_users = root,daemon,bin,mail,www-data,nobody,sshd,bind,openldap,sssd
+reconnection_retries = 3
+
+[pam]
+reconnection_retries = 3
+
+[ssh]
+
+[autofs]
+
+[sudo]
+# Run as root to test it: sudo -U testuser -ll
+
+[sssd]
+config_file_version = 2
+reconnection_retries = 3
+services = nss, pam, ssh, autofs, sudo
+
+# List of domains in the order you want them to be queried
+domains = local
+#debug_level = 10
 

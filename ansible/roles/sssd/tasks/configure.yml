@@ -4,6 +4,9 @@
   template: src=sssd.conf.j2 dest=/etc/sssd/sssd.conf
   notify: restart sssd
 
+- name: generating /etc/nsswitch.conf
+  template: src=nsswitch.conf.j2 dest=/etc/nsswitch.conf
+
 - name: enable pam_mkhomedir.so for sshd
   blockinfile:
     dest: /etc/pam.d/sshd
