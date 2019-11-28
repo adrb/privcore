@@ -1,0 +1,19 @@
+---
+
+- name: install packages
+  apt:
+    state: present
+    name:
+      - samba
+      - smbclient
+      - cifs-utils
+  register: sambainstall_result
+
+- name: mark smbd to start on boot
+  service: name=smbd enabled=yes
+  when: sambainstall_result.changed
+
+- name: mark nmbd to start on boot
+  service: name=nmbd enabled=yes
+  when: sambainstall_result.changed
+

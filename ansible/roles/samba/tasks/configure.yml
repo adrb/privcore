@@ -1,0 +1,9 @@
+---
+
+- name: create samba global shared directory
+  file: path=/srv/samba/shared state=directory owner=root group=DomainUsers mode=3770
+
+- name: generating /etc/samba/smb.conf
+  template: src=smb.conf.j2 dest=/etc/samba/smb.conf
+  notify: restart smbd
+

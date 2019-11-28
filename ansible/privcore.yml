@@ -29,6 +29,8 @@
     - { role: apache, tags: apache }
     # LDAP management interface
     - { role: phpldapadmin, tags: phpldapadmin }
+    # SMB/CIFS
+    - { role: samba, tags: samba }
     # Collaboration server (file, contacts, calendar)
     - { role: nextcloud, tags: nextcloud }
 

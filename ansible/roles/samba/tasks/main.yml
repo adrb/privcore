@@ -1,0 +1,8 @@
+---
+
+- name: repositories and packages
+  include: packages.yml
+
+- name: configure samba
+  include: configure.yml
+
