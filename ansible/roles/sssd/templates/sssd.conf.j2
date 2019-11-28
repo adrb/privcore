@@ -1,4 +1,4 @@
-[domain/local]
+[domain/{{ sssd_config.local_domain }}]
 entry_cache_timeout = 600
 # Allow offline logins by locally storing password hashes (default: false)
 cache_credentials = True
@@ -65,6 +65,6 @@ reconnection_retries = 3
 services = nss, pam, ssh, autofs, sudo
 
 # List of domains in the order you want them to be queried
-domains = local
+domains = {{ sssd_config.local_domain }}
 #debug_level = 10
 

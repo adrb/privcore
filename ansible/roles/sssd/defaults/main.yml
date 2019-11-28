@@ -1,6 +1,8 @@
 ---
 
 sssd_config:
+  local_domain: "{{ config.local_domain }}"
+
   ldap_server_uri: "{{ config.ldap_server_uri }}"
   suffix: "{{ config.suffix }}"
 
