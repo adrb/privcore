@@ -31,6 +31,8 @@ INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_group_member_assoc_attribute"
 INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_turn_on_pwd_change","0") ON DUPLICATE KEY UPDATE configvalue="0";
 INSERT INTO oc_appconfig VALUES ("user_ldap","enabled","yes") ON DUPLICATE KEY UPDATE configvalue="yes";
 
+INSERT INTO oc_appconfig VALUES ("files_external","user_mounting_backends","ftp,dav,owncloud,sftp,amazons3,swift,smb,\OC\Files\Storage\SFTP_Key,\OC\Files\Storage\SMB_OC") ON DUPLICATE KEY UPDATE configvalue="ftp,dav,owncloud,sftp,amazons3,swift,smb,\OC\Files\Storage\SFTP_Key,\OC\Files\Storage\SMB_OC";
+
 INSERT INTO oc_appconfig VALUES ("theming","name","PrivCore") ON DUPLICATE KEY UPDATE configvalue="PrivCore";
 INSERT INTO oc_appconfig VALUES ("theming","url","http://privcore.adrb.pl") ON DUPLICATE KEY UPDATE configvalue="http://privcore.adrb.pl";
 INSERT INTO oc_appconfig VALUES ("theming","enabled","yes") ON DUPLICATE KEY UPDATE configvalue="yes";
