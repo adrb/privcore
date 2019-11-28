@@ -14,14 +14,14 @@
 
 - name: configuring
   shell: |
-    su - www-data -s /bin/bash
-    cd {{ nextcloud_config.install_dir }}/nextcloud
+    su - www-data -s /bin/bash -c ' \
+    cd {{ nextcloud_config.install_dir }}/nextcloud ; \
     php occ maintenance:install --no-interaction --database="mysql" \
       --database-name="{{nextcloud_config.mysql_db}}" \
       --database-user="{{nextcloud_config.mysql_user}}" \
       --database-pass="{{nextcloud_config.mysql_pass}}" \
       --admin-user="admin" --admin-pass="{{nextcloud_config.master_passwd}}" \
-      --data-dir="{{ nextcloud_config.install_dir }}/nextcloud/data"
+      --data-dir="{{ nextcloud_config.install_dir }}/nextcloud/data" '
     :
   register: occ_install_result
   failed_when: occ_install_result.rc != 0
@@ -45,10 +45,10 @@
 
 - name: enabling and installing basic apps
   shell: |
-    su - www-data -s /bin/bash
-    cd {{ nextcloud_config.install_dir }}/nextcloud
-    php occ app:install --no-interaction --quiet {{ item }}
-    php occ app:enable --no-interaction --quiet {{ item }}
+    su - www-data -s /bin/bash -c ' \
+    cd {{ nextcloud_config.install_dir }}/nextcloud ; \
+    php occ app:install --no-interaction --quiet {{ item }} ; \
+    php occ app:enable --no-interaction --quiet {{ item }} '
     :
   with_items: "{{ nextcloud_config.apps_list}}"
   register: occ_app_result
