@@ -19,7 +19,7 @@ nextcloud_config:
   mysql_db: nextcloud
 
   install_dir: /var/www
-  source: "nextcloud-17.0.1.tar.bz2"
+  version: '17.0.1'
 
   apps_list:
     - "user_ldap"

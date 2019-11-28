@@ -42,8 +42,19 @@
       # samba support
       - php-smbclient
 
+- name: creating _nc_archive_file variable
+  set_fact:
+    _nc_archive_file: "nextcloud-{{ nextcloud_config.version}}.tar.bz2"
+
+- name: Download nextcloud archive
+  get_url:
+    url: https://download.nextcloud.com/server/releases/{{ _nc_archive_file }}
+    dest: /tmp/{{ _nc_archive_file }}
+    mode: '0440'
+    checksum: sha256:773e0ee526c2bbc359c012783b3ec65f3b0119a8821bcbacfba2b84ed8bf2b4b
+
 - name: install nextcloud files
-  unarchive: src={{ nextcloud_config.source }} dest={{ nextcloud_config.install_dir }} keep_newer=yes
+  unarchive: remote_src=yes src=/tmp/{{ _nc_archive_file }} dest={{ nextcloud_config.install_dir }} keep_newer=yes
 
 # For those it's better to deploy known good versions than install it with "php -f occ app:install ..."
 #- name: install nextcloud apps from sources
