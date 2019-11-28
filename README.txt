@@ -1,16 +1,17 @@
 
 PrivCore 3.0 (buster)
-
 Author: Adrian Brzezinski
 
------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
-This software is distributed under CreativeCommons BY-SA 4.0 license.
-Full license text you can read on :
+Self-hosted solution for your files, email, mobile contacts, calendar and more.
+Perfect not only for small and medium size companies, but virtually for
+anyone who want to keep data on own servers without giving up new Cloud
+based capabilities.
 
- - https://creativecommons.org/licenses/by-sa/4.0/legalcode
+For detailed information, please visit http://privcore.adrb.pl
 
------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 Quick install:
 
@@ -21,5 +22,12 @@ PrivCore is to be installed
 
 - Run "./privcore.sh" script from current directory
 
-For detailed instructions and more, please visit http://privcore.adrb.pl
+-------------------------------------------------------------------------------
+
+This software is distributed under CreativeCommons BY-SA 4.0 license.
+Full license text you can read on :
+
+ - https://creativecommons.org/licenses/by-sa/4.0/legalcode
+
+-------------------------------------------------------------------------------
 
