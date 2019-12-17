@@ -15,7 +15,7 @@ nextcloud_config:
   ro_user_pw: "{{ config.ro_user_passwd }}"
 
   mysql_user: nextcloud
-  mysql_pass: "{{ lookup('password', '.pc_nc_mysql_passwd chars=ascii_letters,digits,hexdigits,punctuation length=20') }}"
+  mysql_pass: "{{ lookup('password', '.pc_nc_mysql_passwd chars=ascii_letters,digits,hexdigits length=20') }}"
   mysql_db: nextcloud
 
   install_dir: /var/www
