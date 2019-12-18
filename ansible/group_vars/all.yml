@@ -10,7 +10,7 @@ privcore_config:
 
   # Master password for all services. Because we need set something
   # before domain authorization can be configured
-  master_passwd: "{{ lookup('password', '.pc_master_passwd chars=ascii_letters,digits,hexdigits,punctuation length=20') }}"
+  master_passwd: "{{ lookup('password', '.pc_master_passwd chars=ascii_letters,digits,hexdigits length=20') }}"
 
   # Domain admin user
   admin_user: Administrator
@@ -18,7 +18,7 @@ privcore_config:
 
   # Domain readonly user, for services that need query directory data
   ro_user_dn: "uid=readonly,ou=services,ou=users,dc=local"
-  ro_user_passwd: "{{ lookup('password', '.pc_ro_user_passwd chars=ascii_letters,digits,hexdigits,punctuation length=20') }}"
+  ro_user_passwd: "{{ lookup('password', '.pc_ro_user_passwd chars=ascii_letters,digits,hexdigits length=20') }}"
 
   # App server public domain for HTTPS and other services
   internet_domain: "privcore.example.org"
