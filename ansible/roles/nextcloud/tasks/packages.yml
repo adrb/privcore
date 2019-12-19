@@ -39,6 +39,7 @@
       - php-intl
       - php-mysqlnd
       - php-zip
+      - php-imagick
       # samba support
       - php-smbclient
 
