@@ -1,0 +1,11 @@
+---
+
+- name: Installing
+  include_tasks: '{{ansible_distribution}}/{{ansible_distribution_major_version}}/install.yml'
+
+- name: Configure docker services
+  docker_service:
+    project_name: "{{ item.key }}"
+    definition: "{{ item.value.definition | default( omit ) }}"
+  with_dict: "{{ docker_config.projects }}"
+

@@ -1,6 +1,6 @@
 ---
 #
-# Documentation: https://docs.nextcloud.com/server/16/admin_manual/installation/
+# Documentation: https://docs.nextcloud.com/server/17/admin_manual/installation/
 #
 
 - name: creating database {{nextcloud_config.mysql_db}}
@@ -80,10 +80,6 @@
   args:
     executable: /bin/bash
 
-- name: generating apache configuration
-  template: src=apache.conf.j2 dest=/etc/apache2/conf-available/nextcloud.conf
-  notify: reload apache
-
 - name: enabling apache headers module
   command: a2enmod headers
   register: a2enmod_headers
@@ -96,7 +92,27 @@
   changed_when: ("Module rewrite already enabled" not in a2enmod_rewrite.stdout)
   notify: restart apache
 
-- name: enabling apache configuration
+- name: enabling apache proxy module
+  command: a2enmod proxy
+  register: a2enmod_proxy
+  changed_when: ("Module proxy already enabled" not in a2enmod_proxy.stdout)
+  notify: restart apache
+
+- name: enabling apache proxy_http module
+  command: a2enmod proxy_http
+  register: a2enmod_proxy_http
+  changed_when: ("Module proxy_http already enabled" not in a2enmod_proxy_http.stdout)
+  notify: restart apache
+
+- name: generating apache configuration for Nextcloud
+  template: src=nextcloud.apache.j2 dest=/etc/apache2/conf-available/nextcloud.conf
+  notify: reload apache
+
+- name: generating apache configuration for LibreOffice Online
+  template: src=lool.apache.j2 dest=/etc/apache2/privcore-conf/lool.conf
+  notify: reload apache
+
+- name: enabling apache configuration for Nextcloud
   command: a2enconf nextcloud
   register: a2enconf_nextcloud
   changed_when: ("Conf nextcloud already enabled" not in a2enconf_nextcloud.stdout)

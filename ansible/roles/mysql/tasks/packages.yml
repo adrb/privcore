@@ -4,7 +4,7 @@
   apt:
     state: present
     name:
-      - python-mysqldb  # for ansible mysql_user module
+      - python3-mysqldb  # for ansible mysql_user module
       - default-mysql-server
       - default-mysql-client
 

@@ -38,7 +38,7 @@ EOF
 fi
 
 _install_pkgs=''
-for pkt in ansible python python-dnspython python3-dnspython acl ; do
+for pkt in ansible python3 python3-dnspython acl ; do
   if ( ! dpkg -l $pkt 2>&1 | grep ^ii >/dev/null ) ; then
     _install_pkgs="$pkt $_install_pkgs"
   fi
@@ -63,5 +63,5 @@ if [ ! -d plugins ] ; then
 fi
 
 export ANSIBLE_CONFIG='./ansible.cfg'
-ansible-playbook privcore.yml "$@"
+ansible-playbook privcore.yml -e ansible_python_interpreter=/usr/bin/python3 --diff "$@"
 

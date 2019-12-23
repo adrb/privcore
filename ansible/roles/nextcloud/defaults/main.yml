@@ -19,7 +19,8 @@ nextcloud_config:
   mysql_db: nextcloud
 
   install_dir: /var/www
-  version: '17.0.1'
+  version: '17.0.2'
+  archive_checksum: 'sha256:f32596ffc057ef88a5e92a71016fc8685f57f518bfd8f97d1d9b4ae73d553de3'
 
   apps_list:
     - "user_ldap"
@@ -28,6 +29,7 @@ nextcloud_config:
     - "mail"
     - "files_external"
     - "spreed"
+    - "richdocuments" # Collabora online
 
 # Example ldap_user config
 # $ php occ ldap:create-empty-config --only-print-prefix

@@ -52,7 +52,7 @@
     url: https://download.nextcloud.com/server/releases/{{ _nc_archive_file }}
     dest: /tmp/{{ _nc_archive_file }}
     mode: '0440'
-    checksum: sha256:773e0ee526c2bbc359c012783b3ec65f3b0119a8821bcbacfba2b84ed8bf2b4b
+    checksum: '{{ nextcloud_config.archive_checksum }}'
 
 - name: install nextcloud files
   unarchive: remote_src=yes src=/tmp/{{ _nc_archive_file }} dest={{ nextcloud_config.install_dir }} keep_newer=yes

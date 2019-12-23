@@ -1,0 +1,28 @@
+---
+
+docker_config:
+
+  master_passwd: "{{ config.master_passwd }}"
+  internet_domain: "{{ config.internet_domain }}"
+
+  projects:
+    privcore:
+      definition:
+        version: '2'
+        services:
+          libreoffice-online:
+            container_name: 'libreoffice-online'
+#            image: 'collabora/code'
+            image: 'libreoffice/online:master'
+            restart: unless-stopped
+            ports:
+              - 9980:9980
+            environment:
+              - 'domain={{ config.internet_domain.split(".")|join("\\.") }}'
+              - 'username=admin'
+              - 'password={{ config.ro_user_passwd }}'
+              - 'DONT_GEN_SSL_CERT=1'
+              - 'extra_params=--o:ssl.enable=false --o:ssl.termination=true'
+            cap_add:
+              - MKNOD
+

@@ -41,5 +41,9 @@ INSERT INTO oc_appconfig VALUES ("spreed","stun_servers","[\"{{nextcloud_config.
 INSERT INTO oc_appconfig VALUES ("spreed","turn_servers","[{\"server\":\"{{nextcloud_config.internet_domain}}:3478\",\"secret\":\"{{coturn_auth_secret}}\",\"protocols\":\"udp,tcp\"}]") ON DUPLICATE KEY UPDATE configvalue="[{\"server\":\"{{nextcloud_config.internet_domain}}:3478\",\"secret\":\"{{coturn_auth_secret}}\",\"protocols\":\"udp,tcp\"}]";
 INSERT INTO oc_appconfig VALUES ("spreed","enabled","yes") ON DUPLICATE KEY UPDATE configvalue="yes";
 
+INSERT INTO oc_appconfig VALUES ("richdocuments","public_wopi_url","https://{{nextcloud_config.internet_domain}}") ON DUPLICATE KEY UPDATE configvalue="https://{{nextcloud_config.internet_domain}}";
+INSERT INTO oc_appconfig VALUES ("richdocuments","wopi_url","https://{{nextcloud_config.internet_domain}}") ON DUPLICATE KEY UPDATE configvalue="https://{{nextcloud_config.internet_domain}}";
+INSERT INTO oc_appconfig VALUES ("richdocuments","enabled","yes") ON DUPLICATE KEY UPDATE configvalue="yes";
+
 UNLOCK TABLES;
 

@@ -1,7 +1,22 @@
 ---
 
+- name: creating PrivCore config directory - /etc/apache2/privcore-conf
+  file: path=/etc/apache2/privcore-conf state=directory owner=root group=root mode=0755
+
 - name: configuring PHP opcache
   template: src=opcache.ini.j2 dest=/etc/php/7.3/mods-available/opcache.ini
+  notify: restart apache
+
+- name: enabling apache headers module
+  command: a2enmod headers
+  register: a2enmod_headers
+  changed_when: ("Module headers already enabled" not in a2enmod_headers.stdout)
+  notify: restart apache
+
+- name: enabling apache rewrite module
+  command: a2enmod rewrite
+  register: a2enmod_rewrite
+  changed_when: ("Module rewrite already enabled" not in a2enmod_rewrite.stdout)
   notify: restart apache
 
 - name: enabling apache ssl module
@@ -25,9 +40,15 @@
     marker: "# {mark} ANSIBLE MANAGED BLOCK "
     block: |
 
-      Redirect permanent / https://{{apache_config.internet_domain}}/
-      Redirect permanent /ldapadmin https://{{apache_config.internet_domain}}/ldapadmin
-      Redirect permanent /nextcloud  https://{{apache_config.internet_domain}}/nextcloud
+      RewriteCond %{HTTP:X-Forwarded-Proto} !https
+      RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301,E=nocache:1,NE]
+
+      Header always set Cache-Control "max-age=0, private" env=nocache
+      Header always set Expires "-1" env=nocache
+
+      SetEnvIf X-Forwarded-Proto "^https$" HTTPS=on
+
+      IncludeOptional privcore-conf/*.conf
 
     insertbefore: "</VirtualHost>"
   notify: reload apache
