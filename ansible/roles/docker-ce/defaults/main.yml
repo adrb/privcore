@@ -20,7 +20,7 @@ docker_config:
             environment:
               - 'domain={{ config.internet_domain.split(".")|join("\\.") }}'
               - 'username=admin'
-              - 'password={{ config.ro_user_passwd }}'
+              - 'password={{ config.master_passwd }}'
               - 'DONT_GEN_SSL_CERT=1'
               - 'extra_params=--o:ssl.enable=false --o:ssl.termination=true'
             cap_add:
