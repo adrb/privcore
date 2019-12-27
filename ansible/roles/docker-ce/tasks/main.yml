@@ -3,6 +3,10 @@
 - name: Installing
   include_tasks: '{{ansible_distribution}}/{{ansible_distribution_major_version}}/install.yml'
 
+- name: generating /etc/docker/daemon.json
+  copy: content={{ docker_config.daemon | to_nice_json(indent=2) }} dest=/etc/docker/daemon.json
+  notify: restart docker
+
 - name: Configure docker services
   docker_service:
     project_name: "{{ item.key }}"

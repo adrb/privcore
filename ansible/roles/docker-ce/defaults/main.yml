@@ -5,6 +5,13 @@ docker_config:
   master_passwd: "{{ config.master_passwd }}"
   internet_domain: "{{ config.internet_domain }}"
 
+  daemon:
+    "log-driver": "json-file"
+    "log-opts":
+      "max-size": "1g"
+      "max-file": "3"
+      "compress": "true"
+
   projects:
     privcore:
       definition:
