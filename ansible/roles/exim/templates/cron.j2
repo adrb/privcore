@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# Tidying the database
+if [ -r "{{ exim_config.greylist_dbfile }}" ]; then
+  sqlite3 "{{ exim_config.greylist_dbfile }}" <<EOF
+.timeout 5000
+DELETE FROM greylist WHERE expire < strftime('%s', 'now', '-1 day');
+EOF
+
+  sqlite3 "{{ exim_config.greylist_dbfile }}" <<EOF
+.timeout 5000
+DELETE FROM resenders WHERE time < strftime('%s', 'now', '-3 months');
+EOF
+
+fi
+
+# Output some Statistics
+DAY=$(($(date +%s)/86400))
+
+echo -n "Mails greylisted and not retried yesterday: "
+sqlite3 "{{ exim_config.greylist_dbfile }}" <<EOF
+SELECT COUNT(*) FROM greylist LEFT OUTER JOIN resenders ON
+  (greylist.host = resenders.host AND greylist.helo = resenders.helo)
+  WHERE resenders.host IS null
+  AND greylist.expire > $(((DAY - 1) * 86400))
+  AND greylist.expire <= $((DAY * 86400));
+EOF
+
+echo -n "Mails greylisted and then retried yesterday: "
+sqlite3 "{{ exim_config.greylist_dbfile }}" <<EOF
+SELECT COUNT(*) FROM greylist LEFT OUTER JOIN resenders ON
+  (greylist.host = resenders.host AND greylist.helo = resenders.helo)
+  WHERE resenders.host IS NOT null
+  AND greylist.expire > $(((DAY - 1) * 86400))
+  AND greylist.expire <= $((DAY * 86400));
+EOF
+

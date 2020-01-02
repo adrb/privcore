@@ -16,3 +16,6 @@ exim_config:
   tls_cert: "{{ config.tls_cert }}"
   tls_cert_key: "{{ config.tls_cert_key }}"
 
+  # Check $spool_directory location with: exim -bP | grep ^spool_directory
+  greylist_dbfile: "/var/spool/exim4/greylist.sqlite"
+

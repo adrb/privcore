@@ -5,4 +5,6 @@
     state: present
     name:
       - exim4-daemon-heavy
+      - spf-tools-perl # check SFP domain records
+      - sqlite3  # greylisting database
 

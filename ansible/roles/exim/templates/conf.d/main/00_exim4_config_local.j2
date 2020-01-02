@@ -18,6 +18,11 @@ MESSAGE_SIZE_LIMIT = 64M
 #MAIN_LOG_SELECTOR = +deliver_time +queue_time +queue_time_overall +subject -host_lookup_failed -lost_incoming_connection
 MAIN_LOG_SELECTOR = +all
 
+# Verify incoming emails
+CHECK_RCPT_SPF = true
+CHECK_RCPT_REVERSE_DNS = true
+acl_smtp_dkim = acl_check_dkim
+
 #
 # Main configuration
 #

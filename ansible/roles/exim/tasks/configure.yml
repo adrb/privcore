@@ -6,16 +6,48 @@
 - name: setting ACL to {{ exim_config.tls_cert_key }} for user Debian-exim
   acl: name="{{ exim_config.tls_cert_key }}" entity=Debian-exim etype=user permissions="r" state=present
 
+  # Please read:
+  #  - https://github.com/Exim/exim/wiki/SpamFiltering
+  #  - https://github.com/Exim/exim/wiki/SimpleGreylisting
+- name: creating SQLite database for simple Greylisting filter
+  shell:
+    cmd: |
+      sqlite3 "{{ exim_config.greylist_dbfile }}" <<EOF
+      CREATE TABLE resenders (
+        host            TEXT,
+        helo            TEXT,
+        time            INTEGER,
+        PRIMARY KEY (host, helo)
+      );
+      CREATE TABLE greylist (
+        id              TEXT PRIMARY KEY,
+        expire          INTEGER,
+        host            TEXT,
+        helo            TEXT
+      );
+      EOF
+      chown Debian-exim:Debian-exim "{{ exim_config.greylist_dbfile }}"
+  args:
+    executable: /bin/bash
+    creates: "{{ exim_config.greylist_dbfile }}"
+  notify: restart exim
+
 - name: generating exim configuration files
   template: src={{item}}.j2 dest=/etc/exim4/{{item}}
   with_items:
     - 'update-exim4.conf.conf'
     - 'conf.d/main/00_exim4_config_local'
     - 'conf.d/auth/01_exim4-config_ldap_auth'
+    - 'conf.d/acl/10_local_dkim_check'
     - 'conf.d/acl/30_exim4-config_connect'
     - 'conf.d/acl/30_exim4-config_check_mail'
+    - 'conf.d/acl/50_greylist'
+    - 'conf.d/acl/40_exim4-config_check_data'
     - 'conf.d/rewrite/01_exim4-config_local_domains'
     - 'conf.d/router/01_exim4-config_ldap_local'
     - 'conf.d/transport/01_exim4-config_ldap_maildir'
   notify: restart exim
+
+- name: generating greylist maintenance cron job
+  template: src=cron.j2 dest=/etc/cron.daily/exim4-greylisting mode=0755
 
