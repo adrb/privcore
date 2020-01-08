@@ -17,3 +17,11 @@
 
     Header always set Strict-Transport-Security "max-age=15552000; includeSubDomains"
 
+    <Location /.well-known>
+        RewriteEngine On
+
+        RewriteRule /(card|cal)dav$ https://%{HTTP_HOST}/nextcloud/remote.php/dav [L,R=301,NC]
+        RewriteRule /webfinger$ https://%{HTTP_HOST}/nextcloud/public.php?service=webfinger [L,QSA,NC]
+        RewriteRule /host-meta$ https://%{HTTP_HOST}/nextcloud/public.php?service=host-meta [L,QSA,NC]
+        RewriteRule /host-meta\.json$ https://%{HTTP_HOST}/nextcloud/public.php?service=host-meta-json [L,QSA,NC]
+   </Location>
