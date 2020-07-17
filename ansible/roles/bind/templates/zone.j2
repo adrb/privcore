@@ -22,6 +22,6 @@ ntp1            A       {{ hostvars[ inventory_hostname ].ansible_default_ipv4.a
 
 ; Hosts
 {% for host in groups['all'] %}
-{{hostvars[host].inventory_hostname}}       A       {{hostvars[host].ansible_default_ipv4.address}}
+{{hostvars[host].ansible_hostname}}       A       {{hostvars[host].ansible_default_ipv4.address}}
 {% endfor %}
 
