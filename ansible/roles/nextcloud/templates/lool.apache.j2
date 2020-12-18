@@ -37,3 +37,7 @@
   ProxyPass           /lool http://127.0.0.1:9980/lool
   ProxyPassReverse    /lool http://127.0.0.1:9980/lool
 
+  # Collabora Online
+  ProxyPass           /hosting/capabilities https://127.0.0.1:9980/hosting/capabilities retry=0
+  ProxyPassReverse    /hosting/capabilities https://127.0.0.1:9980/hosting/capabilities
+
