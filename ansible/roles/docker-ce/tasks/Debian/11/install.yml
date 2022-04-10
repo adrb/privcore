@@ -1,0 +1,36 @@
+---
+# https://docs.docker.com/install/linux/docker-ce/debian/
+
+- name: Install repo dependencies
+  apt:
+    state: present
+    name:
+        - 'apt-transport-https'
+        - 'ca-certificates'
+        - 'curl'
+        - 'gnupg2'
+        - 'software-properties-common'
+
+- name: Install repo keys
+  apt_key:
+    state: present
+    url: 'https://download.docker.com/linux/debian/gpg'
+    id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+
+- name: Setup repository
+  apt_repository:
+    state: present
+    repo: 'deb [arch=amd64] https://download.docker.com/linux/debian {{ansible_distribution_release}} stable'
+    filename: 'doker-ce'
+
+- name: Install docker-ce
+  apt:
+    state: present
+    name:
+        - 'docker-ce'
+        - 'docker-compose'
+        - 'python3-docker'
+
+- name: Enable docker service
+  service: name=docker enabled=yes
+

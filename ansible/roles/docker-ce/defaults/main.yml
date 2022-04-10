@@ -18,18 +18,20 @@ docker_config:
         version: '2'
         services:
           libreoffice-online:
-            container_name: 'libreoffice-online'
-#            image: 'collabora/code'
-            image: 'libreoffice/online:master'
+            container_name: 'collabora'
+            image: 'collabora/code'
             restart: unless-stopped
             ports:
               - 9980:9980
             environment:
-              - 'domain={{ config.internet_domain.split(".")|join("\\.") }}'
+#              - 'domain={{ config.internet_domain.split(".")|join("\\.") }}'
+              - 'aliasgroup1=https://{{ config.internet_domain }}:443'
+              - 'server_name={{ config.internet_domain }}'
               - 'username=admin'
               - 'password={{ config.master_passwd }}'
               - 'DONT_GEN_SSL_CERT=1'
               - 'extra_params=--o:ssl.enable=false --o:ssl.termination=true'
+#              - 'SLEEPFORDEBUGGER=0'
             cap_add:
               - MKNOD
 

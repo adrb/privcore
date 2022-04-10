@@ -1,23 +1,22 @@
 
   #
   # Docs:
-  #   https://www.collaboraoffice.com/code/apache-reverse-proxy/
-  #   https://wopi.readthedocs.io/en/latest/
+  #   https://nextcloud.com/collaboraonline/
+  #   https://hub.docker.com/r/collabora/code
+  #   https://sdk.collaboraonline.com/docs/installation/Proxy_settings.html#reverse-proxy-with-nginx-webserver
+  #   https://www.collaboraoffice.com/code/quick-tryout-nextcloud-docker/
   #
 
   Options -Indexes
 
-  # Encoded slashes need to be allowed
-  # See https://bz.apache.org/bugzilla/show_bug.cgi?id=46830
-  AllowEncodedSlashes NoDecode
 
-  # keep the host
+  AllowEncodedSlashes NoDecode
   ProxyPreserveHost On
 
-  # static html, js, images, etc. served from loolwsd
-  # loleaflet is the client part of Collabora Online
-  ProxyPass           /loleaflet http://127.0.0.1:9980/loleaflet retry=0
-  ProxyPassReverse    /loleaflet http://127.0.0.1:9980/loleaflet
+  # static html, js, images, etc. served from coolwsd
+  # browser is the client part of Collabora Online
+  ProxyPass           /browser http://127.0.0.1:9980/browser retry=0
+  ProxyPassReverse    /browser http://127.0.0.1:9980/browser
 
   # WOPI discovery URL
   ProxyPass           /hosting/discovery http://127.0.0.1:9980/hosting/discovery retry=0
@@ -28,16 +27,16 @@
   ProxyPassReverse    /hosting/capabilities http://127.0.0.1:9980/hosting/capabilities
 
   # Main websocket
-  ProxyPassMatch "/lool/(.*)/ws$" ws://127.0.0.1:9980/lool/$1/ws nocanon
+  ProxyPassMatch      "/cool/(.*)/ws$"      ws://127.0.0.1:9980/cool/$1/ws nocanon
 
   # Admin Console websocket
-  ProxyPass   /lool/adminws ws://127.0.0.1:9980/lool/adminws
+  ProxyPass           /cool/adminws ws://127.0.0.1:9980/cool/adminws
 
   # Download as, Fullscreen presentation and Image upload operations
-  ProxyPass           /lool http://127.0.0.1:9980/lool
-  ProxyPassReverse    /lool http://127.0.0.1:9980/lool
+  ProxyPass           /cool http://127.0.0.1:9980/cool
+  ProxyPassReverse    /cool http://127.0.0.1:9980/cool
 
-  # Collabora Online
-  ProxyPass           /hosting/capabilities https://127.0.0.1:9980/hosting/capabilities retry=0
-  ProxyPassReverse    /hosting/capabilities https://127.0.0.1:9980/hosting/capabilities
+  # Compatibility with integrations that use the /lool/convert-to endpoint
+  ProxyPass           /lool http://127.0.0.1:9980/cool
+  ProxyPassReverse    /lool http://127.0.0.1:9980/cool
 

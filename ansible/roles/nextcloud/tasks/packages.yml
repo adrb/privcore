@@ -4,9 +4,10 @@
   apt:
     state: present
     name:
-      - python-mysqldb  # for ansible mysql_user module
+      - python3-mysqldb  # for ansible mysql_user module
       - libapache2-mod-php # module for apache
       - php
+      - php-cli
       - php-apcu
       # ICE/TURN/STUN server
       - coturn
@@ -23,25 +24,26 @@
       - libjs-mediaelement
       - libjs-underscore
       - libphp-phpmailer
-      - php-doctrine-dbal
-      - php-getid3
-      - php-patchwork-utf8
-      - php-pear
-      - php-sabre-dav
-      - php-seclib
-      - php-symfony-class-loader
-      - php-symfony-console
-      - php-symfony-routing
-      - php-cli
+      - php-common
+      - php-curl
       - php-gd
       - php-json
-      - php-curl
-      - php-intl
-      - php-mysqlnd
+      - php-xml
+      - php-mbstring
       - php-zip
+      - php-mysql
+      - php-bz2
+      - php-intl
+      # ldap support
+      - php-ldap
+      # external user authentication
+      - php-imap
+      # passwordless login
+      - php-bcmath
+      - php-gmp
+      # preview generation
       - php-imagick
-      # samba support
-      - php-smbclient
+      - ffmpeg
 
 - name: creating _nc_archive_file variable
   set_fact:

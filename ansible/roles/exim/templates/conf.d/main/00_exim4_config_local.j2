@@ -21,6 +21,8 @@ MAIN_LOG_SELECTOR = +all
 # Verify incoming emails
 CHECK_RCPT_SPF = true
 acl_smtp_dkim = acl_check_dkim
+{% if exim_config.greylist_new_senders %}GREYLIST_NEW_SENDERS = {{ exim_config.greylist_new_senders }}{% endif %}
+sqlite_dbfile={{ exim_config.greylist_dbfile }}
 
 #
 # Main configuration

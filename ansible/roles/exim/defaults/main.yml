@@ -16,6 +16,11 @@ exim_config:
   tls_cert: "{{ config.tls_cert }}"
   tls_cert_key: "{{ config.tls_cert_key }}"
 
+  # Enable greylist mail delay for senders unforseen before
+  greylist_new_senders: "{{ config.smtp_greylist_new_senders | default(false) }}"
+
   # Check $spool_directory location with: exim -bP | grep ^spool_directory
   greylist_dbfile: "/var/spool/exim4/greylist.sqlite"
+  # For how long (in seconds) email will be delayed
+  grelist_delay: 300
 

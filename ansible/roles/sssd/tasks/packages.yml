@@ -5,6 +5,7 @@
     state: present
     name:
       - sssd
+      - libsss-sudo
       - libldap-common
   register: sssd_install_result
 

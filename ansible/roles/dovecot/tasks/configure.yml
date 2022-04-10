@@ -21,6 +21,7 @@
     - 'conf.d/10-ssl.conf'
     - 'conf.d/auth-ldap.conf.ext'
     - 'conf.d/15-mailboxes.conf'
+    - 'conf.d/20-lmtp.conf'
     - 'dovecot-ldap.conf.ext'
     - 'dovecot.conf'
   notify: restart dovecot

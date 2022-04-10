@@ -6,7 +6,7 @@
   roles:
     - { role: privcore_config, tags: always }
 
-- name: Domain controller
+- name: Primary Controller
   hosts: controller
   gather_facts: yes
   roles:
@@ -14,7 +14,7 @@
     - { role: openldap, tags: openldap }
     - { role: bind, tags: bind }
 
-- name: Join all machines to the domain controller
+- name: Join all machines to the controller
   hosts: all
   gather_facts: yes
   roles:

@@ -5,6 +5,8 @@ nextcloud_config:
 
   internet_domain: "{{ config.internet_domain }}"
 
+  country_code: "{{ config.country_code }}"
+
   tls_ca_cert: "{{ config.tls_ca_cert }}"
   tls_cert: "{{ config.tls_cert }}"
   tls_cert_key: "{{ config.tls_cert_key }}"
@@ -19,8 +21,8 @@ nextcloud_config:
   mysql_db: nextcloud
 
   install_dir: /var/www
-  version: '18.0.0'
-  archive_checksum: 'sha256:194095a5586d84040bc455f77b8aa6c80f9a6a6dd713c9aebdad046713d4267b'
+  version: '23.0.3'
+  archive_checksum: 'sha256:39401d400fab02a84a175ea6e995b8ed4110fbaea48c876230b4f09755a62986'
 
   apps_list:
     - "user_ldap"

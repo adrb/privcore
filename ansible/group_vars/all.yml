@@ -6,6 +6,7 @@ privcore_config:
   local_domain: "{{ ansible_domain }}"
 
   organization_name: "PrivCore"
+  country_code: "PL"
   timezone: "Europe/Warsaw"
 
   # Master password for all services. Because we need set something

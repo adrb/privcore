@@ -19,5 +19,5 @@
     marker: "# {mark} ANSIBLE MANAGED BLOCK "
     block: |
 
-      export MYSQL_PS1="(\\R:\\m:\\s)(\u@$(hostname -f):\d)\nmysql> "
+      export MYSQL_PS1="(\\R:\\m:\\s)(\u@$(hostname -f):\d) \nmysql> "
 

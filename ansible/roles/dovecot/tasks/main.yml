@@ -8,6 +8,12 @@
 #  4 FETCH 1 BODY[]
 #  5 logout
 #
+# Testing ManageSieve (See: https://doc.dovecot.org/configuration_manual/sieve/)
+#  $ auth=$(echo -n 'loginpassword' | base64)
+#  $ telnet localhost 4190
+#  AUTHENTICATE "PLAIN" "$auth"
+#
+
 - name: repositories and packages
   include: packages.yml
 

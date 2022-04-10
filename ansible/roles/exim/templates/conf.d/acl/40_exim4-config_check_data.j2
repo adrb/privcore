@@ -12,9 +12,10 @@ acl_check_data:
   # we should never receive one such via SMTP.
   #
   .ifndef IGNORE_SMTP_LINE_LENGTH_LIMIT
-  deny    message    = maximum allowed line length is 998 octets, \
+  deny
+    condition  = ${if > {$max_received_linelength}{998}}
+    message    = maximum allowed line length is 998 octets, \
                        got $max_received_linelength
-          condition  = ${if > {$max_received_linelength}{998}}
   .endif
 
   # Deny if the headers contain badly-formed addresses.
@@ -32,9 +33,9 @@ acl_check_data:
   # one of the "Sender:", "Reply-To:", or "From:" header lines.
   .ifdef CHECK_DATA_VERIFY_HEADER_SENDER
   deny
-    message = No verifiable sender address in message headers
     !acl = acl_local_deny_exceptions
     !verify = header_sender
+    message = No verifiable sender address in message headers
   .endif
 
 
@@ -77,10 +78,9 @@ acl_check_data:
   # Reject spam messages (score >15.0).
   # This breaks mailing list and forward messages.
   # deny
-  #   message = Classified as spam (score $spam_score)
   #   condition = ${if <{$message_size}{120k}{1}{0}}
   #   condition = ${if >{$spam_score_int}{150}{true}{false}}
-
+  #   message = Classified as spam (score $spam_score)
 
   # This hook allows you to hook in your own ACLs without having to
   # modify this file. If you do it like we suggest, you'll end up with
@@ -90,7 +90,7 @@ acl_check_data:
   .include CHECK_DATA_LOCAL_ACL_FILE
   .endif
 
-  warn  condition = ${if and {                                  \
+  warn  condition = ${if and {                                \
                       {match {${lc:$h_subject:}}{^re:}}       \
                       {!def:h_References:}                    \
                       {!def:h_In-Reply-To:}                   \
@@ -104,7 +104,9 @@ acl_check_data:
   warn dnslists = blackholes.mail-abuse.org
        set acl_m_greylistreasons = Host listed in $dnslist_domain blacklist: $dnslist_text\n$acl_m_greylistreasons
 
+.ifdef GREYLIST_NEW_SENDERS
   warn set acl_m_greylistreasons = Sender is new to me\n$acl_m_greylistreasons
+.endif
 
   require acl = greylist_mail
 

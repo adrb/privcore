@@ -8,7 +8,7 @@
   notify: restart docker
 
 - name: Configure docker services
-  docker_service:
+  docker_compose:
     project_name: "{{ item.key }}"
     definition: "{{ item.value.definition | default( omit ) }}"
   with_dict: "{{ docker_config.projects }}"

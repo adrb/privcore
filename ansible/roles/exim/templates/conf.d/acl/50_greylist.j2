@@ -2,8 +2,8 @@
 # $Id: acl-greylist-sqlite,v 1.3 2007/11/25 19:17:28 dwmw2 Exp $
 
 GREYDB={{ exim_config.greylist_dbfile }}
-# greylist for 5 minutes
-GREYDELAY = (5*60)
+# greylist time in seconds
+GREYDELAY={{ exim_config.grelist_delay }}
 
 # ACL for greylisting. Place reason(s) for greylisting into a variable named
 # $acl_m_greylistreasons before invoking with 'require acl = greylist_mail'.
@@ -53,7 +53,7 @@ greylist_mail:
 
   # Secondly, there's _absolutely_ no point in greylisting mail from
   # hosts which are known to resend their mail. Just accept it.
-  accept condition = ${lookup sqlite {GREYDB SELECT host from resenders \
+  accept condition = ${lookup sqlite {SELECT host from resenders \
                                WHERE helo='${quote_sqlite:$sender_helo_name}' \
                                AND host='$sender_host_address';} {1}}
 
@@ -63,7 +63,7 @@ greylist_mail:
   # Attempt to look up this mail in the greylist database. If it's there,
   # remember the expiry time for it; we need to make sure they've waited
   # long enough.
-  warn set acl_m_greyexpiry = ${lookup sqlite {GREYDB SELECT expire FROM greylist \
+  warn set acl_m_greyexpiry = ${lookup sqlite {SELECT expire FROM greylist \
                                 WHERE id='${quote_sqlite:$acl_m_greyident}';}{$value}}
 
   # If there's absolutely nothing suspicious about the email, accept it. BUT...
@@ -83,7 +83,7 @@ greylist_mail:
   # where the GREYDELAY timeout is set ($tod_epoch + GREYDELAY), should you wish
   # to change it.
   warn  condition = ${if eq {$acl_m_greyexpiry}{} {1}}
-        set acl_m_dontcare = ${lookup sqlite {GREYDB INSERT INTO greylist \
+        set acl_m_dontcare = ${lookup sqlite {INSERT INTO greylist \
                                         VALUES ( '$acl_m_greyident', \
                                                  '${eval10:$tod_epoch+GREYDELAY}', \
                                                  '$sender_host_address', \
@@ -92,7 +92,7 @@ greylist_mail:
   # Be paranoid, and check if the insertion succeeded (by doing another lookup).
   # Otherwise, if there's a database error we might end up deferring for ever.
   defer condition = ${if eq {$acl_m_greyexpiry}{} {1}}
-        condition = ${lookup sqlite {GREYDB SELECT expire FROM greylist \
+        condition = ${lookup sqlite {SELECT expire FROM greylist \
                                 WHERE id='${quote_sqlite:$acl_m_greyident}';} {1}}
         message = Your mail was considered suspicious for the following reason(s):\n$acl_m_greylistreasons \
                   The mail has been greylisted for some time, after which it should be accepted. \
@@ -123,11 +123,11 @@ greylist_mail:
 write_known_resenders:
   # The message was listed but it's been more than GREYDELAY seconds. Accept it now and whitelist
   # the _original_ sending host by its { IP, HELO } so that we don't delay its mail again.
-  warn set acl_m_orighost = ${lookup sqlite {GREYDB SELECT host FROM greylist \
+  warn set acl_m_orighost = ${lookup sqlite {SELECT host FROM greylist \
                                 WHERE id='${quote_sqlite:$acl_m_greyident}';}{$value}}
-       set acl_m_orighelo = ${lookup sqlite {GREYDB SELECT helo FROM greylist \
+       set acl_m_orighelo = ${lookup sqlite {SELECT helo FROM greylist \
                                 WHERE id='${quote_sqlite:$acl_m_greyident}';}{$value}}
-       set acl_m_dontcare = ${lookup sqlite {GREYDB INSERT INTO resenders \
+       set acl_m_dontcare = ${lookup sqlite {INSERT INTO resenders \
                                 VALUES ( '$acl_m_orighost', \
                                          '${quote_sqlite:$acl_m_orighelo}', \
                                          '$tod_epoch' ); }}

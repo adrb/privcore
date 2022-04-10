@@ -8,6 +8,8 @@
       - dovecot-ldap
       - dovecot-imapd
       - dovecot-lmtpd
+      - dovecot-sieve
+      - dovecot-managesieved  # manage sieve scripts via TCP port 4190
   register: dovecot_install_result
 
 - name: mark dovecot to start on boot

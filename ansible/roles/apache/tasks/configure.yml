@@ -3,8 +3,15 @@
 - name: creating PrivCore config directory - /etc/apache2/privcore-conf
   file: path=/etc/apache2/privcore-conf state=directory owner=root group=root mode=0755
 
-- name: configuring PHP opcache
-  template: src=opcache.ini.j2 dest=/etc/php/7.3/mods-available/opcache.ini
+- name: set PHP memory_limit to 512M
+  lineinfile: dest=/etc/php/7.4/apache2/php.ini regexp="^memory_limit =" line="memory_limit = 512M"
+  notify: restart apache
+
+- name: configuring PHP modules
+  template: src={{ item }}.j2 dest=/etc/php/7.4/mods-available/{{ item }}
+  with_items:
+    - opcache.ini
+    - apcu.ini
   notify: restart apache
 
 - name: enabling apache headers module

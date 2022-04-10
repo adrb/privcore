@@ -52,5 +52,6 @@ ldap_localuser:
   domains = +local_domains
   condition = ${extract{uid}{$address_data}}
   cannot_route_message = Unknown user
-  transport = ldap_maildir
+#  transport = ldap_maildir
+  transport = ldap_dovecot_lmtp_socket
 

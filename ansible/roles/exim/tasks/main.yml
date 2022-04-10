@@ -1,6 +1,15 @@
 ---
 
 #
+# Auth test:
+#   $ user=$(echo -n "username" | base64)
+#   $ pass=$(echo -n "pass" | base64)
+#   $ openssl s_client -host example.com -port 465
+#   EHLO example.com
+#   AUTH LOGIN
+#   $user
+#   $pass
+#
 # Display configuration:
 #   # exim -bP
 #

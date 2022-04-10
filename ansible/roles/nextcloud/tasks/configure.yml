@@ -1,6 +1,6 @@
 ---
 #
-# Documentation: https://docs.nextcloud.com/server/17/admin_manual/installation/
+# Documentation: https://docs.nextcloud.com/server/latest/admin_manual/installation/source_installation.html
 #
 
 - name: creating database {{nextcloud_config.mysql_db}}
@@ -43,6 +43,9 @@
 - name: enabling php-apcu data cache
   lineinfile: dest={{ nextcloud_config.install_dir }}/nextcloud/config/config.php regexp="'memcache.local' => '" line="  'memcache.local' => '\OC\Memcache\APCu'," insertbefore="\);"
 
+- name: set default_phone_region
+  lineinfile: dest={{ nextcloud_config.install_dir }}/nextcloud/config/config.php line="  'default_phone_region' => '{{ nextcloud_config.country_code }}'," insertbefore="\);"
+
 - name: enabling and installing basic apps
   shell: |
     su - www-data -s /bin/bash -c ' \
@@ -50,7 +53,7 @@
     php occ app:install --no-interaction --quiet {{ item }} ; \
     php occ app:enable --no-interaction --quiet {{ item }} '
     :
-  with_items: "{{ nextcloud_config.apps_list}}"
+  with_items: "{{ nextcloud_config.apps_list }}"
   register: occ_app_result
   failed_when: occ_app_result.rc != 0
   changed_when: occ_app_result.rc != 0

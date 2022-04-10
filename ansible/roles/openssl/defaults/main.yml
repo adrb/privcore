@@ -4,5 +4,7 @@ openssl_config:
   organization_name: "{{ config.organization_name }}"
   local_domain: "{{ config.local_domain }}"
 
+  country_code: "{{ config.country_code }}"
+
   ca_dir: /etc/ssl/CA
 
