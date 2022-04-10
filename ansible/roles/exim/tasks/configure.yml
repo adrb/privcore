@@ -46,7 +46,7 @@
     - 'conf.d/rewrite/01_exim4-config_local_domains'
     - 'conf.d/router/01_exim4-config_ldap_local'
     - 'conf.d/transport/01_exim4-config_ldap_maildir'
-    - 'conf.d/transport/01_exim4-config_ldap_dovecot_lmtp'
+    - 'conf.d/transport/01_exim4-config_dovecot_lmtp'
   notify: restart exim
 
 - name: generating greylist maintenance cron job

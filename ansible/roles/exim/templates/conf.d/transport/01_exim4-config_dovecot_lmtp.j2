@@ -1,7 +1,7 @@
 
 # https://wiki2.dovecot.org/LMTP/Exim
 
-ldap_dovecot_lmtp_socket:
+dovecot_lmtp_socket:
   driver = lmtp
   socket = /var/run/dovecot/lmtp
   #maximum number of deliveries per batch, default 1
@@ -12,9 +12,4 @@ ldap_dovecot_lmtp_socket:
   delivery_date_add
   envelope_to_add
   return_path_add
-
-#ldap_devnull:
-#  driver = appendfile
-#  file = /dev/null
-#  group = mail
 
