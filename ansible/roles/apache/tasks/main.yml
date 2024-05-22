@@ -1,8 +1,8 @@
 ---
 
 - name: apache packages
-  include: packages.yml
+  include_tasks: packages.yml
 
 - name: configure apache
-  include: configure.yml
+  include_tasks: configure.yml
 

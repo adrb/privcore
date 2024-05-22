@@ -5,10 +5,10 @@
 #
 
 - name: repositories and packages
-  include: packages.yml
+  include_tasks: packages.yml
 
 - name: configure sssd
-  include: configure.yml
+  include_tasks: configure.yml
 
 - name: Generating LDAP client config /etc/ldap/ldap.conf
   template: src=ldap.conf.j2 dest=/etc/ldap/ldap.conf

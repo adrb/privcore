@@ -20,7 +20,7 @@
     <Location /.well-known>
         RewriteEngine On
 
-        RewriteRule /(card|cal)dav$ https://%{HTTP_HOST}/nextcloud/remote.php/dav [L,R=301,NC]
-        RewriteRule /webfinger$ https://%{HTTP_HOST}/nextcloud/index.php/.well-known/webfinger [L,R=301,NC]
-        RewriteRule /nodeinfo$ https://%{HTTP_HOST}/nextcloud/index.php/.well-known/nodeinfo [L,R=301,NC]
+        RewriteRule /(card|cal)dav$ /nextcloud/remote.php/dav [L,R=301,NC]
+        RewriteRule /webfinger$ /nextcloud/index.php/.well-known/webfinger [L,R=301,NC]
+        RewriteRule /nodeinfo$ /nextcloud/index.php/.well-known/nodeinfo [L,R=301,NC]
    </Location>

@@ -7,11 +7,11 @@
 #
 
 - name: repositories and packages
-  include: packages.yml
+  include_tasks: packages.yml
 
 - name: configure coturn server and set fact coturn_auth_secret
-  include: coturn.yml
+  include_tasks: coturn.yml
 
 - name: configure nextcloud
-  include: configure.yml
+  include_tasks: configure.yml
 

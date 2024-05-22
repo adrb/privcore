@@ -13,16 +13,16 @@ acl_check_mail:
     condition = ${if def:sender_helo_name {no}{yes}}
   .endif
 
-  deny  ! authenticated = *
-        ! verify = helo
-        message = Invalid HELO command
-        log_message = Invalid HELO command (HELO was $sender_helo_name)
+#  deny  ! authenticated = *
+#        ! verify = helo
+#        message = Invalid HELO command
+#        log_message = Invalid HELO command (HELO was $sender_helo_name)
 {% raw %}
-  # Hello should be the same as host name
-  deny  ! authenticated = *
-        condition = ${if and{{def:sender_helo_name}{def:sender_host_name}} {yes}{no}}
-        condition = ${if eqi{$sender_helo_name}{$sender_host_name} {no}{yes}}
-        message = HELLO ($sender_helo_name) doesen't match your host name ($sender_host_name)
+#  # Hello should be the same as host name
+#  deny  ! authenticated = *
+#        condition = ${if and{{def:sender_helo_name}{def:sender_host_name}} {yes}{no}}
+#        condition = ${if eqi{$sender_helo_name}{$sender_host_name} {no}{yes}}
+#        message = HELLO ($sender_helo_name) doesen't match your host name ($sender_host_name)
 {% endraw %}
   deny  ! authenticated = *
         sender_domains = +local_domains

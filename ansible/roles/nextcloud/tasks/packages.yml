@@ -42,6 +42,7 @@
       - php-bcmath
       - php-gmp
       # preview generation
+      - imagemagick
       - php-imagick
       - ffmpeg
 

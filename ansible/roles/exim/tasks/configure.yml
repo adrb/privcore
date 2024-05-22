@@ -50,5 +50,6 @@
   notify: restart exim
 
 - name: generating greylist maintenance cron job
+  when: exim_config.greylist_new_senders
   template: src=cron.j2 dest=/etc/cron.daily/exim4-greylisting mode=0755
 

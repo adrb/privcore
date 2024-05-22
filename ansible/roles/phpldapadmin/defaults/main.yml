@@ -11,7 +11,7 @@ phpldapadmin_config:
   ro_user_dn: "{{ config.ro_user_dn }}"
   ro_user_pw: "{{ config.ro_user_passwd }}"
 
-  sources:
-    # https://github.com/leenooks/phpLDAPadmin/archive/1.2.5.zip
-    - { src: "1.2.5.zip", dest: "/var/www" }
+#  install_dir: /var/www
+#  version: '1.2.6.7'
+#  archive_checksum: 'sha256:dde104aca695e18b0615859ae96177cdcb8a3294aee8d1d47a0b828af939679d'
 

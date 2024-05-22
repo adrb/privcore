@@ -7,7 +7,7 @@
 set -e
 
 if [ "$(id -u)" -ne 0 ] ; then
-  echo "You must be root to run this program!"
+  echo "You must be root to run this program!" >&2
   exit 1
 fi
 
@@ -38,7 +38,7 @@ EOF
 fi
 
 _install_pkgs=''
-for pkt in ansible python3 python3-dnspython acl ; do
+for pkt in ansible ansible-mitogen python3 python3-dnspython acl ; do
   if ( ! dpkg -l $pkt 2>&1 | grep ^ii >/dev/null ) ; then
     _install_pkgs="$pkt $_install_pkgs"
   fi
@@ -51,16 +51,6 @@ fi
 #
 # run ansible playbooks
 cd $(dirname $0)/ansible
-
-# install ansible plugins
-if [ ! -d plugins ] ; then
-  echo "Installing ansible plugins..."
-  mkdir plugins
-  pushd plugins
-  wget -q https://github.com/dw/mitogen/archive/stable.zip -O mitogen-stable.zip
-  unzip -q mitogen-stable.zip
-  popd
-fi
 
 export ANSIBLE_CONFIG='./ansible.cfg'
 ansible-playbook privcore.yml -e ansible_python_interpreter=/usr/bin/python3 --diff "$@"

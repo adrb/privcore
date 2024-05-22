@@ -16,6 +16,9 @@ exim_config:
   tls_cert: "{{ config.tls_cert }}"
   tls_cert_key: "{{ config.tls_cert_key }}"
 
+  # Enable DKIM check
+  enable_check_dkim: "{{ config.enable_check_dkim | default(false) }}"
+
   # Enable greylist mail delay for senders unforseen before
   greylist_new_senders: "{{ config.smtp_greylist_new_senders | default(false) }}"
 

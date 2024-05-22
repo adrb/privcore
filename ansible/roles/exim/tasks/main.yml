@@ -26,8 +26,8 @@
 #   $ exim -M id
 
 - name: repositories and packages
-  include: packages.yml
+  include_tasks: packages.yml
 
 - name: configure exim
-  include: configure.yml
+  include_tasks: configure.yml
 

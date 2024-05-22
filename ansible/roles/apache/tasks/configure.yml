@@ -4,11 +4,27 @@
   file: path=/etc/apache2/privcore-conf state=directory owner=root group=root mode=0755
 
 - name: set PHP memory_limit to 512M
-  lineinfile: dest=/etc/php/7.4/apache2/php.ini regexp="^memory_limit =" line="memory_limit = 512M"
+  lineinfile: dest=/etc/php/8.2/apache2/php.ini regexp="^memory_limit =" line="memory_limit = 512M"
+  notify: restart apache
+
+- name: set PHP upload_max_filesize
+  lineinfile: dest=/etc/php/8.2/apache2/php.ini regexp="^upload_max_filesize =" line="upload_max_filesize = 16G"
+  notify: restart apache
+
+- name: set PHP post_max_size
+  lineinfile: dest=/etc/php/8.2/apache2/php.ini regexp="^post_max_size =" line="post_max_size = 16G"
+  notify: restart apache
+
+- name: set PHP max_input_time
+  lineinfile: dest=/etc/php/8.2/apache2/php.ini regexp="^max_input_time =" line="max_input_time = 3600"
+  notify: restart apache
+
+- name: set PHP max_execution_time
+  lineinfile: dest=/etc/php/8.2/apache2/php.ini regexp="^max_execution_time =" line="max_execution_time = 3600"
   notify: restart apache
 
 - name: configuring PHP modules
-  template: src={{ item }}.j2 dest=/etc/php/7.4/mods-available/{{ item }}
+  template: src={{ item }}.j2 dest=/etc/php/8.2/mods-available/{{ item }}
   with_items:
     - opcache.ini
     - apcu.ini

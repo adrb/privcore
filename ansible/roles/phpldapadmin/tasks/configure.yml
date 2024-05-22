@@ -1,12 +1,15 @@
 ---
 
-- name: Generating /var/www/phpldapadmin/config/config.php
-  template: src=phpldapadmin_config.php.j2 dest=/var/www/phpldapadmin/config/config.php group=www-data mode=0640
+- name: Generating /etc/phpldapadmin/config.php
+  template: src=phpldapadmin_config.php.j2 dest=/etc/phpldapadmin/config.php group=www-data mode=0640
 
-- name: Generating /etc/apache2/conf-available/phpldapadmin.conf
-  template: src=apache.conf.j2 dest=/etc/apache2/conf-available/phpldapadmin.conf
+- name: Generating /etc/phpldapadmin/apache.conf
+  template: src=apache.conf.j2 dest=/etc/phpldapadmin/apache.conf
   notify:
     - reload apache
+
+- name: linking to phpldapadmin apache configuration
+  file: src=/etc/phpldapadmin/apache.conf dest=/etc/apache2/conf-available/phpldapadmin.conf state=link force=yes
 
 - name: enabling apache phpldapadmin.conf
   command: a2enconf phpldapadmin

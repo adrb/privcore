@@ -10,14 +10,28 @@
       - php-ldap
       - php-xml
       - php-cli
+      - phpldapadmin
       - unzip # needed by unarchive ansible module
   notify:
     - restart apache
 
-- name: unarchive source files
-  unarchive: src={{ item.src }} dest={{ item.dest }} keep_newer=yes
-  with_items: "{{ phpldapadmin_config.sources }}"
-
-- name: linking
-  file: src=/var/www/phpLDAPadmin-1.2.5 dest=/var/www/phpldapadmin state=link owner=root group=root force=yes
-
+#- name: creating _pla_archive_file variable
+#  set_fact:
+#    _pla_archive_file: "{{ phpldapadmin_config.version }}.tar.gz"
+#
+#- name: Download nextcloud archive
+#  get_url:
+#    url: https://github.com/leenooks/phpLDAPadmin/archive/refs/tags/{{ _pla_archive_file }}
+#    dest: /tmp/{{ _pla_archive_file }}
+#    mode: '0440'
+#    checksum: '{{ phpldapadmin_config.archive_checksum }}'
+#
+#- name: install phpLDAPadmin files
+#  unarchive: remote_src=yes src=/tmp/{{ _pla_archive_file }} dest={{ phpldapadmin_config.install_dir }} keep_newer=yes
+#
+#- name: resetting files ownerships and permissions
+#  file: path={{ phpldapadmin_config.install_dir }}/phpLDAPadmin-{{ phpldapadmin_config.version }} owner=www-data group=www-data mode=0750 recurse=yes
+#
+#- name: linking
+#  file: src={{ phpldapadmin_config.install_dir }}/phpLDAPadmin-{{ phpldapadmin_config.version }} dest=/var/www/phpldapadmin state=link owner=www-data group=www-data force=yes
+#

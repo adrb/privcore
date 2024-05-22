@@ -131,7 +131,7 @@ Repeat new password: <br><input name='_newpass' type='password'><br>
 
       if ( strlen($uid) > 0 ) {
         if ( $newpass == $_POST['_newpass'] ) {
-          if ( strlen($newpass) >= 6 )
+          if ( strlen($newpass) >= 8 )
             changepass($uid, $pass, $newpass);
           else
             error('New password too short!');
@@ -153,7 +153,7 @@ Repeat new password: <br><input name='_newpass' type='password'><br>
             </div>
             <div class="row">
                 <div class="col-md-12 text-md-center">
-                    <h6>PrivCore - &copy; 2020 -  All Rights Reserved</h6>
+                    <h6>PrivCore - &copy; 2024 -  All Rights Reserved</h6>
                 </div>
             </div>
       </div>

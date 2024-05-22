@@ -1,5 +1,5 @@
 
-PrivCore 11.0 (bullseye)
+PrivCore 12.0 (bookworm)
 Author: Adrian Brzezinski
 
 -------------------------------------------------------------------------------
@@ -21,7 +21,7 @@ For detailed information, please visit http://privcore.adrb.pl
 
 Quick install:
 
-- Install a fresh copy of the Debian 11 system on all machines, where you plan
+- Install a fresh copy of the Debian 12 system on all machines, where you plan
 to install PrivCore
 
 - Clone PrivCore git repository

@@ -4,12 +4,15 @@ nextcloud_config:
   suffix: "{{ config.suffix }}"
 
   internet_domain: "{{ config.internet_domain }}"
+  smtp_internet_domains: "{[ config.smtp_internet_domains }}"
 
   country_code: "{{ config.country_code }}"
 
   tls_ca_cert: "{{ config.tls_ca_cert }}"
   tls_cert: "{{ config.tls_cert }}"
   tls_cert_key: "{{ config.tls_cert_key }}"
+
+  admin_user: "{{ config.admin_user }}"
 
   master_passwd: "{{ config.master_passwd }}"
 
@@ -21,8 +24,8 @@ nextcloud_config:
   mysql_db: nextcloud
 
   install_dir: /var/www
-  version: '23.0.3'
-  archive_checksum: 'sha256:39401d400fab02a84a175ea6e995b8ed4110fbaea48c876230b4f09755a62986'
+  version: '29.0.0'
+  archive_checksum: 'sha256:e9b53f6432b6f664487d3869645fa121a64cf0ed6aee83aa560903daf86b52bd'
 
   apps_list:
     - "user_ldap"
@@ -31,13 +34,20 @@ nextcloud_config:
     - "mail"
     - "files_external"
     - "spreed"
+    - "theming"
     - "richdocuments" # Collabora online
+
+  apps_config:
+    - { app: "richdocuments", key: "public_wopi_url", value: "https://{{config.internet_domain}}" }
+    - { app: "richdocuments", key: "wopi_url", value: "https://{{config.internet_domain}}/" }
+    - { app: "files_external", key: "user_mounting_backends", value: 'ftp,dav,owncloud,sftp,amazons3,swift,smb,\OC\Files\Storage\SFTP_Key,\OC\Files\Storage\SMB_OC' }
+
 
 # Example ldap_user config
 # $ php occ ldap:create-empty-config --only-print-prefix
 # s01
 # $ php occ ldap:set-config s01 <key> <value>
-#  user_ldap:
+#  app_user_ldap_config:
 #    - { key: "ldapAgentName", value: '{{ config.ro_user_dn }}' }
 #    - { key: "ldapAgentPassword", value: '{{ config.ro_user_passwd }}' }
 #    - { key: "ldapBase", value: '{{ config.suffix }}' }

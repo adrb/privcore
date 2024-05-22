@@ -1,49 +1,41 @@
 
 LOCK TABLES oc_appconfig WRITE;
 
-INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_dn","{{nextcloud_config.ro_user_dn}}") ON DUPLICATE KEY UPDATE configvalue="{{nextcloud_config.ro_user_dn}}";
-INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_agent_password","{{ldap_userpw_base64}}") ON DUPLICATE KEY UPDATE configvalue="{{ldap_userpw_base64}}";
-INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_backup_host","") ON DUPLICATE KEY UPDATE configvalue="";
-INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_backup_port","") ON DUPLICATE KEY UPDATE configvalue="";
-INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_base","{{nextcloud_config.suffix}}") ON DUPLICATE KEY UPDATE configvalue="{{nextcloud_config.suffix}}";
-INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_base_groups","ou=groups,{{nextcloud_config.suffix}}") ON DUPLICATE KEY UPDATE configvalue="ou=groups,{{nextcloud_config.suffix}}";
-INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_base_users","ou=accounts,ou=users,{{nextcloud_config.suffix}}") ON DUPLICATE KEY UPDATE configvalue="ou=accounts,ou=users,{{nextcloud_config.suffix}}";
-INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_cache_ttl","600") ON DUPLICATE KEY UPDATE configvalue="600";
-INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_configuration_active","1") ON DUPLICATE KEY UPDATE configvalue="1";
-INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_display_name","cn") ON DUPLICATE KEY UPDATE configvalue="cn";
-INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_user_display_name_2","mail") ON DUPLICATE KEY UPDATE configvalue="mail";
-INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_email_attr","mail") ON DUPLICATE KEY UPDATE configvalue="mail";
-INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_group_display_name","cn") ON DUPLICATE KEY UPDATE configvalue="cn";
-INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_group_member_assoc_attribute","memberUid") ON DUPLICATE KEY UPDATE configvalue="memberUid";
-INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_host","{% if inventory_hostname == groups['controller'][0] %}localhost{% else %}{{ groups['controller'][0] }}{% endif %}") ON DUPLICATE KEY UPDATE configvalue="{% if inventory_hostname == groups['controller'][0] %}localhost{% else %}{{ groups['controller'][0] }}{% endif %}";
-INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_port","{% if inventory_hostname == groups['controller'][0] %}389{% else %}636{% endif %}") ON DUPLICATE KEY UPDATE configvalue="{% if inventory_hostname == groups['controller'][0] %}389{% else %}636{% endif %}";
-INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_tls","{% if inventory_hostname == groups['controller'][0] %}0{% else %}1{% endif %}") ON DUPLICATE KEY UPDATE configvalue="{% if inventory_hostname == groups['controller'][0] %}0{% else %}1{% endif %}";
-INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_turn_off_cert_check","0") ON DUPLICATE KEY UPDATE configvalue="0";
-INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_login_filter","(&(objectclass=inetOrgPerson)(|(uid=%uid)(|(mailPrimaryAddress=%uid)(mail=%uid))))") ON DUPLICATE KEY UPDATE configvalue="(&(objectclass=inetOrgPerson)(|(uid=%uid)(|(mailPrimaryAddress=%uid)(mail=%uid))))";
-INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_loginfilter_email","1") ON DUPLICATE KEY UPDATE configvalue="1";
-INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_loginfilter_username","1") ON DUPLICATE KEY UPDATE configvalue="1";
-INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_userfilter_objectclass","inetOrgPerson") ON DUPLICATE KEY UPDATE configvalue="inetOrgPerson";
-INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_userlist_filter","(&(objectclass=inetOrgPerson))") ON DUPLICATE KEY UPDATE configvalue="(&(objectclass=inetOrgPerson))";
-INSERT INTO oc_appconfig VALUES ("user_ldap","types","authentication") ON DUPLICATE KEY UPDATE configvalue="authentication";
-INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_group_filter","(&(objectclass=posixGroup))") ON DUPLICATE KEY UPDATE configvalue="(&(objectclass=posixGroup))";
-INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_group_filter_mode","1") ON DUPLICATE KEY UPDATE configvalue="1";
-INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_group_member_assoc_attribute","memberUid") ON DUPLICATE KEY UPDATE configvalue="memberUid";
-INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_turn_on_pwd_change","0") ON DUPLICATE KEY UPDATE configvalue="0";
-INSERT INTO oc_appconfig VALUES ("user_ldap","enabled","yes") ON DUPLICATE KEY UPDATE configvalue="yes";
+INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_dn","{{nextcloud_config.ro_user_dn}}",2,0) ON DUPLICATE KEY UPDATE configvalue="{{nextcloud_config.ro_user_dn}}";
+INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_agent_password","{{ldap_userpw_base64}}",2,0) ON DUPLICATE KEY UPDATE configvalue="{{ldap_userpw_base64}}";
+INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_backup_host","",2,0) ON DUPLICATE KEY UPDATE configvalue="";
+INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_backup_port","",2,0) ON DUPLICATE KEY UPDATE configvalue="";
+INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_base","{{nextcloud_config.suffix}}",2,0) ON DUPLICATE KEY UPDATE configvalue="{{nextcloud_config.suffix}}";
+INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_base_groups","ou=groups,{{nextcloud_config.suffix}}",2,0) ON DUPLICATE KEY UPDATE configvalue="ou=groups,{{nextcloud_config.suffix}}";
+INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_base_users","ou=accounts,ou=users,{{nextcloud_config.suffix}}",2,0) ON DUPLICATE KEY UPDATE configvalue="ou=accounts,ou=users,{{nextcloud_config.suffix}}";
+INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_cache_ttl","600",2,0) ON DUPLICATE KEY UPDATE configvalue="600";
+INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_configuration_active","1",2,0) ON DUPLICATE KEY UPDATE configvalue="1";
+INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_display_name","cn",2,0) ON DUPLICATE KEY UPDATE configvalue="cn";
+INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_user_display_name_2","mail",2,0) ON DUPLICATE KEY UPDATE configvalue="mail";
+INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_email_attr","mail",2,0) ON DUPLICATE KEY UPDATE configvalue="mail";
+INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_group_display_name","cn",2,0) ON DUPLICATE KEY UPDATE configvalue="cn";
+INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_group_member_assoc_attribute","memberUid",2,0) ON DUPLICATE KEY UPDATE configvalue="memberUid";
+INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_host","{% if inventory_hostname == groups['controller'][0] %}localhost{% else %}{{ groups['controller'][0] }}{% endif %}",2,0) ON DUPLICATE KEY UPDATE configvalue="{% if inventory_hostname == groups['controller'][0] %}localhost{% else %}{{ groups['controller'][0] }}{% endif %}";
+INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_port","{% if inventory_hostname == groups['controller'][0] %}389{% else %}636{% endif %}",2,0) ON DUPLICATE KEY UPDATE configvalue="{% if inventory_hostname == groups['controller'][0] %}389{% else %}636{% endif %}";
+INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_tls","{% if inventory_hostname == groups['controller'][0] %}0{% else %}1{% endif %}",2,0) ON DUPLICATE KEY UPDATE configvalue="{% if inventory_hostname == groups['controller'][0] %}0{% else %}1{% endif %}";
+INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_turn_off_cert_check","0",2,0) ON DUPLICATE KEY UPDATE configvalue="0";
+INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_login_filter","(&(objectclass=inetOrgPerson)(|(uid=%uid)(|(mailPrimaryAddress=%uid)(mail=%uid))))",2,0) ON DUPLICATE KEY UPDATE configvalue="(&(objectclass=inetOrgPerson)(|(uid=%uid)(|(mailPrimaryAddress=%uid)(mail=%uid))))";
+INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_loginfilter_email","1",2,0) ON DUPLICATE KEY UPDATE configvalue="1";
+INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_loginfilter_username","1",2,0) ON DUPLICATE KEY UPDATE configvalue="1";
+INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_userfilter_objectclass","inetOrgPerson",2,0) ON DUPLICATE KEY UPDATE configvalue="inetOrgPerson";
+INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_userlist_filter","(&(objectclass=inetOrgPerson))",2,0) ON DUPLICATE KEY UPDATE configvalue="(&(objectclass=inetOrgPerson))";
+INSERT INTO oc_appconfig VALUES ("user_ldap","types","authentication",2,0) ON DUPLICATE KEY UPDATE configvalue="authentication";
+INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_group_filter","(&(objectclass=posixGroup))",2,0) ON DUPLICATE KEY UPDATE configvalue="(&(objectclass=posixGroup))";
+INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_group_filter_mode","1",2,0) ON DUPLICATE KEY UPDATE configvalue="1";
+INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_group_member_assoc_attribute","memberUid",2,0) ON DUPLICATE KEY UPDATE configvalue="memberUid";
+INSERT INTO oc_appconfig VALUES ("user_ldap","ldap_turn_on_pwd_change","0",2,0) ON DUPLICATE KEY UPDATE configvalue="0";
+INSERT INTO oc_appconfig VALUES ("user_ldap","enabled","yes",2,0) ON DUPLICATE KEY UPDATE configvalue="yes";
 
-INSERT INTO oc_appconfig VALUES ("files_external","user_mounting_backends","ftp,dav,owncloud,sftp,amazons3,swift,smb,\OC\Files\Storage\SFTP_Key,\OC\Files\Storage\SMB_OC") ON DUPLICATE KEY UPDATE configvalue="ftp,dav,owncloud,sftp,amazons3,swift,smb,\OC\Files\Storage\SFTP_Key,\OC\Files\Storage\SMB_OC";
+INSERT INTO oc_appconfig VALUES ("theming","name","PrivCore",2,0) ON DUPLICATE KEY UPDATE configvalue="PrivCore";
+INSERT INTO oc_appconfig VALUES ("theming","url","http://privcore.adrb.pl",2,0) ON DUPLICATE KEY UPDATE configvalue="http://privcore.adrb.pl";
 
-INSERT INTO oc_appconfig VALUES ("theming","name","PrivCore") ON DUPLICATE KEY UPDATE configvalue="PrivCore";
-INSERT INTO oc_appconfig VALUES ("theming","url","http://privcore.adrb.pl") ON DUPLICATE KEY UPDATE configvalue="http://privcore.adrb.pl";
-INSERT INTO oc_appconfig VALUES ("theming","enabled","yes") ON DUPLICATE KEY UPDATE configvalue="yes";
-
-INSERT INTO oc_appconfig VALUES ("spreed","stun_servers","[\"{{nextcloud_config.internet_domain}}:3478\"]") ON DUPLICATE KEY UPDATE configvalue="[\"{{nextcloud_config.internet_domain}}:3478\"]";
-INSERT INTO oc_appconfig VALUES ("spreed","turn_servers","[{\"server\":\"{{nextcloud_config.internet_domain}}:3478\",\"secret\":\"{{coturn_auth_secret}}\",\"protocols\":\"udp,tcp\"}]") ON DUPLICATE KEY UPDATE configvalue="[{\"server\":\"{{nextcloud_config.internet_domain}}:3478\",\"secret\":\"{{coturn_auth_secret}}\",\"protocols\":\"udp,tcp\"}]";
-INSERT INTO oc_appconfig VALUES ("spreed","enabled","yes") ON DUPLICATE KEY UPDATE configvalue="yes";
-
-INSERT INTO oc_appconfig VALUES ("richdocuments","public_wopi_url","https://{{nextcloud_config.internet_domain}}") ON DUPLICATE KEY UPDATE configvalue="https://{{nextcloud_config.internet_domain}}";
-INSERT INTO oc_appconfig VALUES ("richdocuments","wopi_url","https://{{nextcloud_config.internet_domain}}") ON DUPLICATE KEY UPDATE configvalue="https://{{nextcloud_config.internet_domain}}";
-INSERT INTO oc_appconfig VALUES ("richdocuments","enabled","yes") ON DUPLICATE KEY UPDATE configvalue="yes";
+INSERT INTO oc_appconfig VALUES ("spreed","stun_servers","[\"{{nextcloud_config.internet_domain}}:3478\"]",2,0) ON DUPLICATE KEY UPDATE configvalue="[\"{{nextcloud_config.internet_domain}}:3478\"]";
+INSERT INTO oc_appconfig VALUES ("spreed","turn_servers","[{\"server\":\"{{nextcloud_config.internet_domain}}:3478\",\"secret\":\"{{coturn_auth_secret}}\",\"protocols\":\"udp,tcp\"}]",2,0) ON DUPLICATE KEY UPDATE configvalue="[{\"server\":\"{{nextcloud_config.internet_domain}}:3478\",\"secret\":\"{{coturn_auth_secret}}\",\"protocols\":\"udp,tcp\"}]";
 
 UNLOCK TABLES;
 

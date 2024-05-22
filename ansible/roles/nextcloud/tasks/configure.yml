@@ -15,55 +15,68 @@
 - name: configuring
   shell: |
     su - www-data -s /bin/bash -c ' \
-    cd {{ nextcloud_config.install_dir }}/nextcloud ; \
+    cd {{ nextcloud_config.install_dir }}/nextcloud && \
     php occ maintenance:install --no-interaction --database="mysql" \
       --database-name="{{nextcloud_config.mysql_db}}" \
       --database-user="{{nextcloud_config.mysql_user}}" \
       --database-pass="{{nextcloud_config.mysql_pass}}" \
       --admin-user="admin" --admin-pass="{{nextcloud_config.master_passwd}}" \
-      --data-dir="{{ nextcloud_config.install_dir }}/nextcloud/data" '
+      --data-dir="{{ nextcloud_config.install_dir }}/nextcloud/data" && \
+    php occ db:add-missing-indices && \
+    php occ background:cron && \
+    php occ config:system:set overwrite.cli.url --type=string --value="https://{{ nextcloud_config.internet_domain }}" && \
+    php occ config:system:set memcache.local --type=string --value="\OC\Memcache\APCu" && \
+    php occ config:system:set default_phone_region --type=string --value="{{ nextcloud_config.country_code }}" && \
+    php occ config:system:set trusted_domains 0 --type=string --value="{{ nextcloud_config.internet_domain }}" && \
+    php occ config:system:set trusted_domains 1 --type=string --value="{{ inventory_hostname }}" && \
+    php occ config:system:set maintenance_window_start --type=integer --value=3 && \
+    php occ config:system:set mail_smtpmode --type=string --value=sendmail && \
+    php occ config:system:set mail_sendmailmode --type=string --value=pipe && \
+    php occ config:system:set mail_domain --type=string --value="{{ nextcloud_config.smtp_internet_domains[0] }}" && \
+    php occ config:system:set mail_from_address --type=string --value=admin && \
+    php occ user:setting admin settings email "{{ nextcloud_config.admin_user }}@{{ nextcloud_config.smtp_internet_domains[0] }}"
+    '
     :
   register: occ_install_result
   failed_when: occ_install_result.rc != 0
   changed_when: occ_install_result.rc != 0
 # become_flags seems not working properly with mitogen plugin
-  args:
-    warn: false
 #  become: true
 #  become_method: su
 #  become_user: www-data
 #  become_flags: '-s /bin/bash'
 
-- name: fixing configured cli.url
-  lineinfile: dest={{ nextcloud_config.install_dir }}/nextcloud/config/config.php regexp="'overwrite.cli.url' => '" line="  'overwrite.cli.url' => 'https://{{ nextcloud_config.internet_domain }}'," insertbefore="\);"
-
-- name: changing trusted domain
-  lineinfile: dest={{ nextcloud_config.install_dir }}/nextcloud/config/config.php regexp="0 => " line="    0 => '{{ nextcloud_config.internet_domain }}'," insertbefore="\);"
-
-- name: enabling php-apcu data cache
-  lineinfile: dest={{ nextcloud_config.install_dir }}/nextcloud/config/config.php regexp="'memcache.local' => '" line="  'memcache.local' => '\OC\Memcache\APCu'," insertbefore="\);"
-
-- name: set default_phone_region
-  lineinfile: dest={{ nextcloud_config.install_dir }}/nextcloud/config/config.php line="  'default_phone_region' => '{{ nextcloud_config.country_code }}'," insertbefore="\);"
-
 - name: enabling and installing basic apps
   shell: |
     su - www-data -s /bin/bash -c ' \
-    cd {{ nextcloud_config.install_dir }}/nextcloud ; \
-    php occ app:install --no-interaction --quiet {{ item }} ; \
-    php occ app:enable --no-interaction --quiet {{ item }} '
+    cd {{ nextcloud_config.install_dir }}/nextcloud && \
+    php occ app:install --no-interaction --quiet {{ item }} && \
+    php occ app:enable --no-interaction --quiet {{ item }}
+    '
     :
   with_items: "{{ nextcloud_config.apps_list }}"
   register: occ_app_result
   failed_when: occ_app_result.rc != 0
   changed_when: occ_app_result.rc != 0
 # become_flags Seems not working properly with mitogen plugin
-  args:
-    warn: false
 #  become: true
 #  become_method: su
 #  become_user: www-data
 #  become_flags: '-s /bin/bash'
+#
+- name: configuring basic apps
+  shell: |
+    su - www-data -s /bin/bash -c ' \
+    cd {{ nextcloud_config.install_dir }}/nextcloud && \
+    {% for config in nextcloud_config.apps_config %}
+    php occ config:app:set --update-only --quiet {{ config.app }} {{ config.key }} --value "{{ config.value }}" && \
+    {% endfor %}
+    :
+    '
+    :
+  register: occ_app_result
+  failed_when: occ_app_result.rc != 0
+  changed_when: occ_app_result.rc != 0
 
 - name: hashing LDAP user password with BASE64
   shell: echo -n "{{nextcloud_config.ro_user_pw}}" | base64
@@ -120,4 +133,7 @@
   register: a2enconf_nextcloud
   changed_when: ("Conf nextcloud already enabled" not in a2enconf_nextcloud.stdout)
   notify: reload apache
+
+- name: generating nextcloud cron configuration
+  template: src=nextcloud.cron.j2 dest=/etc/cron.d/nextcloud
 

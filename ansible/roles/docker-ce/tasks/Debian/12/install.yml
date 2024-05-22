@@ -1,0 +1,36 @@
+---
+# https://docs.docker.com/install/linux/docker-ce/debian/
+
+- name: Install repo dependencies
+  apt:
+    state: present
+    name:
+        - 'apt-transport-https'
+        - 'ca-certificates'
+        - 'curl'
+        - 'gnupg2'
+        - 'software-properties-common'
+
+- name: Install repo keys
+  get_url:
+    url: https://download.docker.com/linux/debian/gpg
+    dest: /etc/apt/keyrings/docker-ce.asc
+    checksum: sha256:1500c1f56fa9e26b9b8f42452a553675796ade0807cdce11975eb98170b3a570
+
+- name: Setup repository
+  apt_repository:
+    state: present
+    repo: 'deb [arch=amd64 signed-by=/etc/apt/keyrings/docker-ce.asc] https://download.docker.com/linux/debian {{ansible_distribution_release}} stable'
+    filename: 'docker-ce'
+
+- name: Install docker-ce
+  apt:
+    state: present
+    name:
+        - 'docker-ce'
+        - 'docker-compose'
+        - 'python3-docker'
+
+- name: Enable docker service
+  service: name=docker enabled=yes
+
