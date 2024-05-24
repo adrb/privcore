@@ -8,10 +8,14 @@
 #  4 FETCH 1 BODY[]
 #  5 logout
 #
-# Testing ManageSieve (See: https://doc.dovecot.org/configuration_manual/sieve/)
-#  $ auth=$(echo -n 'loginpassword' | base64)
+# Testing ManageSieve (See: https://doc.dovecot.org/configuration_manual/sieve/, https://doc.dovecot.org/configuration_manual/sieve/managesieve/troubleshooting/, https://datatracker.ietf.org/doc/html/rfc5804.html)
+#  $ auth=$(echo -en '\0login\0password' | base64)
 #  $ telnet localhost 4190
 #  AUTHENTICATE "PLAIN" "$auth"
+#  LISTSCRIPTS
+#  GETSCRIPT "$scriptname"
+#  SETACTIVE "$scriptname"
+#  LOGOUT
 #
 
 - name: repositories and packages

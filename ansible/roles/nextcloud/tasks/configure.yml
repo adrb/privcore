@@ -34,7 +34,8 @@
     php occ config:system:set mail_sendmailmode --type=string --value=pipe && \
     php occ config:system:set mail_domain --type=string --value="{{ nextcloud_config.smtp_internet_domains[0] }}" && \
     php occ config:system:set mail_from_address --type=string --value=admin && \
-    php occ user:setting admin settings email "{{ nextcloud_config.admin_user }}@{{ nextcloud_config.smtp_internet_domains[0] }}"
+    php occ user:setting admin settings email "{{ nextcloud_config.admin_user }}@{{ nextcloud_config.smtp_internet_domains[0] }}" && \
+    php occ config:system:set allow_local_remote_servers --type=boolean --value=true
     '
     :
   register: occ_install_result
