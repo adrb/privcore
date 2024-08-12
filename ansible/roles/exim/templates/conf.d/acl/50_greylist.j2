@@ -84,7 +84,7 @@ greylist_mail:
   # to change it.
   warn  condition = ${if eq {$acl_m_greyexpiry}{} {1}}
         set acl_m_dontcare = ${lookup sqlite {INSERT INTO greylist \
-                                        VALUES ( '$acl_m_greyident', \
+                                        VALUES ( '${quote_sqlite:$acl_m_greyident}', \
                                                  '${eval10:$tod_epoch+GREYDELAY}', \
                                                  '$sender_host_address', \
                                                  '${quote_sqlite:$sender_helo_name}' );}}
